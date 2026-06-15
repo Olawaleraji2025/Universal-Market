@@ -1,49 +1,9 @@
 import { useMemo, useState } from "react";
-
 import Button from "../ui/button";
-
-const products = [
-  {
-    id: 1,
-    name: "iPhone 13 Pro 256GB",
-    price: "485,000",
-    image:
-      "https://images.unsplash.com/photo-1616348436168-de43ad0db179?auto=format&fit=crop&q=80&w=400",
-    category: "Phones",
-    tag: "Like New",
-    tagColor: "bg-emerald-100 text-emerald-700",
-  },
-  {
-    id: 2,
-    name: "Samsung QLED 55\" 4K",
-    price: "310,000",
-    image:
-      "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1-a4bb92f829d1?auto=format&fit=crop&q=80&w=400",
-    category: "Laptops",
-    tag: "Verified",
-    tagColor: "bg-blue-100 text-blue-700",
-  },
-  {
-    id: 3,
-    name: "MacBook Pro M2 14\"",
-    price: "920,000",
-    image:
-      "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=400",
-    category: "Laptops",
-    tag: "Verified",
-    tagColor: "bg-blue-100 text-blue-700",
-  },
-  {
-    id: 4,
-    name: "Sony WH-1000XM5",
-    price: "240,000",
-    image:
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=400",
-    category: "Phones",
-    tag: "Like New",
-    tagColor: "bg-emerald-100 text-emerald-700",
-  },
-];
+import useShopProducts from "../../Hooks/useShopProducts";
+import { useSelector, useDispatch } from "react-redux";
+import { setClickedProduct } from "../../features/shop/productDetailsClicked";
+import { useNavigate } from "react-router-dom";
 
 const filters = [
   "All",
@@ -55,25 +15,46 @@ const filters = [
   "Appliances",
 ];
 
-
 export default function ShopProductList() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  
+  const { data: products = [], isLoading, error } = useShopProducts();
+
   const [activeFilter, setActiveFilter] = useState("All");
+  const query = useSelector((state) => state.shopSearch?.query ?? "");
 
   const filteredProducts = useMemo(() => {
-    if (activeFilter === "All") return products;
-    return products.filter((p) => p.category === activeFilter);
-  }, [activeFilter]);
+    const q = (query || "").trim().toLowerCase();
+
+    let result = products;
+
+    if (activeFilter !== "All") {
+      result = result.filter((p) => p.Category === activeFilter);
+    }
+
+    if (!q) return result;
+
+    return result.filter((p) => {
+      const name = String(p.ProductName ?? "").toLowerCase();
+      const category = String(p.Category ?? "").toLowerCase();
+      const status = String(p.ProductStatus ?? "").toLowerCase();
+      return name.includes(q) || category.includes(q) || status.includes(q);
+    });
+  }, [activeFilter, products, query]);
+
+  if (isLoading) return <p>Loading the shop...</p>;
+  if (error) return <p>Error: {error.message}</p>;
 
   return (
     <section className="px-6 py-10">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
-          
           <div className="flex gap-3 overflow-x-auto pb-1">
             {filters.map((f) => {
               const isActive = f === activeFilter;
               return (
-                <button
+                <Button
                   key={f}
                   type="button"
                   onClick={() => setActiveFilter(f)}
@@ -85,7 +66,7 @@ export default function ShopProductList() {
                   }
                 >
                   {f}
-                </button>
+                </Button>
               );
             })}
           </div>
@@ -95,31 +76,46 @@ export default function ShopProductList() {
           {filteredProducts.map((product) => (
             <div
               key={product.id}
-              className="min-w-[260px] bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition flex flex-col"
+              className="w-3xs bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition flex flex-col"
             >
               <div className="relative aspect-square">
                 <img
-                  src={product.image}
-                  alt={product.name}
+                  src={product.imageUrl}
+                  alt={product.ProductName}
                   className="w-full h-full object-cover"
                 />
                 <span
-                  className={
-                    "absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold uppercase " +
-                    product.tagColor
-                  }
+                  className={`absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold uppercase ${product.ProductStatus === 'In Stock' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}
                 >
-                  {product.tag}
+                  {product.ProductStatus || ""}
                 </span>
               </div>
 
-              <div className="p-4 flex flex-col grow">
-                <h3 className="font-semibold text-gray-800 mb-1">
-                  {product.name}
-                </h3>
-                <p className="text-xl font-bold text-[#01241a] mb-4">₦{product.price}</p>
+              
 
-                <Button className="mt-auto bg-[#064e3b] text-white w-full py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 hover:bg-emerald-900 transition cursor-pointer">
+              <div className="p-4 flex flex-col grow">
+
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-100">
+                    {product.Category}
+                  </span>
+                </div>
+
+                <h3 className="font-semibold text-gray-800 mb-1 leading-snug">
+                  {product.ProductName}
+                </h3>
+                <p className="text-xl font-bold text-[#01241a] mb-4">
+                  ₦{product.ProductPrice}
+                </p>
+
+
+                <Button
+                  className="mt-auto bg-[#064e3b] text-white w-full py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 hover:bg-emerald-900 transition cursor-pointer"
+                  onClick={() => {
+                    dispatch(setClickedProduct(product));
+                    navigate('/product');
+                  }}
+                >
                   View details
                 </Button>
               </div>

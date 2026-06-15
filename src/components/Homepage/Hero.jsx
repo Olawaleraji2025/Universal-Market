@@ -1,8 +1,12 @@
 import { motion} from "framer-motion";
 import Button from "/src/components/ui/button.jsx";
+import { useNavigate } from 'react-router-dom'
 
 
-export const Hero = () => (
+export const Hero = () => {
+    const navigate = useNavigate();
+
+  return (<>
   <motion.section className="px-6 py-12 md:py-20 max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center"
   initial={{ opacity: 0 }} 
       animate={{ opacity: 1}}
@@ -22,7 +26,9 @@ export const Hero = () => (
         Verified devices, tested appliances, and direct WhatsApp support for smooth transactions. No middlemen, no surprises.
       </p>
       <div className="flex flex-col sm:flex-row gap-4">
-        <Button className="bg-[#01241a] text-white px-8 py-4 rounded-md font-semibold hover:bg-black transition" size="lg">
+        <Button className="bg-[#01241a] text-white px-8 py-4 rounded-md font-semibold hover:bg-black transition" size="lg"
+        onClick={() => navigate('/shop')}
+        >
           Browse Products
         </Button>
         <Button className="bg-[#22c55e] text-white px-8 py-4 rounded-md font-semibold flex items-center justify-center gap-2 hover:bg-emerald-600 transition" size="lg" >
@@ -46,4 +52,5 @@ export const Hero = () => (
       </div>
     </div>
   </motion.section>
-);
+  </>
+)};

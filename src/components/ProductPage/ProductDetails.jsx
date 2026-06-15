@@ -1,42 +1,45 @@
 import { useMemo, useState } from "react";
 import { Package } from "lucide-react";
+import useShopProducts from "../../Hooks/useShopProducts";  
+import { useSelector } from "react-redux";
 
 import Button from "../ui/button";
 import RequestModal from "./RequestModal";
 
 
-export default function ProductDetails({
-  title = "iPhone 13 Pro 256GB",
-  description =
-    "A premium iPhone 13 Pro with excellent condition. Ideal for everyday performance and creative work.",
-  priceLabel = "₦485,000",
-  keySpecifications = [
-    "Storage: 256GB",
-    "Condition: Like New",
-    "Battery: Excellent",
-    "Color: Graphite",
-  ],
-  whatsappMessage =
-    "Hi, I’m interested in this product. Please share more details and availability.",
-  images = [
-    "https://images.unsplash.com/photo-1616348436168-de43ad0db179?auto=format&fit=crop&q=80&w=800",
-    "https://images.unsplash.com/photo-1616348436168-de43ad0db179?auto=format&fit=crop&q=80&w=400",
-    "https://images.unsplash.com/photo-1616348436168-de43ad0db179?auto=format&fit=crop&q=80&w=401",
-    "https://images.unsplash.com/photo-1616348436168-de43ad0db179?auto=format&fit=crop&q=80&w=402",
-  ],
-  requestWhatsAppNumber = "2348000000000",
-}) {
+export  const ProductDetails = (
+  // title = "iPhone 13 Pro 256GB",
+  // description =
+  //   "A premium iPhone 13 Pro with excellent condition. Ideal for everyday performance and creative work.",
+  // priceLabel = "₦485,000",
+  // keySpecifications = [
+  //   "Storage: 256GB",
+  //   "Condition: Like New",
+  //   "Battery: Excellent",
+  //   "Color: Graphite",
+  // ],
+  // whatsappMessage =
+  //   "Hi, I’m interested in this product. Please share more details and availability.",
+  // images = {clickedProduct.ImageName},
+  // requestWhatsAppNumber = "2348000000000",
+) => {
+const clickedProduct = useSelector((state) => state.productDetailsClicked?.clickedProduct);
+console.log({clickedProduct})
+
+
   const [activeIndex, setActiveIndex] = useState(0);
   const [requestOpen, setRequestOpen] = useState(false);
 
 
-  const activeImage = images[activeIndex] ?? images[0];
+  const activeImage = clickedProduct.imageUrl;
+  const Specs = clickedProduct.ProductSpecification
+;
 
-  const whatsappHref = useMemo(() => {
-    const text = encodeURIComponent(whatsappMessage);
-    // WA deep link: https://wa.me/<number>?text=<message>
-    return `https://wa.me/${requestWhatsAppNumber}?text=${text}`;
-  }, [requestWhatsAppNumber, whatsappMessage]);
+  // const whatsappHref = useMemo(() => {
+  //   const text = encodeURIComponent(whatsappMessage);
+  //   // WA deep link: https://wa.me/<number>?text=<message>
+  //   return `https://wa.me/${requestWhatsAppNumber}?text=${text}`;
+  // }, [requestWhatsAppNumber, whatsappMessage]);
 
   return (
     <section className="px-6 py-10">
@@ -48,13 +51,13 @@ export default function ProductDetails({
               <div className="aspect-[4/3] w-full">
                 <img
                   src={activeImage}
-                  alt={title}
+                  alt={clickedProduct.ProductName}
                   className="w-full h-full object-cover"
                 />
               </div>
             </div>
 
-            <div className="flex gap-3 overflow-x-auto pb-2">
+            {/* <div className="flex gap-3 overflow-x-auto pb-2">
               {images.map((img, idx) => {
                 const isActive = idx === activeIndex;
                 return (
@@ -78,26 +81,26 @@ export default function ProductDetails({
                   </button>
                 );
               })}
-            </div>
+            </div> */}
           </div>
 
           {/* Info */}
           <div className="space-y-5">
             <div>
-              <h1 className="text-3xl font-bold text-[#01241a]">{title}</h1>
+              <h1 className="text-3xl font-bold text-[#01241a]">{clickedProduct.ProductName}</h1>
               <p className="text-xl font-bold text-[#01241a] mt-2">
-                {priceLabel}
+                #{clickedProduct.ProductPrice}
               </p>
             </div>
 
-            <p className="text-gray-600 leading-relaxed">{description}</p>
+            {/* <p className="text-gray-600 leading-relaxed">{clickedProduct.ProductDescription}</p> */}
 
             <div className="bg-white border border-gray-100 rounded-2xl p-5">
               <h3 className="font-semibold text-[#01241a] mb-3">
                 Key specifications
               </h3>
               <ul className="space-y-2 text-gray-700">
-                {keySpecifications.map((spec, idx) => (
+                {Specs.map((spec, idx) => (
                   <li key={spec + idx} className="flex items-start gap-2">
                     <span className="mt-1 block w-1.5 h-1.5 rounded-full bg-[#064e3b]" />
                     <span>{spec}</span>
@@ -116,12 +119,12 @@ export default function ProductDetails({
               </Button>
 
               <RequestModal
-                open={requestOpen}
-                onClose={() => setRequestOpen(false)}
-                productTitle={title}
-                priceLabel={priceLabel}
-                whatsappMessage={whatsappMessage}
-                requestWhatsAppNumber={requestWhatsAppNumber}
+                // open={requestOpen}
+                // onClose={() => setRequestOpen(false)}
+                // productTitle={title}
+                // priceLabel={priceLabel}
+                // whatsappMessage={whatsappMessage}
+                // requestWhatsAppNumber={requestWhatsAppNumber}
               />
 
 
@@ -132,7 +135,7 @@ export default function ProductDetails({
               {/* Optional: if you want the button to open WhatsApp, we keep the href here for easy wiring */}
               <a
                 className="hidden"
-                href={whatsappHref}
+                // href={whatsappHref}
                 target="_blank"
                 rel="noreferrer"
               >

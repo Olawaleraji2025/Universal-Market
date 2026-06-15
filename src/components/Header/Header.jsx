@@ -22,7 +22,9 @@ export const Navbar = () => {
     </div>
     
     <div className="hidden md:flex items-center gap-8 font-medium text-gray-600">
-      <a href="#" className="hover:text-emerald-600 ">Shop</a>
+      <a href="#" className="hover:text-emerald-600 "
+      onClick={() => navigate('/shop')}
+      >Shop</a>
       <a href="#" className="hover:text-emerald-600 transition">Contact</a>
       <a href="#" className="hover:text-emerald-600 transition">About</a>
     </div>

@@ -1,7 +1,22 @@
+import { useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "../ui/input";
+import { useDispatch, useSelector } from "react-redux";
+import { setShopSearchQuery } from "../../features/shop/shopSearchSlice";
 
-export const ShopHero = () =>  (
+export function ShopHero() {
+  const dispatch = useDispatch();
+  const query = useSelector((state) => state.shopSearch?.query ?? "");
+
+  const [value, setValue] = useState(query);
+
+  const handleChange = (e) => {
+    const next = e.target.value;
+    setValue(next);
+    dispatch(setShopSearchQuery(next));
+  };
+
+  return (
     <section className="relative bg-[#064e3b] text-white py-20 px-6 text-center">
       <div className="max-w-2xl mx-auto">
         <h1 className="text-4xl font-bold mb-4">Discover Your Next Favorite Gadget</h1>
@@ -11,6 +26,8 @@ export const ShopHero = () =>  (
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#064e3b]" size={18} />
           <Input
             type="search"
+            value={value}
+            onChange={handleChange}
             placeholder="Search products..."
             className="bg-white text-[#064e3b] pl-10 pr-3 py-3 rounded-md font-medium border-none focus-visible:ring-0 focus-visible:ring-offset-0"
           />
@@ -18,8 +35,5 @@ export const ShopHero = () =>  (
       </div>
     </section>
   );
-
-
-
-
+}
 
