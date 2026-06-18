@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { setClickedProduct } from '../../features/shop/productDetailsClicked'
 import useShopProducts from "../../Hooks/useShopProducts"; 
-
+import { TbCurrencyNaira } from "react-icons/tb";
 import { Package } from "lucide-react";
 import Button from "/src/components/ui/button.jsx";
 
@@ -47,7 +47,8 @@ onClick={() => {
           </div>
           <div className="p-4 flex flex-col grow">
             <h3 className="font-semibold text-gray-800 mb-1">{product.ProductName}</h3>
-            <p className="text-xl font-bold text-[#01241a] mb-4">₦{product.ProductPrice}</p>
+            <p className="text-xl font-bold text-[#01241a] mb-4 flex items-center">
+              <TbCurrencyNaira />{product.ProductPrice}</p>
             <Button
               type="button"
               onClick={() => {
