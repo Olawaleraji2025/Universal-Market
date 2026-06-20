@@ -34,6 +34,12 @@ const App = () => {
 export default App;
 
 
+
+
+
+
+
+
         {/* Existing homepage sections were commented out; Supabase fetch is shown here */}
         {/* <SupabaseTasks /> */}
 

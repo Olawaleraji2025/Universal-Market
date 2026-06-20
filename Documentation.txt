@@ -6,3 +6,7 @@ I also learn to keep all components into a single file and export it as one, ins
 2. I learn about Fetching data from supabase using Tanstack query. I learnt some keywords such as useQuery, useMutation e.t.c
 
 3. I use Redux for statemanagement, when the user click view details, it collects the clicked product data and renders it in the ProductDetails.jsx. I also updated the Supabase database by adding a new column called ProductSpecification.
+
+4. I installed React-Hook-form and change the Request form Ui using shadcn Field.
+
+5. I learnt how to switch between pages using conditional rendering and Redux as state management. But i noticed that at my product page, if i refresh it, the product item will be lost and blank...... still going to work on it.

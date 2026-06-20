@@ -63,7 +63,7 @@ const clickedProduct = useSelector((state) => state.productDetailsClicked?.click
             <div>
               <h1 className="text-3xl font-bold text-[#01241a]">{clickedProduct.ProductName}</h1>
               <p className="text-xl font-bold text-[#01241a] mt-2 flex items-center">
-                <TbCurrencyNaira /> {clickedProduct.ProductPrice}
+                <TbCurrencyNaira /> {clickedProduct.ProductPrice.toLocaleString()}
               </p>
             </div>
 
