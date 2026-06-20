@@ -8,7 +8,7 @@ import {
 import Button from "../ui/button";
 import { Input } from "../ui/input";
 
-import { resetFlow } from "../../features/shop/FlowContext";
+import { resetFlow, SignupSetStep  } from "../../features/shop/FlowContext";
 
 export default function LoginForm() {
   const dispatch = useDispatch();
@@ -76,6 +76,7 @@ export default function LoginForm() {
         <Button
           type="submit"
           className="w-full px-6 py-3.5 bg-white border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors"
+           onClick={() => dispatch(SignupSetStep("signup"))}
         >
         
           Create Account

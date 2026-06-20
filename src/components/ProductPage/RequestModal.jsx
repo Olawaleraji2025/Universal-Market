@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
-import { setStep, loginSetStep } from "../../features/shop/FlowContext";
+import { setStep, loginSetStep} from "../../features/shop/FlowContext";
 
 import { MessageCircle, User, Check, Star, ArrowRight } from "lucide-react";
 import { TbCurrencyNaira } from "react-icons/tb";
@@ -8,6 +8,8 @@ import { IoCloseCircleOutline } from "react-icons/io5";
 
 import GuestForm from "./GuestForm";
 import LoginForm from "./LoginForm";
+import {SignupForm} from "./signup-form"
+import { SuccessPage } from "./SuccessPage";
 
 const guestBenefits = [
   "Quick Request",
@@ -28,38 +30,36 @@ export default function RequestModal({ open, onClose }) {
   const flowStep = useSelector((state) => state.flow.step);
   const dispatch = useDispatch();
 
-const showImage = flowStep === "chooser" || flowStep === "guest";
+const showImage = flowStep === "chooser" || flowStep === "guest" || flowStep === "login" || flowStep === "signup";
 
   if (!open) return null;
 
 
   return (
     <div className="fixed inset-0 z-50" aria-hidden={false}>
-      <div className="absolute inset-0 bg-black/50" />
+      <div className="absolute inset-[-3] bg-black/50" />
 
       <div className="relative min-h-full flex items-center justify-center p-4">
           <div
             role="dialog"
             aria-modal="true"
             aria-label="Request product"
-            className="w-full max-w-lg bg-white rounded-2xl border border-gray-100 shadow-xl overflow-hidden"
+            className="w-full max-w-lg bg-white rounded-2xl border border-gray-100 shadow-xl overflow-hidden overflow-y-scroll max-h-140"
             >
             {showImage && (
             <div>
 
             <div className="px-5 py-4 border-b border-gray-100 flex items-start justify-between gap-4">
               <div>
-                <h2 className="text-lg font-bold text-[#01241a]">Request Item</h2>
-                <p className="text-sm text-gray-600 mt-1">
-                  Complete your request and continue the conversation on WhatsApp.
+                {/* <h2 className="text-lg font-bold text-[#01241a]">Request Item</h2> */}
+                <p className="text-lg font-bold text-[#01241a] text-center">
+                  Complete your request.
                 </p>
               </div>
               <IoCloseCircleOutline size={24} onClick={onClose} />
             </div>
 
             
-            </div>
-        )}
 
             <div>
               <motion.div
@@ -93,6 +93,11 @@ const showImage = flowStep === "chooser" || flowStep === "guest";
                 <p className="text-[11px] text-gray-400 mt-0.5">Pre-owned</p>
               </div>
             </motion.div>
+            </div>
+            </div>
+
+        )}
+
               {flowStep === "guest" && (
                 <motion.div
                   initial={{ opacity: 0, y: 8 }}
@@ -112,6 +117,28 @@ const showImage = flowStep === "chooser" || flowStep === "guest";
                   className="mt-1 p-4"
                 >
                   <LoginForm />
+                </motion.div>
+              )}
+
+              {flowStep === "success" && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.1 }}
+                  className="mt-1 p-4"
+                >
+                  <SuccessPage />
+                </motion.div>
+              )}
+
+              {flowStep === "signup" && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.1 }}
+                  className="mt-1 p-4"
+                >
+                  <SignupForm />
                 </motion.div>
               )}
 
@@ -205,7 +232,6 @@ const showImage = flowStep === "chooser" || flowStep === "guest";
             </div>
           </div>
       </div>
-    </div>
   );
 }
 

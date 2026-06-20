@@ -10,7 +10,7 @@ import {
 import Button from "../ui/button";
 import { Input } from "../ui/input";
 import {useDispatch, useSelector} from "react-redux";
-import { setStep, resetFlow } from "../../features/shop/FlowContext";
+import { setStep, resetFlow, SuccessSetStep} from "../../features/shop/FlowContext";
 
 export default function GuestForm() {
 const dispatch = useDispatch();
@@ -18,7 +18,9 @@ const dispatch = useDispatch();
 // console.log("Current flow step:", flowStep);
 
 return (
-     <form className="space-y-4" >
+     <form className="space-y-4" onSubmit={(e) => {
+      e.preventDefault();
+    }}>
                   <div className="space-y-2">
                     <Field>
                       <FieldLabel className="text-sm font-semibold text-[#01241a]" htmlFor="fullName">
@@ -90,8 +92,9 @@ return (
                       Back
                     </Button>
                     <Button
-                      type="submit"
+                      // type="submit"
                       className="w-1/2 bg-[#064e3b] hover:bg-emerald-900 text-white"
+                      onClick={() => dispatch(SuccessSetStep("success"))}
                     >
                       Submit request
                     </Button>
