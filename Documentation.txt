@@ -12,3 +12,5 @@ I also learn to keep all components into a single file and export it as one, ins
 5. I learnt how to switch between pages using conditional rendering and Redux as state management. But i noticed that at my product page, if i refresh it, the product item will be lost and blank...... still going to work on it.
 
 6. I Added signup functionality and success page; enhance flow management with new Redux actions
+
+7. I Implement guest form validation with Zod; enhance form handling and state management in GuestForm and RequestModal components

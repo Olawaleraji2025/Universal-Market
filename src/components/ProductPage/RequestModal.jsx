@@ -1,15 +1,17 @@
 import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
 import { setStep, loginSetStep} from "../../features/shop/FlowContext";
-
+import { useNavigate } from "react-router-dom";
 import { MessageCircle, User, Check, Star, ArrowRight } from "lucide-react";
 import { TbCurrencyNaira } from "react-icons/tb";
 import { IoCloseCircleOutline } from "react-icons/io5";
-
+import { resetFlow } from "../../features/shop/FlowContext";
 import GuestForm from "./GuestForm";
 import LoginForm from "./LoginForm";
 import {SignupForm} from "./signup-form"
 import { SuccessPage } from "./SuccessPage";
+import { clearClickedProduct } from "../../features/shop/productDetailsClicked"
+import { resetForm } from "../../features/shop/formValidation";
 
 const guestBenefits = [
   "Quick Request",
@@ -28,7 +30,15 @@ export default function RequestModal({ open, onClose }) {
     (state) => state.productDetailsClicked?.clickedProduct
   );
   const flowStep = useSelector((state) => state.flow.step);
+  console.log(flowStep)
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleContinueShopping = () => {
+  dispatch(clearClickedProduct());
+  dispatch(resetFlow());
+  navigate("/shop");
+};
 
 const showImage = flowStep === "chooser" || flowStep === "guest" || flowStep === "login" || flowStep === "signup";
 
@@ -39,7 +49,7 @@ const showImage = flowStep === "chooser" || flowStep === "guest" || flowStep ===
     <div className="fixed inset-0 z-50" aria-hidden={false}>
       <div className="absolute inset-[-3] bg-black/50" />
 
-      <div className="relative min-h-full flex items-center justify-center p-4">
+      <div className="relative min-h-full flex items-center justify-center p-4 bg-black/50">
           <div
             role="dialog"
             aria-modal="true"
@@ -56,7 +66,7 @@ const showImage = flowStep === "chooser" || flowStep === "guest" || flowStep ===
                   Complete your request.
                 </p>
               </div>
-              <IoCloseCircleOutline size={24} onClick={onClose} />
+              <IoCloseCircleOutline size={24} onClick={() => handleContinueShopping()} />
             </div>
 
             

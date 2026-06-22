@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from 'react-router-dom'
 import { clearClickedProduct } from "../../features/shop/productDetailsClicked";
 import { resetFlow } from "../../features/shop/FlowContext";
+import { resetForm } from "../../features/shop/formValidation";
 
 export function SuccessPage() {
 const clickedProduct = useSelector(
@@ -16,6 +17,7 @@ const dispatch = useDispatch()
   const handleContinueShopping = () => {
     dispatch(clearClickedProduct())
     dispatch(resetFlow("chooser"));
+    dispatch(resetForm());
     navigate("/shop");
   }
   
