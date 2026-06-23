@@ -46,7 +46,7 @@ export const optionalMessageSchema = z
 export const termsAcceptedSchema = z
   .boolean()
   .refine((val) => val === true, {
-    message: "You must agree to be contacted.",
+    message: "Please agree before submiting.",
   });
 
 // The final schema for the GuestForm.
@@ -60,6 +60,8 @@ export const guestFormSchema = z.object({
 
   // Optional message.
   message: optionalMessageSchema,
+
+  termsAccepted: termsAcceptedSchema,
 });
 
 // Example usage:

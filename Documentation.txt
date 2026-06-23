@@ -14,3 +14,5 @@ I also learn to keep all components into a single file and export it as one, ins
 6. I Added signup functionality and success page; enhance flow management with new Redux actions
 
 7. I Implement guest form validation with Zod; enhance form handling and state management in GuestForm and RequestModal components
+
+8. I Enhance the GuestForm and RequestModal components; implement form submission with Supabase, add request date and ID, and improve validation messages I added Request Date, Item Status, Request ID, Contact

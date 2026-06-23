@@ -6,10 +6,25 @@ import { clearClickedProduct } from "../../features/shop/productDetailsClicked";
 import { resetFlow } from "../../features/shop/FlowContext";
 import { resetForm } from "../../features/shop/formValidation";
 
+ const requestDate = new Date().toLocaleString('en-US', {
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  });
+
+  const requestId = new Date().getTime()
+console.log(requestId)
+
+
 export function SuccessPage() {
 const clickedProduct = useSelector(
     (state) => state.productDetailsClicked?.clickedProduct
   );
+
+   const guestFormState = useSelector((state) => state.guestForm.formData);
 
   const navigate = useNavigate();
 const dispatch = useDispatch()
@@ -89,21 +104,21 @@ const dispatch = useDispatch()
             <h3 className="font-semibold text-gray-900 mb-1">
               {clickedProduct.ProductName}
             </h3>
-            {/* <p className="text-sm text-gray-600">
-              Request Date: {formatDate(currentRequest.requestDate)}
-            </p> */}
+            <p className="text-sm text-gray-600">
+              Request Date: {requestDate}
+            </p>
             <div className="mt-2">
-              {/* <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-teal-50 text-teal-700 border border-teal-200">
-                Status: {currentRequest.status}
-              </span> */}
+              <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-teal-50 text-teal-700 border border-teal-200">
+                Status: {clickedProduct.ProductStatus}
+              </span>
             </div>
           </div>
         </div>
 
         <div className="pt-4 border-t border-gray-200">
           <div className="text-sm text-gray-600 space-y-1">
-            <p><span className="font-medium text-gray-900">Request ID:</span> {clickedProduct.id}</p>
-            {/* <p><span className="font-medium text-gray-900">Contact:</span> {currentRequest.user.phoneNumber}</p> */}
+            <p><span className="font-medium text-gray-900">Request ID:</span> UM-{requestId}</p>
+            <p><span className="font-medium text-gray-900">Contact:</span> {guestFormState.contact}</p>
           </div>
         </div>
       </motion.div>

@@ -105,7 +105,7 @@ export default function ShopProductList() {
                   {product.ProductName}
                 </h3>
                 <p className="text-xl font-bold text-[#01241a] mb-4">
-                  ₦{product.ProductPrice}
+                  ₦{product.ProductPrice.toLocaleString()}
                 </p>
 
 

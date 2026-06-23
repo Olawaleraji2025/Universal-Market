@@ -30,7 +30,7 @@ export default function RequestModal({ open, onClose }) {
     (state) => state.productDetailsClicked?.clickedProduct
   );
   const flowStep = useSelector((state) => state.flow.step);
-  console.log(flowStep)
+  // console.log(flowStep)
   const dispatch = useDispatch();
   const navigate = useNavigate();
 

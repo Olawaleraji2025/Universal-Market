@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Textarea } from "../ui/textarea";
 import { Checkbox } from "../ui/checkbox";
 import { Field, FieldLabel, FieldContent, FieldError } from "../ui/field";
@@ -5,6 +6,7 @@ import Button from "../ui/button";
 import { Input } from "../ui/input";
 import { useDispatch, useSelector } from "react-redux";
 
+import { supabase } from "../../supabaseClient";
 import { resetFlow, SuccessSetStep } from "../../features/shop/FlowContext";
 import { validateGuestForm } from "../../Hooks/FormValidatorZod";
 import { validate, errors, resetForm } from "../../features/shop/formValidation";
@@ -13,33 +15,59 @@ import { validate, errors, resetForm } from "../../features/shop/formValidation"
 export default function GuestForm() {
   const dispatch = useDispatch();
   const guestFormState = useSelector((state) => state.guestForm);
+  const clickedProduct = useSelector((state) => state.productDetailsClicked?.clickedProduct);
   const { formData = {}, errors: fieldErrors = {} } = guestFormState;
-  
+
+  const finePrice = clickedProduct?.ProductPrice ?? "";
+  const rawPrice = Number(String(finePrice).replace(/,/g, ""));
+
+  const [submissionError, setSubmissionError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const updateField = (patch) => {
     // Store all form values in Redux slice
     dispatch(validate({ ...formData, ...patch }));
   };
 
-   const handleContinueShopping = () => {
+  const handleContinueShopping = () => {
     dispatch(resetForm());
     dispatch(resetFlow());
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
+    setSubmissionError("");
 
     const result = validateGuestForm(formData);
-
 
     if (!result.valid) {
       dispatch(errors(result.errors));
       return;
-    } 
-    dispatch(errors({}));
-    // TODO: call API to save form submission using result.data
-    dispatch(SuccessSetStep());
+    }
 
+    dispatch(errors({}));
+    setIsSubmitting(true);
+
+    const { error } = await supabase.from("UsersRequests").insert([
+      {
+        userName: result.data.fullName,
+        userNumber: result.data.contact,
+        userMessages: result.data.message ?? "",
+        itemImage: clickedProduct.ProductName ?? null,
+        itemPrice: rawPrice ?? null,
+        itemName: clickedProduct.imageUrl ?? null,
+        // termsAccepted: result.data.termsAccepted ?? false,
+      },
+    ]);
+
+    setIsSubmitting(false);
+
+    if (error) {
+      setSubmissionError(error.message);
+      return;
+    }
+
+    dispatch(SuccessSetStep());
   };
 
   return (
@@ -109,8 +137,7 @@ export default function GuestForm() {
           </FieldContent>
         </Field>
       </div>
-
-      {/* <div className="space-y-2 flex">
+       <div className="space-y-2 flex">
         <Field orientation="horizontal">
           <Checkbox
             id="terms-checkbox"
@@ -128,7 +155,7 @@ export default function GuestForm() {
         <div>
           <FieldError errors={fieldErrors.termsAccepted} />
 
-        </div> */}
+        </div>
 
       <div className="flex gap-3">
         <Button
@@ -142,10 +169,15 @@ export default function GuestForm() {
         <Button
           className="w-1/2 bg-[#064e3b] hover:bg-emerald-900 text-white"
           type="submit"
+          disabled={isSubmitting}
         >
-          Submit request
+          {isSubmitting ? "Submitting..." : "Submit request"}
         </Button>
       </div>
+
+      {submissionError ? (
+        <p className="text-sm text-red-600">{submissionError}</p>
+      ) : null}
 
       <p className="text-xs text-gray-500 leading-relaxed">
         By submitting, we’ll prepare your WhatsApp request details.
