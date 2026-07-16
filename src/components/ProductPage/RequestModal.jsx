@@ -12,6 +12,11 @@ import {SignupForm} from "./signup-form"
 import { SuccessPage } from "./SuccessPage";
 import { clearClickedProduct } from "../../features/shop/productDetailsClicked"
 import { resetForm } from "../../features/shop/formValidation";
+import { useParams } from "react-router-dom";
+import useShopProducts from "../../Hooks/useShopProducts";
+
+
+
 
 const guestBenefits = [
   "Quick Request",
@@ -26,9 +31,20 @@ const accountBenefits = [
 ];
 
 export default function RequestModal({ open, onClose }) {
+  const { id } = useParams();
+   const { data: products = [] } = useShopProducts({
+        staleTime: 5 * 60 * 1000,
+      });
+      
   const clickedProduct = useSelector(
     (state) => state.productDetailsClicked?.clickedProduct
   );
+
+       const selectedProduct =
+    clickedProduct?.id != null ? clickedProduct : products.find((p) => String(p.id) === String(id));
+
+
+
   const flowStep = useSelector((state) => state.flow.step);
   // console.log(flowStep)
   const dispatch = useDispatch();
@@ -37,7 +53,8 @@ export default function RequestModal({ open, onClose }) {
   const handleContinueShopping = () => {
   dispatch(clearClickedProduct());
   dispatch(resetFlow());
-  navigate("/shop");
+  navigate("/product/" + selectedProduct?.id);
+  onClose();
 };
 
 const showImage = flowStep === "chooser" || flowStep === "guest" || flowStep === "login" || flowStep === "signup";
@@ -80,25 +97,25 @@ const showImage = flowStep === "chooser" || flowStep === "guest" || flowStep ===
             >
               <div className="w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden bg-white border border-gray-100 shadow-sm">
                 <img
-                  src={clickedProduct?.imageUrl}
-                  alt={clickedProduct?.ProductName}
+                  src={clickedProduct?.imageUrl ?? selectedProduct.imageUrl}
+                  alt={clickedProduct?.ProductName ?? selectedProduct.ProductName}
                   className="w-full h-full object-cover"
                 />
               </div>
 
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-0.5">
-                  {clickedProduct?.ProductCategory}
+                  {clickedProduct?.ProductCategory ?? selectedProduct.ProductCategory}
                 </p>
                 <h3 className="text-sm font-semibold text-gray-900 leading-snug truncate pr-2">
-                  {clickedProduct?.ProductName}
+                  {clickedProduct?.ProductName ?? selectedProduct.ProductName}
                 </h3>
               </div>
 
               <div className="flex-shrink-0 text-right">
                 <p className="text-lg font-bold text-gray-900 flex items-center">
                   <TbCurrencyNaira />
-                  {clickedProduct?.ProductPrice?.toLocaleString?.()}
+                  {clickedProduct?.ProductPrice?.toLocaleString?.() ?? selectedProduct?.ProductPrice?.toLocaleString?.()}
                 </p>
                 <p className="text-[11px] text-gray-400 mt-0.5">Pre-owned</p>
               </div>

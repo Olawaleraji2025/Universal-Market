@@ -16,7 +16,6 @@ import { resetForm } from "../../features/shop/formValidation";
   });
 
   const requestId = new Date().getTime()
-console.log(requestId)
 
 
 export function SuccessPage() {

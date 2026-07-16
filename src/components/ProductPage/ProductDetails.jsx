@@ -6,14 +6,31 @@ import Button from "../ui/button";
 import RequestModal from "./RequestModal";
 
 
-export  const ProductDetails = () => {
-const clickedProduct = useSelector((state) => state.productDetailsClicked?.clickedProduct);
+import { useParams } from "react-router-dom";
+import useShopProducts from "../../Hooks/useShopProducts";
 
-  // const [activeIndex, setActiveIndex] = useState(0);
+export const ProductDetails = () => {
+  const { id } = useParams();
+  const clickedProduct = useSelector((state) => state.productDetailsClicked?.clickedProduct);
+  const { data: products = [], isLoading } = useShopProducts({
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const selectedProduct =
+    clickedProduct?.id != null ? clickedProduct : products.find((p) => String(p.id) === String(id));
+
   const [requestOpen, setRequestOpen] = useState(false);
 
-  const activeImage = clickedProduct.imageUrl;
-  const Specs = clickedProduct.ProductSpecification;
+  if (isLoading && !selectedProduct) {
+    return <section className="px-6 py-10"><p>Loading product...</p></section>;
+  }
+
+  if (!selectedProduct) {
+    return <section className="px-6 py-10"><p>Product not found.</p></section>;
+  }
+
+  const activeImage = selectedProduct.imageUrl;
+  const Specs = selectedProduct.ProductSpecification;
 
   return (
     <section className="px-6 py-10">
@@ -25,45 +42,19 @@ const clickedProduct = useSelector((state) => state.productDetailsClicked?.click
               <div className="aspect-[4/3] w-full">
                 <img
                   src={activeImage}
-                  alt={clickedProduct.ProductName}
+                  alt={selectedProduct.ProductName}
                   className="w-full h-full object-cover"
                 />
               </div>
             </div>
-
-            {/* <div className="flex gap-3 overflow-x-auto pb-2">
-              {images.map((img, idx) => {
-                const isActive = idx === activeIndex;
-                return (
-                  <button
-                    key={img + idx}
-                    type="button"
-                    onClick={() => setActiveIndex(idx)}
-                    className={
-                      "shrink-0 rounded-xl overflow-hidden border transition " +
-                      (isActive
-                        ? "border-[#064e3b]"
-                        : "border-gray-200 hover:border-gray-300")
-                    }
-                    aria-label={`Thumbnail ${idx + 1}`}
-                  >
-                    <img
-                      src={img}
-                      alt={`${title} thumbnail ${idx + 1}`}
-                      className="w-20 h-16 object-cover"
-                    />
-                  </button>
-                );
-              })}
-            </div> */}
           </div>
 
           {/* Info */}
           <div className="space-y-5">
             <div>
-              <h1 className="text-3xl font-bold text-[#01241a]">{clickedProduct.ProductName}</h1>
+              <h1 className="text-3xl font-bold text-[#01241a]">{selectedProduct.ProductName}</h1>
               <p className="text-xl font-bold text-[#01241a] mt-2 flex items-center">
-                <TbCurrencyNaira /> {clickedProduct.ProductPrice.toLocaleString()}
+                <TbCurrencyNaira /> {selectedProduct.ProductPrice.toLocaleString()}
               </p>
             </div>
 

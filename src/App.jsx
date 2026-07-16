@@ -1,12 +1,13 @@
 import './index.css'
 import './App.css'
 
-import { Navbar } from './components/Header/Header';
-import { Footer } from './components/Homepage/Footer';
+import { Navbar } from './components/Layout/Header';
+import { Footer } from './components/Layout/Footer';
 import { Routes, Route, useLocation } from 'react-router-dom'
 import { HomePage } from './components/Homepage/LandingPage';
 import ShopPage from './components/Shop/ShopPage';
 import { ProductPage } from './components/ProductPage/ProductPage';
+// import Practice from './components/ForPractice/practice';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -15,6 +16,7 @@ function ScrollToTop() {
 }
 
 const App = () => {
+  {/* <Practice /> */}
   return (
     <>
       <Navbar />
@@ -23,7 +25,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/shop" element={<ShopPage />} />
-          <Route path="/product" element={<ProductPage />} />
+          <Route path="/product/:id" element={<ProductPage />} />
         </Routes>
       </div>
       <Footer />
@@ -32,30 +34,3 @@ const App = () => {
 };
 
 export default App;
-
-
-
-
-
-
-
-
-        {/* Existing homepage sections were commented out; Supabase fetch is shown here */}
-        {/* <SupabaseTasks /> */}
-
-    
-    // <ShopHero />
-    //   <ShopProductList />
-
-    {/* <ProductDetails /> */}
-    
-    // Admin Dashboard and Products page are still in development, so they are commented out for now.
-    {/* <Dashboard /> */}
-      {/* <Products /> */}
- 
-
-    //  <ProductImage />
-
-
-    // import SupabaseTasks from './components/supabase.jsx';
-// import { ProductImage } from './components/ProductImages.jsx';

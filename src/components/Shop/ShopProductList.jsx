@@ -113,7 +113,7 @@ export default function ShopProductList() {
                   className="mt-auto bg-[#064e3b] text-white w-full py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 hover:bg-emerald-900 transition cursor-pointer"
                   onClick={() => {
                     dispatch(setClickedProduct(product));
-                    navigate('/product');
+                    navigate(`/product/${product.id}`);
                   }}
                 >
                   View details

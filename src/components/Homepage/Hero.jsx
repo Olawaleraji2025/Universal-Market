@@ -39,16 +39,16 @@ export const Hero = () => {
     </div>
     
     <div className="relative">
-      <div className="bg-[#ccfbf1] rounded-3xl p-4 overflow-hidden shadow-xl">
+      <div className="">
         <img 
-          src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=80&w=800" 
+          src="./src/assets/Hero-image.png" 
           alt="Gadgets montage" 
           className="rounded-2xl w-full h-100 object-cover"
         />
-        <div className="absolute bottom-10 -left-6 bg-[#99f6e4] p-4 rounded-xl shadow-lg">
+        {/* <div className="absolute bottom-10 -left-6 bg-[#99f6e4] p-4 rounded-xl shadow-lg">
           <p className="text-2xl font-bold text-[#01241a]">₦150k+</p>
           <p className="text-xs text-emerald-800 font-medium">Items Sold Locally</p>
-        </div>
+        </div> */}
       </div>
     </div>
   </motion.section>

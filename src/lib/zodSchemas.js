@@ -64,7 +64,4 @@ export const guestFormSchema = z.object({
   termsAccepted: termsAcceptedSchema,
 });
 
-// Example usage:
-// const parsed = guestFormSchema.safeParse(formValues);
-// if (!parsed.success) { parsed.error } else { parsed.data }
 

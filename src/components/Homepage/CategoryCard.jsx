@@ -1,13 +1,15 @@
 
 import { Smartphone, Laptop, Tv, Refrigerator, Gamepad2 } from "lucide-react";
 import { GiWashingMachine } from "react-icons/gi";
+import { CiCircleMore } from "react-icons/ci";
 
 const theIcons = [{ name: "Phones", icon: Smartphone },
   { name: "Laptops", icon: Laptop },
   { name: "TVs", icon: Tv },
   { name: "Refrigerators", icon: Refrigerator },
   { name: "Gaming Consoles", icon: Gamepad2 },
-  { name: "Appliances", icon: GiWashingMachine }
+  { name: "Appliances", icon: GiWashingMachine },
+  { name: "Others", icon: CiCircleMore },
 ];
 
 export const CategoryCard = () => (
@@ -17,7 +19,7 @@ export const CategoryCard = () => (
       <h2 className='text-2xl font-bold'>Popular Categories</h2>
       <span className="cursor-pointer text-emerald-900 underline">View all</span>
       </div>
-  <div className=" border-gray-100 rounded-xl p-8 flex items-center justify-center gap-4">
+  <div className=" border-gray-100 rounded-xl p-8 flex items-center justify-center gap-4 w-xl">
     
     
     <div className="flex justify-center p-4 rounded-lg gap-10">

@@ -30,9 +30,10 @@ export const ProductCard = () => {
           className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition flex flex-col w-3xs"
 onClick={() => {
                 dispatch(setClickedProduct(product));
-                navigate('/product');
+                navigate(`/product/${product.id}`);
               }}
         >
+          
           <div className="relative aspect-square">
             <img 
             src={product.imageUrl} 

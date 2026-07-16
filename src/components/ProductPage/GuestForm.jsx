@@ -5,73 +5,107 @@ import { Field, FieldLabel, FieldContent, FieldError } from "../ui/field";
 import Button from "../ui/button";
 import { Input } from "../ui/input";
 import { useDispatch, useSelector } from "react-redux";
-
+import { guestFormSchema } from "../../lib/zodSchemas";
+import { setClickedProduct } from "../../features/shop/productDetailsClicked";
 import { supabase } from "../../supabaseClient";
 import { resetFlow, SuccessSetStep } from "../../features/shop/FlowContext";
-import { validateGuestForm } from "../../Hooks/FormValidatorZod";
 import { validate, errors, resetForm } from "../../features/shop/formValidation";
+import { useParams } from "react-router-dom";
+import useShopProducts from "../../Hooks/useShopProducts";
 
 
 export default function GuestForm() {
   const dispatch = useDispatch();
-  const guestFormState = useSelector((state) => state.guestForm);
-  const clickedProduct = useSelector((state) => state.productDetailsClicked?.clickedProduct);
-  const { formData = {}, errors: fieldErrors = {} } = guestFormState;
 
-  const finePrice = clickedProduct?.ProductPrice ?? "";
-  const rawPrice = Number(String(finePrice).replace(/,/g, ""));
-
-  const [submissionError, setSubmissionError] = useState("");
+  // This state tracks any submission error messages to display to the user.
+const [submissionError, setSubmissionError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // This will get the selected product's ID from the URL parameters and fetch the product data.
+   const { id } = useParams();
+  const { data: products = [], isLoading } = useShopProducts({
+    staleTime: 5 * 60 * 1000,});
+
+    const clickedProduct = useSelector((state) => state.productDetailsClicked?.clickedProduct);
+ const selectedProduct =
+    clickedProduct?.id != null ? clickedProduct : products.find((p) => String(p.id) === String(id));
+
+const rawPrice = selectedProduct?.ProductPrice != null ? selectedProduct.ProductPrice : null;
+
+   // This will reset the form and refresh the page
+    const handleContinueShopping = () => {
+      dispatch(resetForm());
+      dispatch(resetFlow());
+    };
+    
+    // This will get the user inputs from the store
+const guestFormState = useSelector((state) => state.guestForm);
+
+// These are the form data and field errors from the Redux store
+  const { formData = {}, errors: fieldErrors = {} } = guestFormState;
+
+ // Updates the Redux form slice with the latest input values.
+  // This is the function responsible for synchronizing form data into Redux.
   const updateField = (patch) => {
-    // Store all form values in Redux slice
-    dispatch(validate({ ...formData, ...patch }));
+    const nextFormData = { ...formData, ...patch };
+    dispatch(validate(nextFormData)); // This dispatch updates the Redux store with the new form data and triggers validation. 
   };
 
-  const handleContinueShopping = () => {
-    dispatch(resetForm());
-    dispatch(resetFlow());
-  };
+const onSubmit = async (validatedValues) => {
+  setIsSubmitting(true);
+  setSubmissionError("");
+dispatch(setClickedProduct(selectedProduct))
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    setSubmissionError("");
+  // Step 1: Tell the Zod Guard to check the REDUX data (formData)
+  const result = guestFormSchema.safeParse(formData);
 
-    const result = validateGuestForm(formData);
-
-    if (!result.valid) {
-      dispatch(errors(result.errors));
-      return;
-    }
-
-    dispatch(errors({}));
-    setIsSubmitting(true);
-
-    const { error } = await supabase.from("UsersRequests").insert([
-      {
-        userName: result.data.fullName,
-        userNumber: result.data.contact,
-        userMessages: result.data.message ?? "",
-        itemImage: clickedProduct.ProductName ?? null,
-        itemPrice: rawPrice ?? null,
-        itemName: clickedProduct.imageUrl ?? null,
-        // termsAccepted: result.data.termsAccepted ?? false,
-      },
-    ]);
-
+  // Step 2: If the Guard says "No!"
+  if (!result.success) {
+    const nextErrors = {};
+    // Loop through mistakes and format them for your UI
+    result.error.issues.forEach((issue) => {
+      const field = issue.path[0];
+      nextErrors[field] = [{ message: issue.message }];
+    });
+    
+    dispatch(errors(nextErrors)); // Show errors in the UI
     setIsSubmitting(false);
+    return;
+  }
 
-    if (error) {
-      setSubmissionError(error.message);
-      return;
-    }
+  // Step 3: If the Guard says "Yes!", send to Supabase
+  const { error } = await supabase.from("UsersRequests").insert([
+        {
+          userName: validatedValues.fullName,
+          userNumber: validatedValues.contact,
+          userMessages: validatedValues.message ?? "",
+          itemImage: selectedProduct?.ProductName ?? null,
+          itemPrice: rawPrice ?? null,
+          itemName: selectedProduct?.imageUrl ?? null,
+          // termsAccepted: validatedValues.termsAccepted,
+        },
+        
+      ]);
 
+  if (error) {
+    setSubmissionError(error.message);
+  } else {
     dispatch(SuccessSetStep());
-  };
+  }
+  setIsSubmitting(false);
+};
+
 
   return (
-    <form className="space-y-4" onSubmit={onSubmit}>
+    <form className="space-y-4" onSubmit={(e) => {
+      e.preventDefault();
+      onSubmit({
+        fullName: formData.fullName ?? "",
+        contact: formData.contact ?? "",
+        message: formData.message ?? "",
+        termsAccepted: !!formData.termsAccepted,
+      });
+    }}>
       <div className="space-y-2">
         <Field>
           <FieldLabel
@@ -137,7 +171,8 @@ export default function GuestForm() {
           </FieldContent>
         </Field>
       </div>
-       <div className="space-y-2 flex">
+
+      <div className="space-y-2 flex">
         <Field orientation="horizontal">
           <Checkbox
             id="terms-checkbox"
@@ -152,17 +187,17 @@ export default function GuestForm() {
           </FieldLabel>
         </Field>
       </div>
-        <div>
-          <FieldError errors={fieldErrors.termsAccepted} />
 
-        </div>
+      <div>
+        <FieldError errors={fieldErrors.termsAccepted} />
+      </div>
 
       <div className="flex gap-3">
         <Button
           type="button"
           variant="outline"
           className="w-1/2"
-          onClick={() => handleContinueShopping()}
+          onClick={handleContinueShopping}
         >
           Back
         </Button>
