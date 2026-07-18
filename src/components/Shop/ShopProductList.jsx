@@ -1,9 +1,11 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
 import Button from "../ui/button";
 import useShopProducts from "../../Hooks/useShopProducts";
 import { useSelector, useDispatch } from "react-redux";
 import { setClickedProduct } from "../../features/shop/productDetailsClicked";
 import { useNavigate } from "react-router-dom";
+import { useSearchParams, Link } from 'react-router-dom';
 
 const filters = [
   "All",
@@ -18,22 +20,31 @@ const filters = [
 export default function ShopProductList() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+    const [searchParams, setSearchParams] = useSearchParams();
+    const category = searchParams.get('category') || '';
+
+    const normalizedCategory = category && filters.includes(category) ? category : "All";
   
   const { data: products = [], isLoading, error } = useShopProducts();
 
-  const [activeFilter, setActiveFilter] = useState("All");
   const query = useSelector((state) => state.shopSearch?.query ?? "");
+
+  const effectiveCategory = normalizedCategory;
+
 
   const filteredProducts = useMemo(() => {
     const q = (query || "").trim().toLowerCase();
 
     let result = products;
 
-    if (activeFilter !== "All") {
-      result = result.filter((p) => p.Category === activeFilter);
+    if (effectiveCategory !== "All") {
+      result = result.filter((p) => p.Category === effectiveCategory);
     }
 
+
     if (!q) return result;
+
 
     return result.filter((p) => {
       const name = String(p.ProductName ?? "").toLowerCase();
@@ -41,7 +52,7 @@ export default function ShopProductList() {
       const status = String(p.ProductStatus ?? "").toLowerCase();
       return name.includes(q) || category.includes(q) || status.includes(q);
     });
-  }, [activeFilter, products, query]);
+  }, [products, query, effectiveCategory]);
 
   if (isLoading) return <p>Loading the shop...</p>;
   if (error) return <p>Error: {error.message}</p>;
@@ -52,12 +63,20 @@ export default function ShopProductList() {
         <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
           <div className="flex gap-3 overflow-x-auto pb-1">
             {filters.map((f) => {
-              const isActive = f === activeFilter;
+              const isActive = f === effectiveCategory;
               return (
                 <Button
                   key={f}
                   type="button"
-                  onClick={() => setActiveFilter(f)}
+                  onClick={() => {
+                    setSearchParams((prev) => {
+                      const next = new URLSearchParams(prev);
+                      if (f === "All"){
+                        next.delete("category");
+                      } else next.set("category", f);
+                      return next;
+                    });
+                  }}
                   className={
                     "whitespace-nowrap px-4 py-2 rounded-full border text-sm font-semibold transition " +
                     (isActive

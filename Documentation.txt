@@ -15,4 +15,12 @@ I also learn to keep all components into a single file and export it as one, ins
 
 7. I Implement guest form validation with Zod; enhance form handling and state management in GuestForm and RequestModal components
 
-8. I Enhance the GuestForm and RequestModal components; implement form submission with Supabase, add request date and ID, and improve validation messages I added Request Date, Item Status, Request ID, Contact
+8. I Enhance the GuestForm and RequestModal components; implement form submission with Supabase, add request date and ID, and improve validation messages I added Request Date, Item Status, Request ID, Contact.
+
+9. I recheck my project and try t revised what i had implemented, the tools i used, learn more about them and how they improve this project.
+
+10. I converted my Hero image to Webp.
+
+11. I noticed that when i refresh the product page, the data is lost in redux.Learnt that redux stores data in ram memory. i had to use fetching the data from Url for persistency.
+
+12. I want to implented the feature whereby when the use clicked on one of the category cards, it take the user to the shop page with the filtered category - i learnt how to implement that using useSearchparams(). But a bug occurred that after getting the data from the url,the user is unable to search and filter using input text and buttons.

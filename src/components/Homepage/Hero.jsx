@@ -41,7 +41,7 @@ export const Hero = () => {
     <div className="relative">
       <div className="">
         <img 
-          src="./src/assets/Hero-image.png" 
+          src="./src/assets/Hero-image.webp" 
           alt="Gadgets montage" 
           className="rounded-2xl w-full h-100 object-cover"
         />

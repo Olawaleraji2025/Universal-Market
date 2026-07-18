@@ -1,7 +1,7 @@
 import { Hero } from "./Hero";
 import { Cards } from "./Cards";
 import { ProductCard } from "./ProductCard";
-import { CategoryCard } from "./CategoryCard";
+import  CategoryCard  from "./CategoryCard";
 import { HowToOrder } from "./HowToOrder";
 import { FaqSection } from "./FaqSection";
 import { CustomOrderCTA } from "./CustomOrderCTA";

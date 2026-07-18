@@ -6,7 +6,16 @@ import { clearClickedProduct } from "../../features/shop/productDetailsClicked";
 import { resetFlow } from "../../features/shop/FlowContext";
 import { resetForm } from "../../features/shop/formValidation";
 
- const requestDate = new Date().toLocaleString('en-US', {
+export function SuccessPage() {
+
+  const clickedProduct = useSelector(
+    (state) => state.productDetailsClicked?.clickedProduct
+  );
+
+
+  const guestFormState = useSelector((state) => state.guestForm.formData);
+
+  const requestDate = new Date().toLocaleString('en-US', {
     month: 'short',
     day: '2-digit',
     year: 'numeric',
@@ -15,15 +24,8 @@ import { resetForm } from "../../features/shop/formValidation";
     hour12: true,
   });
 
-  const requestId = new Date().getTime()
+  const requestId = new Date().getTime();
 
-
-export function SuccessPage() {
-const clickedProduct = useSelector(
-    (state) => state.productDetailsClicked?.clickedProduct
-  );
-
-   const guestFormState = useSelector((state) => state.guestForm.formData);
 
   const navigate = useNavigate();
 const dispatch = useDispatch()
@@ -35,7 +37,32 @@ const dispatch = useDispatch()
     navigate("/shop");
   }
   
+ if (!clickedProduct) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900">Request Submitted Successfully</h2>
+          <p className="mt-2 text-sm text-gray-600">We couldn’t load the product details. Please return to the shop.</p>
+        </div>
+        <div className="flex justify-center">
+          <button
+            onClick={() => {
+              dispatch(clearClickedProduct());
+              dispatch(resetFlow("chooser"));
+              dispatch(resetForm());
+              navigate("/shop");
+            }}
+            className="px-6 py-3.5 bg-white border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors"
+          >
+            Back to shop
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
+
     <div className="space-y-6">
       {/* Success Animation */}
       <motion.div

@@ -17,14 +17,17 @@ import useShopProducts from "../../Hooks/useShopProducts";
 export default function GuestForm() {
   const dispatch = useDispatch();
 
+
   // This state tracks any submission error messages to display to the user.
 const [submissionError, setSubmissionError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // This will get the selected product's ID from the URL parameters and fetch the product data.
    const { id } = useParams();
-  const { data: products = [], isLoading } = useShopProducts({
-    staleTime: 5 * 60 * 1000,});
+const { data: products = [] } = useShopProducts({
+    staleTime: 5 * 60 * 1000,
+});
+
 
     const clickedProduct = useSelector((state) => state.productDetailsClicked?.clickedProduct);
  const selectedProduct =
@@ -51,13 +54,21 @@ const guestFormState = useSelector((state) => state.guestForm);
     dispatch(validate(nextFormData)); // This dispatch updates the Redux store with the new form data and triggers validation. 
   };
 
-const onSubmit = async (validatedValues) => {
+const onSubmit = async (values) => {
   setIsSubmitting(true);
   setSubmissionError("");
-dispatch(setClickedProduct(selectedProduct))
 
-  // Step 1: Tell the Zod Guard to check the REDUX data (formData)
-  const result = guestFormSchema.safeParse(formData);
+  if (!selectedProduct) {
+    setSubmissionError("Product not found. Please try again.");
+    setIsSubmitting(false);
+    return;
+  }
+
+  dispatch(setClickedProduct(selectedProduct));
+
+  // Validate exactly what we are about to submit
+  const result = guestFormSchema.safeParse(values);
+
 
   // Step 2: If the Guard says "No!"
   if (!result.success) {
@@ -74,18 +85,19 @@ dispatch(setClickedProduct(selectedProduct))
   }
 
   // Step 3: If the Guard says "Yes!", send to Supabase
-  const { error } = await supabase.from("UsersRequests").insert([
-        {
-          userName: validatedValues.fullName,
-          userNumber: validatedValues.contact,
-          userMessages: validatedValues.message ?? "",
-          itemImage: selectedProduct?.ProductName ?? null,
-          itemPrice: rawPrice ?? null,
-          itemName: selectedProduct?.imageUrl ?? null,
-          // termsAccepted: validatedValues.termsAccepted,
-        },
-        
-      ]);
+  const payload = {
+    userName: values.fullName,
+    userNumber: values.contact,
+    userMessages: values.message ?? "",
+
+    // Ensure the mapping matches your Supabase table expectations
+    itemImage: selectedProduct?.ProductName ?? null,
+    itemPrice: rawPrice ?? null,
+    itemName: selectedProduct?.imageUrl ?? null,
+  };
+
+  const { error } = await supabase.from("UsersRequests").insert([payload]);
+
 
   if (error) {
     setSubmissionError(error.message);
@@ -96,16 +108,21 @@ dispatch(setClickedProduct(selectedProduct))
 };
 
 
-  return (
-    <form className="space-y-4" onSubmit={(e) => {
-      e.preventDefault();
-      onSubmit({
-        fullName: formData.fullName ?? "",
-        contact: formData.contact ?? "",
-        message: formData.message ?? "",
-        termsAccepted: !!formData.termsAccepted,
-      });
-    }}>
+return (
+    <form
+      className="space-y-4"
+      onSubmit={(e) => {
+        e.preventDefault();
+
+        onSubmit({
+          fullName: formData.fullName ?? "",
+          contact: formData.contact ?? "",
+          message: formData.message ?? "",
+          termsAccepted: !!formData.termsAccepted,
+        });
+      }}
+    >
+
       <div className="space-y-2">
         <Field>
           <FieldLabel
