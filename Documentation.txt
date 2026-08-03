@@ -24,3 +24,7 @@ I also learn to keep all components into a single file and export it as one, ins
 11. I noticed that when i refresh the product page, the data is lost in redux.Learnt that redux stores data in ram memory. i had to use fetching the data from Url for persistency.
 
 12. I want to implented the feature whereby when the use clicked on one of the category cards, it take the user to the shop page with the filtered category - i learnt how to implement that using useSearchparams(). But a bug occurred that after getting the data from the url,the user is unable to search and filter using input text and buttons.
+
+13. I implementing a function that override the url param id when filtering and searching for items.... more details on it soon.
+
+14. i Implemented the Skeleton feature to keep the user busy when the data is fetched and also make sure that the images load completely not in chunks before rendering

@@ -7,8 +7,10 @@ import { Routes, Route, useLocation } from 'react-router-dom'
 import { HomePage } from './components/Homepage/LandingPage';
 import ShopPage from './components/Shop/ShopPage';
 import { ProductPage } from './components/ProductPage/ProductPage';
+import { Toaster } from './components/ui/sonner';
 // import PracticeApp from './components/ForPractice/PracticeApp';
-
+// import { RetryDemo } from './components/Practice';
+import ErrorModal from '../src/components/Layout/ErrorModal';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -20,6 +22,7 @@ const App = () => {
   {/* <Practice /> */}
   return (
     <>
+    {/* <RetryDemo /> */}
       <Navbar />
       <div className="min-h-screen bg-[#f8fafc] font-sans text-gray-900">
         <ScrollToTop />
@@ -27,11 +30,11 @@ const App = () => {
           <Route path="/" element={<HomePage />} />
           <Route path="/shop" element={<ShopPage />} />
           <Route path="/product/:id" element={<ProductPage />} />
-          {/* <Route path="/practice/*" element={<PracticeApp />} /> */}
 
         </Routes>
       </div>
       <Footer />
+      <Toaster richColors />
     </>
   );
 };
