@@ -10,6 +10,7 @@ const Toaster = ({
   return (
     <Sonner
       theme={theme}
+      position="top-right"
       className="toaster group"
       icons={{
         success: (
@@ -33,7 +34,8 @@ const Toaster = ({
           "--normal-bg": "var(--popover)",
           "--normal-text": "var(--popover-foreground)",
           "--normal-border": "var(--border)",
-          "--border-radius": "var(--radius)"
+          "--border-radius": "var(--radius)",
+          "--font-size": "1rem"
         }
       }
       toastOptions={{

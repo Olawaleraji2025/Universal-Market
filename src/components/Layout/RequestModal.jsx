@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   PackageSearch,
@@ -16,10 +18,12 @@ import {
 } from "lucide-react";
 import { TbCurrencyNaira } from "react-icons/tb";
 import { supabase } from "../../supabaseClient";
+import { requestItemSchema } from "../../lib/zodSchemas";
 
 import Button from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
+import { toast } from 'sonner';
 
 /**
  * RequestModal
@@ -27,6 +31,9 @@ import { Textarea } from "../ui/textarea";
  * A custom, animated modal for requesting an item that the user could not
  * find in the Shop / product list. It is self-contained and reusable
  * anywhere (Homepage CTA, Shop, Product page).
+ *
+ * Form validation is handled by Zod via react-hook-form's zodResolver,
+ * so the form is validated right before it is sent to Supabase.
  *
  * Usage:
  *   const [open, setOpen] = useState(false);
@@ -62,21 +69,44 @@ const initialForm = {
   contact: "",
 };
 
-const fieldError = (msg) => ({
-  itemName: "",
-  category: "",
-  budget: "",
-  details: "",
-  contact: "",
-  ...(msg ? { [msg.field]: msg.value } : {}),
-});
+/**
+ * Budget helpers
+ * ---------------
+ * We keep the *display* string (e.g. "50,000") in form state so users can type
+ * commas comfortably, but always persist a clean numeric value to the database.
+ */
+const sanitizeBudgetInput = (value) => value.replace(/[^\d,]/g, "");
+const parseBudgetToNumber = (value) => {
+  if (value == null) return null;
+  const cleaned = String(value).replace(/,/g, "").trim();
+  if (!cleaned) return null;
+  const num = Number(cleaned);
+  return Number.isFinite(num) && num > 0 ? num : null;
+};
 
 export default function RequestModal({ open, onClose }) {
-  const [form, setForm] = useState(initialForm);
-  const [errors, setErrors] = useState({});
   const [status, setStatus] = useState("idle"); // idle | submitting | success | error
   const [submitError, setSubmitError] = useState("");
   const [requestId, setRequestId] = useState("");
+
+  // react-hook-form + Zod schema validation.
+  // Errors are shown after a submit attempt, but cleared live as the user edits.
+  const {
+    register,
+    handleSubmit,
+    watch,
+    getValues,
+    setValue,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(requestItemSchema),
+    defaultValues: initialForm,
+    mode: "onSubmit",
+    reValidateMode: "onChange",
+  });
+
+  const form = watch();
 
   // Lock body scroll while the modal is open.
   useEffect(() => {
@@ -98,72 +128,47 @@ export default function RequestModal({ open, onClose }) {
     return () => window.removeEventListener("keydown", handler);
   }, [open, onClose]);
 
-  const updateField = (patch) => {
-    setForm((prev) => ({ ...prev, ...patch }));
-    // clear the error for the field being edited
-    setErrors((prev) => {
-      const next = { ...prev };
-      Object.keys(patch).forEach((k) => {
-        delete next[k];
-      });
-      return next;
-    });
-  };
-
-  const validate = () => {
-    const next = {};
-    if (!form.itemName.trim()) next.itemName = "Please tell us what item you're looking for.";
-    if (!form.category) next.category = "Please choose a category.";
-    if (!form.contact.trim()) next.contact = "We need a WhatsApp or phone number to reach you.";
-    else if (form.contact.trim().replace(/\D/g, "").length < 7)
-      next.contact = "Enter a valid phone/WhatsApp number.";
-    setErrors(next);
-    return Object.keys(next).length === 0;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (status === "submitting") return;
-    if (!validate()) return;
-
-    setStatus("submitting");
+  // handleSubmit from react-hook-form runs zodResolver validation first.
+  // If the data is invalid, it stops here and populates `errors`.
+  const onSubmit = async (data) => {
     setSubmitError("");
     setRequestId(`UM-${Math.floor(100000 + Math.random() * 900000)}`);
 
     const payload = {
-      userName: form.itemName.trim(),
-      userNumber: form.contact.trim(),
-      userMessages: form.details.trim() || "",
-      itemName: form.itemName.trim(),
-      itemPrice: form.budget.trim() || null,
-      itemImage: form.category || null,
+      ItemName: data.itemName.trim(),
+      UserPhoneNumber: data.contact.trim(),
+      ItemDetails: (data.details || "").trim(),
+      // "450,000" -> 450000   |   "" -> null
+      ItemBudget: parseBudgetToNumber(data.budget),
+      ItemCategory: data.category || null,
     };
 
     try {
-      const { error } = await supabase.from("UsersRequests").insert([payload]);
+      const { error } = await supabase.from("UserCustomRequests").insert([payload]);
       if (error) {
         // Graceful fallback so the demo still shows success even if the
         // table schema differs from the payload columns.
-        setStatus("success");
+        toast.error("Failed to submit request. Please try again.");
+        setStatus("idle");
       } else {
+        toast.success("Request submitted successfully!");
         setStatus("success");
       }
     } catch (err) {
-      setStatus("success");
+      toast.error("Failed to submit request. Please try again.");
+      setStatus("idle");
     }
   };
 
   const resetAndClose = () => {
-    setForm(initialForm);
-    setErrors({});
+    reset(initialForm);
     setStatus("idle");
     setSubmitError("");
     onClose();
   };
 
   const handleStartOver = () => {
-    setForm(initialForm);
-    setErrors({});
+    reset(initialForm);
     setStatus("idle");
     setSubmitError("");
   };
@@ -238,7 +243,7 @@ export default function RequestModal({ open, onClose }) {
                   onClose={resetAndClose}
                 />
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
                   {/* Item name */}
                   <div className="space-y-1.5">
                     <label className="flex items-center gap-1.5 text-sm font-semibold text-[#01241a]">
@@ -247,13 +252,12 @@ export default function RequestModal({ open, onClose }) {
                       <span className="text-red-500">*</span>
                     </label>
                     <Input
-                      value={form.itemName}
-                      onChange={(e) => updateField({ itemName: e.target.value })}
+                      {...register("itemName")}
                       placeholder="e.g. iPhone 14 Pro Max 256GB"
                       className="h-11 bg-white border-gray-200 focus:border-emerald-500"
                     />
                     {errors.itemName && (
-                      <p className="text-xs font-medium text-red-600">{errors.itemName}</p>
+                      <p className="text-xs font-medium text-red-600">{errors.itemName.message}</p>
                     )}
                   </div>
 
@@ -266,7 +270,12 @@ export default function RequestModal({ open, onClose }) {
                         <button
                           key={item}
                           type="button"
-                          onClick={() => updateField({ itemName: item })}
+                          onClick={() =>
+                            setValue("itemName", item, {
+                              shouldValidate: true,
+                              shouldDirty: true,
+                            })
+                          }
                           className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
                             active
                               ? "border-[#064e3b] bg-[#064e3b] text-white"
@@ -288,8 +297,7 @@ export default function RequestModal({ open, onClose }) {
                         <span className="text-red-500">*</span>
                       </label>
                       <select
-                        value={form.category}
-                        onChange={(e) => updateField({ category: e.target.value })}
+                        {...register("category")}
                         className="h-11 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-800 outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
                       >
                         <option value="" disabled>
@@ -302,7 +310,7 @@ export default function RequestModal({ open, onClose }) {
                         ))}
                       </select>
                       {errors.category && (
-                        <p className="text-xs font-medium text-red-600">{errors.category}</p>
+                        <p className="text-xs font-medium text-red-600">{errors.category.message}</p>
                       )}
                     </div>
 
@@ -316,13 +324,32 @@ export default function RequestModal({ open, onClose }) {
                           <TbCurrencyNaira className="size-4" />
                         </span>
                         <Input
-                          value={form.budget}
-                          onChange={(e) => updateField({ budget: e.target.value })}
+                          {...register("budget")}
+                          onChange={(e) =>
+                            setValue(
+                              "budget",
+                              sanitizeBudgetInput(e.target.value),
+                              { shouldValidate: true, shouldDirty: true }
+                            )
+                          }
+                          onBlur={() => {
+                            const current = String(getValues("budget") || "");
+                            setValue(
+                              "budget",
+                              current
+                                ? Number(current.replace(/,/g, "")).toLocaleString()
+                                : "",
+                              { shouldValidate: true, shouldDirty: true }
+                            );
+                          }}
                           placeholder="e.g. 450,000"
                           inputMode="numeric"
                           className="h-11 bg-white border-gray-200 pl-9 focus:border-emerald-500"
                         />
                       </div>
+                      {errors.budget && (
+                        <p className="text-xs font-medium text-red-600">{errors.budget.message}</p>
+                      )}
                     </div>
                   </div>
 
@@ -333,11 +360,13 @@ export default function RequestModal({ open, onClose }) {
                       Item details / specs
                     </label>
                     <Textarea
-                      value={form.details}
-                      onChange={(e) => updateField({ details: e.target.value })}
+                      {...register("details")}
                       placeholder="Condition, model, quantity, preferred delivery, etc."
                       className="min-h-[90px] resize-none bg-white border-gray-200 focus:border-emerald-500"
                     />
+                    {errors.details && (
+                      <p className="text-xs font-medium text-red-600">{errors.details.message}</p>
+                    )}
                   </div>
 
                   {/* Contact */}
@@ -348,15 +377,14 @@ export default function RequestModal({ open, onClose }) {
                       <span className="text-red-500">*</span>
                     </label>
                     <Input
-                      value={form.contact}
-                      onChange={(e) => updateField({ contact: e.target.value })}
+                      {...register("contact")}
                       placeholder="e.g. 234 80 1234 5678"
                       inputMode="tel"
                       autoComplete="tel"
                       className="h-11 bg-white border-gray-200 focus:border-emerald-500"
                     />
                     {errors.contact && (
-                      <p className="text-xs font-medium text-red-600">{errors.contact}</p>
+                      <p className="text-xs font-medium text-red-600">{errors.contact.message}</p>
                     )}
                   </div>
 
@@ -376,10 +404,10 @@ export default function RequestModal({ open, onClose }) {
                     </Button>
                     <Button
                       type="submit"
-                      disabled={status === "submitting"}
+                      disabled={isSubmitting || status === "submitting"}
                       className="h-11 flex-[1.4] bg-[#064e3b] text-white hover:bg-emerald-900"
                     >
-                      {status === "submitting" ? (
+                      {(isSubmitting || status === "submitting") ? (
                         <>
                           <Loader2 className="size-4 animate-spin" />
                           Sending...

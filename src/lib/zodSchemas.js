@@ -64,4 +64,69 @@ export const guestFormSchema = z.object({
   termsAccepted: termsAcceptedSchema,
 });
 
+// ---------------------------------------------------------------------------
+// RequestModal schema (src/components/Layout/RequestModal.jsx)
+// ---------------------------------------------------------------------------
+
+// A schema for the item name a user is looking for.
+// Rules: must be a non-empty trimmed string.
+export const itemNameSchema = nonEmptyTrimmedString;
+
+// A schema for the item category.
+// Rules: must be a non-empty trimmed string (a category must be chosen).
+export const categorySchema = nonEmptyTrimmedString;
+
+// A schema for the estimated budget (display string, e.g. "450,000").
+// Rules:
+// - Optional (the user may leave it blank).
+// - If present, must be a string of digits and commas only.
+// - After stripping commas, it must parse to a finite number > 0.
+export const budgetSchema = z
+  .string()
+  .trim()
+  .optional()
+  .refine((val) => {
+    if (val == null || val === "") return true; // empty budget is allowed
+    const cleaned = String(val).replace(/,/g, "").trim();
+    if (!cleaned) return false;
+    const num = Number(cleaned);
+    return Number.isFinite(num) && num > 0;
+  }, {
+    message: "Enter a valid budget amount, e.g. 450,000",
+  });
+
+// A schema for the optional item details / specs.
+// Rules: optional, trimmed, max length 1000.
+export const itemDetailsSchema = z
+  .string()
+  .trim()
+  .max(1000, { message: "Details are too long (max 1000 characters)." })
+  .optional();
+
+// A schema for the phone/WhatsApp contact on the request form.
+// Rules:
+// - Must be a non-empty trimmed string.
+// - Must contain at least 11 digits (Nigerian phone format).
+// - Must only contain digits, spaces, +, -, and parentheses.
+export const requestContactSchema = z
+  .string()
+  .trim()
+  .min(1, { message: "We need a WhatsApp or phone number to reach you." })
+  .refine((val) => String(val).replace(/\D/g, "").length >= 11, {
+    message: "Enter a valid phone/WhatsApp number.",
+  })
+  .regex(/^[0-9+\-()\s]+$/, {
+    message: "Phone/WhatsApp number contains invalid characters.",
+  });
+
+// The final schema for the RequestModal form.
+// It describes the exact shape of the data react-hook-form validates.
+export const requestItemSchema = z.object({
+  itemName: itemNameSchema,
+  category: categorySchema,
+  budget: budgetSchema,
+  details: itemDetailsSchema,
+  contact: requestContactSchema,
+});
+
 

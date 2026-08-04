@@ -28,3 +28,7 @@ I also learn to keep all components into a single file and export it as one, ins
 13. I implementing a function that override the url param id when filtering and searching for items.... more details on it soon.
 
 14. i Implemented the Skeleton feature to keep the user busy when the data is fetched and also make sure that the images load completely not in chunks before rendering
+
+15. I added a fallback ErrorModal for error handling with a retry button
+
+16. I built the CustomrequestModal for users that couldnt find a particular item, used Zod and Zodshchema for validation and error handling, a success and error toast and a success modal
