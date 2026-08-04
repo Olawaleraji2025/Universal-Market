@@ -31,4 +31,4 @@ I also learn to keep all components into a single file and export it as one, ins
 
 15. I added a fallback ErrorModal for error handling with a retry button
 
-16. I built the CustomrequestModal for users that couldnt find a particular item, used Zod and Zodshchema for validation and error handling, a success and error toast and a success modal
+16. I built the CustomrequestModal for users that couldnt find a particular item, used Zod and Zodshchema for validation and error handling, a success and error toast and a success modal. I also created a new database table for the CustomRequestModal
