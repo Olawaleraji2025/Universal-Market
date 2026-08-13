@@ -1,5 +1,6 @@
 import { motion} from "framer-motion";
 import Button from "/src/components/ui/button.jsx";
+import WhatsAppButton from "/src/components/WhatsAppChat/WhatsAppButton.jsx";
 import { useNavigate } from 'react-router-dom'
 
 
@@ -31,10 +32,7 @@ export const Hero = () => {
         >
           Browse Products
         </Button>
-        <Button className="bg-[#22c55e] text-white px-8 py-4 rounded-md font-semibold flex items-center justify-center gap-2 hover:bg-emerald-600 transition" size="lg" >
-          {/* <MessageCircle size={20} /> */}
-          Chat on WhatsApp
-        </Button>
+        <WhatsAppButton className="bg-[#22c55e] text-white px-8 py-4 rounded-md font-semibold hover:bg-emerald-600 transition" size="lg" />
       </div>
     </div>
     

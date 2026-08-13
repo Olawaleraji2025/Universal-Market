@@ -34,14 +34,6 @@ export const ProductCard = () => {
     [dispatch, navigate]
   );
 
-  // useEffect(() => {
-  //   if (error) {
-  //     toast.error('Failed to load products', {
-  //       description: error.message,
-  //     });
-  //   }
-  // }, [error]);
-
   return (
     <section className="px-6 py-16 mx-auto">
       <div className="mb-10">

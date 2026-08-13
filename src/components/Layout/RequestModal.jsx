@@ -84,7 +84,7 @@ const parseBudgetToNumber = (value) => {
   return Number.isFinite(num) && num > 0 ? num : null;
 };
 
-export default function RequestModal({ open, onClose }) {
+export default function RequestModal({ open, onClose, initialItemName = "" }) {
   const [status, setStatus] = useState("idle"); // idle | submitting | success | error
   const [submitError, setSubmitError] = useState("");
   const [requestId, setRequestId] = useState("");
@@ -101,10 +101,18 @@ export default function RequestModal({ open, onClose }) {
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(requestItemSchema),
-    defaultValues: initialForm,
+    defaultValues: { ...initialForm, itemName: initialItemName || initialForm.itemName },
     mode: "onSubmit",
     reValidateMode: "onChange",
   });
+
+  // Keep the itemName in sync if a parent passes a new initialItemName
+  useEffect(() => {
+    if (!open) return;
+    if (initialItemName && initialItemName.trim()) {
+      setValue("itemName", initialItemName, { shouldValidate: true, shouldDirty: true });
+    }
+  }, [initialItemName, open, setValue]);
 
   const form = watch();
 

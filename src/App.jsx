@@ -24,7 +24,7 @@ const App = () => {
     <>
     {/* <RetryDemo /> */}
       <Navbar />
-      <div className="min-h-screen bg-[#f8fafc] font-sans text-gray-900">
+      <div className="min-h-screen bg-[#f8fafc] font-sans text-gray-900 ">
         <ScrollToTop />
         <Routes>
           <Route path="/" element={<HomePage />} />

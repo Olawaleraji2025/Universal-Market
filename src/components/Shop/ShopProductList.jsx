@@ -1,11 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 
 import Button from "../ui/button";
+import NoProductFound from "../NoProductFound/NoProductFound";
 import useShopProducts from "../../Hooks/useShopProducts";
+import ErrorModal from "../Layout/ErrorModal";
 import { useSelector, useDispatch } from "react-redux";
 import { setClickedProduct } from "../../features/shop/productDetailsClicked";
 import { useNavigate } from "react-router-dom";
 import { useSearchParams, Link } from 'react-router-dom';
+import { clearShopSearchQuery } from "../../features/shop/shopSearchSlice";
+import RequestModal from "../Layout/RequestModal";
+import SkeletonCard from "../ui/SkeletonLoader";
 
 const filters = [
   "All",
@@ -20,13 +25,23 @@ const filters = [
 export default function ShopProductList() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [requestOpen, setRequestOpen] = useState(false);
+  const [loadedImages, setLoadedImages] = useState(new Set());
+
+  const handleImageLoad = (productId) => {
+    setLoadedImages((prev) => {
+      const next = new Set(prev);
+      next.add(productId);
+      return next;
+    });
+  };
 
     const [searchParams, setSearchParams] = useSearchParams();
     const category = searchParams.get('category') || '';
 
     const normalizedCategory = category && filters.includes(category) ? category : "All";
   
-  const { data: products = [], isLoading, error } = useShopProducts();
+  const { data: products = [], isLoading, isError, isFetching, error, refetch } = useShopProducts();
 
   const query = useSelector((state) => state.shopSearch?.query ?? "");
 
@@ -54,8 +69,8 @@ export default function ShopProductList() {
     });
   }, [products, query, effectiveCategory]);
 
-  if (isLoading) return <p>Loading the shop...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  // Render flow handled below: show ErrorModal on error, skeleton while loading,
+  // otherwise render products with per-image skeleton overlays.
 
   return (
     <section className="px-6 py-10">
@@ -92,57 +107,97 @@ export default function ShopProductList() {
         </div>
 
         <div className="flex gap-6 overflow-x-auto pb-2">
-          {filteredProducts.map((product) => (
-            <div
-              key={product.id}
-              className="w-3xs bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition flex flex-col"
-            >
-              <div className="relative aspect-square">
-                <img
-                  src={product.imageUrl}
-                  alt={product.ProductName}
-                  className="w-full h-full object-cover"
-                />
-                <span
-                  className={`absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold uppercase ${product.ProductStatus === 'In Stock' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}
+          {isError ? (
+            <ErrorModal
+              onRetry={() => refetch()}
+              isRetrying={isFetching}
+              error={error}
+              title="Failed to load products"
+              message="We couldn't load the products. Please check your internet connection and try again."
+            />
+          ) : isLoading ? (
+            <SkeletonCard count={3} />
+          ) : (
+            filteredProducts.map((product) => {
+              const hasFinishedLoading = loadedImages.has(product.id);
+
+              return (
+                <div
+                  key={product.id}
+                  className="w-3xs bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition flex flex-col"
                 >
-                  {product.ProductStatus || ""}
-                </span>
-              </div>
+                  <div className="relative aspect-square bg-gray-50">
+                    <img
+                      src={product.imageUrl}
+                      alt={product.ProductName}
+                      className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-in ${hasFinishedLoading ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+                      loading="lazy"
+                      onLoad={() => handleImageLoad(product.id)}
+                    />
 
-              
+                    {!hasFinishedLoading && (
+                      <div className="absolute inset-0">
+                        <SkeletonCard count={1} />
+                      </div>
+                    )}
 
-              <div className="p-4 flex flex-col grow">
+                    <span
+                      className={`absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold uppercase ${product.ProductStatus === 'In Stock' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} ${hasFinishedLoading ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+                    >
+                      {product.ProductStatus || ""}
+                    </span>
+                  </div>
 
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-100">
-                    {product.Category}
-                  </span>
+                  <div className="p-4 flex flex-col grow">
+
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-100">
+                        {product.Category}
+                      </span>
+                    </div>
+
+                    <h3 className="font-semibold text-gray-800 mb-1 leading-snug">
+                      {product.ProductName}
+                    </h3>
+                    <p className="text-xl font-bold text-[#01241a] mb-4">
+                      ₦{product.ProductPrice.toLocaleString()}
+                    </p>
+
+
+                    <Button
+                      className="mt-auto bg-[#064e3b] text-white w-full py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 hover:bg-emerald-900 transition cursor-pointer"
+                      onClick={() => {
+                        dispatch(setClickedProduct(product));
+                        navigate(`/product/${product.id}`);
+                      }}
+                    >
+                      View details
+                    </Button>
+                  </div>
                 </div>
+              );
+            })
+          )}
 
-                <h3 className="font-semibold text-gray-800 mb-1 leading-snug">
-                  {product.ProductName}
-                </h3>
-                <p className="text-xl font-bold text-[#01241a] mb-4">
-                  ₦{product.ProductPrice.toLocaleString()}
-                </p>
+          {!isLoading && !isError && filteredProducts.length === 0 && (
+            <>
+              <NoProductFound
+                searchQuery={query}
+                category={effectiveCategory}
+                onRequestCustomItem={() => setRequestOpen(true)}
+                onBrowseCategories={() => {
+                  // Clear URL category param and clear search query in redux
+                  setSearchParams((prev) => {
+                    const next = new URLSearchParams(prev);
+                    next.delete('category');
+                    return next;
+                  });
+                  dispatch(clearShopSearchQuery());
+                }}
+              />
 
-
-                <Button
-                  className="mt-auto bg-[#064e3b] text-white w-full py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 hover:bg-emerald-900 transition cursor-pointer"
-                  onClick={() => {
-                    dispatch(setClickedProduct(product));
-                    navigate(`/product/${product.id}`);
-                  }}
-                >
-                  View details
-                </Button>
-              </div>
-            </div>
-          ))}
-
-          {filteredProducts.length === 0 && (
-            <div className="text-gray-500">No products found.</div>
+              <RequestModal open={requestOpen} onClose={() => setRequestOpen(false)} initialItemName={query} />
+            </>
           )}
         </div>
       </div>
