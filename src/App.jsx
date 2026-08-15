@@ -10,7 +10,6 @@ import { ProductPage } from './components/ProductPage/ProductPage';
 import { Toaster } from './components/ui/sonner';
 // import PracticeApp from './components/ForPractice/PracticeApp';
 // import { RetryDemo } from './components/Practice';
-import ErrorModal from '../Layout/ErrorModal';
 
 function ScrollToTop() {
   const { pathname } = useLocation();

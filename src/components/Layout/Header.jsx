@@ -10,15 +10,16 @@ export const Navbar = () => {
   
   return(
     <>
-    <nav className="flex items-center justify-between px-6 py-4 bg-white">
+    <nav className="flex items-center justify-between px-6 py-4 bg-white h-16">
     <div className="flex items-center gap-2">
-      
-      <span className="font-bold text-xl text-[#01241a] cursor-pointer"
-              onClick={() => navigate('/')}
+      <img src="public/UM-logo.png" alt="Universal Market Logo" className="w-25 h-auto cursor-pointer"
+      onClick={() => navigate('/')}  />
+      {/* <span className="font-bold text-xl text-[#01241a] cursor-pointer"
+             
       
       >Universal Market
 
-      </span>
+      </span> */}
     </div>
     
     <div className="hidden md:flex items-center gap-8 font-medium text-gray-600">

@@ -3,10 +3,9 @@ export const Footer = () => (
     <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
       <div>
         <div className="flex items-center gap-2 mb-6">
-          <div className="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center">
-            <div className="w-4 h-4 border-2 border-white rounded-full"></div>
-          </div>
-          <span className="font-bold text-xl text-white">Universal Market</span>
+        
+          <img src="public/UM-logo2.png" alt="Universal Market Logo" className="w-25 h-auto cursor-pointer"
+      onClick={() => navigate('/')}  />
         </div>
         <p className="text-sm leading-relaxed opacity-60">
           Ibadan's #1 trusted marketplace for pre-owned electronics. Fast, reliable, and verified.
