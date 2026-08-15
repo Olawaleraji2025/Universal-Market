@@ -61,23 +61,11 @@ export const ProductDetails = () => {
   const productName = selectedProduct.ProductName || selectedProduct.name || selectedProduct.ProductTitle || "Product";
   const rawPrice = selectedProduct.ProductPrice ?? selectedProduct.price ?? 0;
   const priceDisplay = `₦${Number(rawPrice).toLocaleString('en-NG')}`;
-  const conditionRaw = selectedProduct.condition || selectedProduct.Condition || selectedProduct.ProductCondition || selectedProduct.ConditionName || "";
+  const productStatus = selectedProduct.ProductStatus || selectedProduct.status || "";
+  const statusClass = String(productStatus).toLowerCase() === "in stock"
+    ? "bg-green-100 text-green-800"
+    : "bg-red-100 text-red-800";
   const description = selectedProduct.ProductDescription || selectedProduct.description || selectedProduct.ProductDetails || "";
-
-  const condition = String(conditionRaw || "").trim();
-  const isNewCondition = condition.toLowerCase() === "new" || condition.toLowerCase() === "brand new" || condition.toLowerCase() === "unused";
-  const normalizedCondition = isNewCondition ? "NEW" : "USED";
-
-  let conditionClass = "mt-2 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[10px] font-bold tracking-[0.18em] uppercase shadow-sm border ";
-  let conditionDotClass = "h-2 w-2 rounded-full ";
-
-  if (isNewCondition) {
-    conditionClass += "border-red-100 bg-red-100";
-    conditionDotClass += "bg-[#16A34A]";
-  } else {
-    conditionClass += "border-red-100 bg-red-100 ";
-    conditionDotClass += "bg-[#7C3AED]";
-  }
 
   const specSource = selectedProduct.ProductSpecifications ?? null;
 
@@ -156,10 +144,12 @@ export const ProductDetails = () => {
                 <div>
                   <h1 className="text-3xl font-bold text-[#01241a]">{productName}</h1>
                   <p className="text-xl font-bold text-[#01241a] mt-2">{priceDisplay}</p>
-                  <span className={conditionClass} aria-label={`Condition: ${normalizedCondition}`}>
-                    <span className={conditionDotClass} aria-hidden="true" />
-                    {normalizedCondition}
-                  </span>
+
+                  {productStatus && (
+                    <span className={`mt-3 inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase ${statusClass}`}>
+                      {productStatus}
+                    </span>
+                  )}
                 </div>
 
                 <div className="flex items-start gap-3">

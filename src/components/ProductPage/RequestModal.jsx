@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
 import { setStep, loginSetStep} from "../../features/shop/FlowContext";
@@ -50,6 +51,23 @@ export default function RequestModal({ open, onClose }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (!open) return;
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+  dispatch(resetFlow());
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+  dispatch(resetFlow());
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open, onClose, dispatch]);
+
   const handleContinueShopping = () => {
   dispatch(clearClickedProduct());
   dispatch(resetFlow());
@@ -61,17 +79,23 @@ const showImage = flowStep === "chooser" || flowStep === "guest" || flowStep ===
 
   if (!open) return null;
 
+  const handleBackdropClick = (event) => {
+    if (event.target === event.currentTarget) {
+      onClose();
+    }
+  };
 
   return (
-    <div className="fixed inset-0 z-50" aria-hidden={false}>
+    <div className="fixed inset-0 z-50" aria-hidden={false} onClick={handleBackdropClick}>
       <div className="absolute inset-[-3] bg-black/50" />
 
-      <div className="relative min-h-full flex items-center justify-center p-4 bg-black/50">
+      <div className="relative min-h-full flex items-center justify-center p-4 bg-black/50" onClick={handleBackdropClick}>
           <div
             role="dialog"
             aria-modal="true"
             aria-label="Request product"
             className="w-full max-w-lg bg-white rounded-2xl border border-gray-100 shadow-xl overflow-hidden overflow-y-scroll max-h-140"
+            onClick={(event) => event.stopPropagation()}
             >
             {showImage && (
             <div>

@@ -1,24 +1,13 @@
-import { motion} from "framer-motion";
 import Button from "/src/components/ui/button.jsx";
 import WhatsAppButton from "/src/components/WhatsAppChat/WhatsAppButton.jsx";
 import { useNavigate } from 'react-router-dom'
 
-
+// Hero is rendered inside AnimatedSection which provides entrance animation
 export const Hero = () => {
     const navigate = useNavigate();
 
   return (<>
-  <motion.section className="px-6 py-12 md:py-20 max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center"
-  initial={{ opacity: 0 }} 
-      animate={{ opacity: 1}}
-      transition={{ 
-    duration: 1,      // How many seconds the journey takes
-    delay: 1,         // Wait for 1 second before starting
-    type: "spring",   // Make it bounce like a spring
-    stiffness: 100    // How "strong" the spring is
-  }}
-  
-  >
+  <section className="px-6 py-12 md:py-20 max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
     <div>
       <h1 className="text-xl md:text-5xl font-bold text-[#01241a] leading-tight mb-6">
         Buy Quality Pre-Owned Gadgets & Appliances You Can Trust
@@ -49,6 +38,6 @@ export const Hero = () => {
         </div> */}
       </div>
     </div>
-  </motion.section>
+  </section>
   </>
 )};

@@ -12,6 +12,8 @@ import { resetFlow, SuccessSetStep } from "../../features/shop/FlowContext";
 import { validate, errors, resetForm } from "../../features/shop/formValidation";
 import { useParams } from "react-router-dom";
 import useShopProducts from "../../Hooks/useShopProducts";
+import { toast } from 'sonner';
+
 
 
 export default function GuestForm() {
@@ -100,7 +102,8 @@ const onSubmit = async (values) => {
 
 
   if (error) {
-    setSubmissionError(error.message);
+    // setSubmissionError(error.message);
+     toast.error("Failed to submit request. Please try again.");
   } else {
     dispatch(SuccessSetStep());
   }

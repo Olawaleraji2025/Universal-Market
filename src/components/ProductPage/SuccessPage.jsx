@@ -1,6 +1,7 @@
 
 import { motion } from 'framer-motion';
 import { FaWhatsapp } from 'react-icons/fa';
+import { buildWhatsAppUrl, WHATSAPP_NUMBER, PRE_FILLED_MESSAGE } from "../WhatsAppChat/whatsappConfig";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from 'react-router-dom'
 import { clearClickedProduct } from "../../features/shop/productDetailsClicked";
@@ -12,6 +13,10 @@ export function SuccessPage() {
   const clickedProduct = useSelector(
     (state) => state.productDetailsClicked?.clickedProduct
   );
+  const selectedProduct =
+    clickedProduct?.id != null ? clickedProduct : products.find((p) => String(p.id) === String(id));
+
+const rawPrice = selectedProduct?.ProductPrice != null ? selectedProduct.ProductPrice : null;
 
 
   const guestFormState = useSelector((state) => state.guestForm.formData);
@@ -36,6 +41,30 @@ const dispatch = useDispatch()
     dispatch(resetFlow("chooser"));
     dispatch(resetForm());
     navigate("/shop");
+  }
+  
+  const handleWhatsApp = () => {
+    if (!WHATSAPP_NUMBER) {
+      // fallback: alert user
+      alert("WhatsApp number not configured.");
+      return;
+    }
+
+    const product = clickedProduct?.ProductName || "the product";
+    const msg = `Hello Universal Market, I am intrested in ${product} - id ${selectedProduct?.id || "the product id"} listed for ${rawPrice || "a price"}.`;
+
+    const url = buildWhatsAppUrl(WHATSAPP_NUMBER, msg || PRE_FILLED_MESSAGE);
+    try {
+      const win = window.open(url, "_blank");
+      if (win) try { win.opener = null; } catch (e) {return}
+      dispatch(clearClickedProduct());
+              dispatch(resetFlow("chooser"));
+              dispatch(resetForm());
+              navigate("/shop");
+    } catch (e) {
+      console.error(e);
+      alert("Couldn't open WhatsApp. Please try again.");
+    }
   }
   
  if (!clickedProduct) {
@@ -158,7 +187,7 @@ const dispatch = useDispatch()
         className="space-y-3"
       >
         <motion.button
-        //   onClick={handleWhatsApp}
+          onClick={handleWhatsApp}
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.99 }}
           className="w-full px-6 py-3.5 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors shadow-lg shadow-green-600/30 flex items-center justify-center gap-2"

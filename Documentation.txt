@@ -40,3 +40,5 @@ I also learn to keep all components into a single file and export it as one, ins
 - Implemented WhatsApp chat modal for initiating conversations with a pre-filled message.
 - Refactored ShopProductList to display loading states and errors more effectively.
 - Added WhatsApp configuration for centralized management of WhatsApp number and message.
+
+18. Refactor components to use AnimatedSection for entrance animations, update ErrorModal import path, and enhance WhatsAppButton functionality, implemented toast error in Request submission 

@@ -5,6 +5,7 @@ import WhatsAppModal from "./WhatsAppModal";
 import { WHATSAPP_NUMBER, PRE_FILLED_MESSAGE, buildWhatsAppUrl } from "./whatsappConfig";
 
 export default function WhatsAppButton(props) {
+  const { direct = false, message } = props;
   const triggerRef = useRef(null);
   const [open, setOpen] = useState(false);
   const [isOpening, setIsOpening] = useState(false);
@@ -28,8 +29,8 @@ export default function WhatsAppButton(props) {
       setError("Business WhatsApp number is not configured. Please set VITE_WHATSAPP_NUMBER.");
       return;
     }
-
-    const url = buildWhatsAppUrl(WHATSAPP_NUMBER, PRE_FILLED_MESSAGE);
+    const text = message || PRE_FILLED_MESSAGE;
+    const url = buildWhatsAppUrl(WHATSAPP_NUMBER, text);
     if (!url) {
       setError("Couldn't build WhatsApp link. Please try again.");
       return;
@@ -40,6 +41,10 @@ export default function WhatsAppButton(props) {
       // Open in a new tab/window. wa.me works for web and will redirect to app where available.
       const win = window.open(url, "_blank");
       if (!win) throw new Error("popup-blocked");
+      try {
+        // Mitigate reverse tabnabbing
+        win.opener = null;
+      } catch (e) {}
       // Close modal after a short delay to show loading state
       setTimeout(() => {
         setOpen(false);
@@ -57,7 +62,7 @@ export default function WhatsAppButton(props) {
       <Button
         {...props}
         ref={triggerRef}
-        onClick={openModal}
+        onClick={direct ? handleConfirm : openModal}
         className={`${props.className ?? ""} flex items-center justify-center gap-2`}
       >
         <FaWhatsapp className="w-4 h-4" aria-hidden />
