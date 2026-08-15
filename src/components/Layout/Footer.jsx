@@ -4,7 +4,7 @@ export const Footer = () => (
       <div>
         <div className="flex items-center gap-2 mb-6">
         
-          <img src="public/UM-logo2.png" alt="Universal Market Logo" className="w-25 h-auto cursor-pointer"
+          <img src="/public/UM-logo2.png" alt="Universal Market Logo" className="w-25 h-auto cursor-pointer"
       onClick={() => navigate('/')}  />
         </div>
         <p className="text-sm leading-relaxed opacity-60">
