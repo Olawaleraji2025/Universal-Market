@@ -4,9 +4,9 @@ import Button from '../components/ui/button';
 import SkeletonCard from '../components/ui/SkeletonLoader';
 import useShopProducts from '../Hooks/useShopProducts';
 import useWishlist from '../Hooks/useWishlist';
-import WishlistHeader from '../layout/Wishlist/WishlistHeader';
-import WishlistEmptyState from '../layout/Wishlist/WishlistEmptyState';
-import WishlistCard from '../layout/Wishlist/WishlistCard';
+import WishlistHeader from '../Layout/Wishlist/WishlistHeader';
+import WishlistEmptyState from '../Layout/Wishlist/WishlistEmptyState';
+import WishlistCard from '../Layout/Wishlist/WishlistCard';
 
 export default function WishListPage() {
   const navigate = useNavigate();

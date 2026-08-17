@@ -8,7 +8,7 @@ import { Package, Heart } from 'lucide-react';
 import Button from '/src/components/ui/button.jsx';
 import SkeletonCard from '../../components/ui/SkeletonLoader';
 import ErrorModal from '../../components/ui/ErrorModal.jsx';
-// import { toast } from 'sonner';
+import { toast } from 'sonner';
 
 const WISHLIST_STORAGE_KEY = 'universal-market-wishlist';
 
