@@ -44,3 +44,32 @@ I also learn to keep all components into a single file and export it as one, ins
 18. Refactor components to use AnimatedSection for entrance animations, update ErrorModal import path, and enhance WhatsAppButton functionality, implemented toast error in Request submission 
 
 19. Update .gitignore, remove build_output.txt, and add logo images; enhance Footer and Header components with new logo integration
+
+20. I add ErrorModal, Footer, Header, and NetworkConnectionModal components
+
+- Implemented ErrorModal for in-flow error handling with retry functionality.
+- Created Footer component with navigation links and branding.
+- Developed Header component with navigation and user authentication buttons.
+- Added NetworkConnectionModal to notify users of connectivity issues.
+
+feat: add NoProductFound and WhatsApp components
+
+- Introduced NoProductFound component to handle empty search results.
+- Created WhatsAppButton and WhatsAppModal for initiating WhatsApp chats.
+
+feat: implement Redux slices for flow and product details
+
+- Added FlowSlice to manage modal steps for user authentication.
+- Created productDetailsClicked slice to store clicked product information.
+- Implemented shopSearchSlice for managing search queries.
+
+feat: add WhatsApp configuration utility
+
+- Centralized WhatsApp configuration in whatsappConfig.js for easier management.
+
+feat: create LandingPage, ProductPage, ShopPage, and WishListPage
+
+- Developed LandingPage with various sections for product display.
+- Implemented ProductPage for detailed product views.
+- Created ShopPage for product listings.
+- Developed WishListPage to manage user wishlists with loading and error states.

@@ -1,8 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
-import shopSearchReducer from './features/shop/shopSearchSlice';
-import productDetailsClickedReducer from './features/shop/productDetailsClicked';
-import flowReducer from './features/shop/FlowContext';
-import guestFormValidation from "./features/shop/formValidation"
+import shopSearchReducer from './features/shopSearchSlice';
+import productDetailsClickedReducer from './features/productDetailsClicked';
+import flowReducer from './features/FlowSlice';
+import guestFormValidation from "./Hooks/formValidation"
 
 export const store = configureStore({
   reducer: {

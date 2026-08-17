@@ -1,0 +1,178 @@
+import { useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setClickedProduct } from '../../features/productDetailsClicked';
+import useShopProducts from '../../Hooks/useShopProducts';
+import { TbCurrencyNaira } from 'react-icons/tb';
+import { Package, Heart } from 'lucide-react';
+import Button from '/src/components/ui/button.jsx';
+import SkeletonCard from '../../components/ui/SkeletonLoader';
+import ErrorModal from '../../components/ui/ErrorModal.jsx';
+// import { toast } from 'sonner';
+
+const WISHLIST_STORAGE_KEY = 'universal-market-wishlist';
+
+const getStoredWishlist = () => {
+  try {
+    const saved = localStorage.getItem(WISHLIST_STORAGE_KEY);
+    return saved ? JSON.parse(saved) : [];
+  } catch {
+    return [];
+  }
+};
+
+export const ProductCard = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const { data: products, isLoading, isError, isFetching, error, refetch } = useShopProducts();
+
+  const [loadedImages, setLoadedImages] = useState(new Set());
+  const [wishlist, setWishlist] = useState(() => new Set(getStoredWishlist()));
+
+  const handleImageLoad = useCallback((productId) => {
+    setLoadedImages((prev) => {
+      const next = new Set(prev);
+      next.add(productId);
+      return next;
+    });
+  }, []);
+
+  const handleViewDetails = useCallback(
+    (product) => {
+      dispatch(setClickedProduct(product));
+      navigate(`/product/${product.id}`);
+    },
+    [dispatch, navigate]
+  );
+
+  const toggleWishlist = useCallback((product) => {
+    const productId = String(product.id);
+
+    setWishlist((prev) => {
+      const next = new Set(prev);
+      const isSaved = next.has(productId);
+
+      // toast.dismiss('wishlist-toast');
+
+      if (isSaved) {
+        next.delete(productId);
+        toast.info(`${product.ProductName} removed from wishlist.`, { id: 'wishlist-toast' });
+      } else {
+        next.add(productId);
+        toast.success(`${product.ProductName} added to wishlist.`, { id: 'wishlist-toast' });
+      }
+
+      try {
+        localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify([...next]));
+      } catch {
+        // Ignore storage write problems silently.
+      }
+
+      return next;
+    });
+  }, []);
+
+  return (
+    <section className="px-6 py-16 mx-auto">
+      <div className="mb-10">
+        <h2 className="text-3xl font-bold text-[#01241a]">Fresh Arrivals</h2>
+        <p className="text-gray-500 mt-2">
+          Handpicked items that just landed in our shop.
+        </p>
+      </div>
+
+      <div className="flex gap-4">
+        {/* Error state — ErrorModal replaces the skeleton cards */}
+        {isError ? (
+          <ErrorModal
+            onRetry={() => refetch()}
+            isRetrying={isFetching}
+            error={error}
+            title="Failed to load products"
+            message="We couldn't load the products. Please check your internet connection and try again."
+          />
+        ) : isLoading ? (
+          <SkeletonCard count={3} />
+        ) : (
+          products.map((product) => {
+            const hasFinishedLoading = loadedImages.has(product.id);
+
+            // ── ONE card shape, always. Only the photo square toggles. ──
+            return (
+              <div
+                key={product.id}
+                className="w-3xs bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition flex flex-col h-full"
+              >
+                <div className="relative aspect-square bg-gray-50">
+                  {/* Permanent image — always in the DOM, fenced by THIS div */}
+                  <img
+                    src={product.imageUrl}
+                    alt={product.ProductName}
+                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-in ${
+                      hasFinishedLoading
+                        ? 'opacity-100 pointer-events-auto'
+                        : 'opacity-0 pointer-events-none'
+                    }`}
+                    loading="lazy"
+                    onLoad={() => handleImageLoad(product.id)}
+                  />
+
+                  {/* Skeleton overlay — exists ONLY until image loads, same fence */}
+                  {!hasFinishedLoading && (
+                    <div className="absolute inset-0">
+                      <SkeletonCard count={1} />
+                    </div>
+                  )}
+
+                  <button
+                    type="button"
+                    aria-label={wishlist.has(String(product.id)) ? `Remove ${product.ProductName} from wishlist` : `Add ${product.ProductName} to wishlist`}
+                    aria-pressed={wishlist.has(String(product.id))}
+                    onClick={() => toggleWishlist(product)}
+                    className={`absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border shadow-sm backdrop-blur-sm transition hover:scale-105 ${
+                      wishlist.has(String(product.id))
+                        ? 'border-red-200 bg-red-50 text-red-500'
+                        : 'border-white/80 bg-white/85 text-gray-700 hover:text-red-500'
+                    }`}
+                  >
+                    <Heart
+                      className={`h-4 w-4 ${wishlist.has(String(product.id)) ? 'fill-current' : ''}`}
+                      strokeWidth={2}
+                    />
+                  </button>
+                </div>
+
+                <div className="p-4 flex flex-col grow">
+                  <h3 className="font-semibold text-gray-800 mb-1">
+                    {product.ProductName}
+                  </h3>
+                  <p className="text-xl font-bold text-[#01241a] flex items-center">
+                    <TbCurrencyNaira />
+                    {product.ProductPrice.toLocaleString()}
+                  </p>
+                  <span
+                    className={`mt-2 inline-flex w-fit items-center rounded-full px-2.5 py-1 text-[10px] font-bold uppercase ${
+                      product.ProductStatus === 'In Stock'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-red-100 text-red-800'
+                    }`}
+                  >
+                    {product.ProductStatus}
+                  </span>
+                  <Button
+                    type="button"
+                    onClick={() => handleViewDetails(product)}
+                    className="mt-4 bg-[#064e3b] text-white w-full py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 hover:bg-emerald-900 transition cursor-pointer"
+                  >
+                    <Package size={16} /> View details
+                  </Button>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+    </section>
+  );
+};
