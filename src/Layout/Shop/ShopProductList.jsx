@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 
 import Button from "../../components/ui/button";
 import NoProductFound from "../../components/ui/NoProductFound";
@@ -6,12 +6,15 @@ import useShopProducts from "../../Hooks/useShopProducts";
 import ErrorModal from "../../components/ui/ErrorModal";
 import { useSelector, useDispatch } from "react-redux";
 import { setClickedProduct } from "../../features/productDetailsClicked";
+import { selectWishlistIds, toggleWishlist as toggleWishlistAction } from "../../features/wishlistSlice";
 import { useNavigate } from "react-router-dom";
 import { useSearchParams } from 'react-router-dom';
 import { clearShopSearchQuery } from "../../features/shopSearchSlice";
 import RequestModal from "../../components/ui/CustomRequestModal";
 import SkeletonCard from "../../components/ui/SkeletonLoader";
-import { Heart } from "lucide-react";
+import { Heart, Package } from "lucide-react";
+import { TbCurrencyNaira } from "react-icons/tb";
+import { toast } from "sonner";
 
 const filters = [
   "All",
@@ -26,27 +29,41 @@ const filters = [
 export default function ShopProductList() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const wishlistIds = useSelector(selectWishlistIds);
   const [requestOpen, setRequestOpen] = useState(false);
   const [loadedImages, setLoadedImages] = useState(new Set());
 
-  const handleImageLoad = (productId) => {
+  const handleImageLoad = useCallback((productId) => {
     setLoadedImages((prev) => {
       const next = new Set(prev);
       next.add(productId);
       return next;
     });
-  };
+  }, []);
 
-    const [searchParams, setSearchParams] = useSearchParams();
-    const category = searchParams.get('category') || '';
+  const [searchParams, setSearchParams] = useSearchParams();
+  const category = searchParams.get('category') || '';
 
-    const normalizedCategory = category && filters.includes(category) ? category : "All";
-  
+  const normalizedCategory = category && filters.includes(category) ? category : "All";
+
   const { data: products = [], isLoading, isError, isFetching, error, refetch } = useShopProducts();
 
   const query = useSelector((state) => state.shopSearch?.query ?? "");
 
   const effectiveCategory = normalizedCategory;
+
+  const toggleWishlist = useCallback((product) => {
+    const productId = String(product.id);
+    const isSaved = wishlistIds.some((id) => String(id) === productId);
+
+    dispatch(toggleWishlistAction(productId));
+
+    if (isSaved) {
+      toast.info(`${product.ProductName} removed from wishlist.`, { id: 'wishlist-toast' });
+    } else {
+      toast.success(`${product.ProductName} added to wishlist.`, { id: 'wishlist-toast' });
+    }
+  }, [dispatch, wishlistIds]);
 
 
   const filteredProducts = useMemo(() => {
@@ -144,26 +161,29 @@ export default function ShopProductList() {
 
                     <button
                       type="button"
-                      aria-label={`Add ${product.ProductName} to wishlist`}
-                      className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-white/80 bg-white/85 text-gray-700 shadow-sm backdrop-blur-sm transition hover:scale-105 hover:text-red-500"
+                      aria-label={wishlistIds.some((id) => String(id) === String(product.id)) ? `Remove ${product.ProductName} from wishlist` : `Add ${product.ProductName} to wishlist`}
+                      aria-pressed={wishlistIds.some((id) => String(id) === String(product.id))}
+                      onClick={() => toggleWishlist(product)}
+                      className={`absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border shadow-sm backdrop-blur-sm transition hover:scale-105 ${
+                        wishlistIds.some((id) => String(id) === String(product.id))
+                          ? 'border-red-200 bg-red-50 text-red-500'
+                          : 'border-white/80 bg-white/85 text-gray-700 hover:text-red-500'
+                      }`}
                     >
-                      <Heart className="h-4 w-4" strokeWidth={2} />
+                      <Heart
+                        className={`h-4 w-4 ${wishlistIds.some((id) => String(id) === String(product.id)) ? 'fill-current' : ''}`}
+                        strokeWidth={2}
+                      />
                     </button>
                   </div>
 
                   <div className="p-4 flex flex-col grow">
-
-                    {/* <div className="flex items-center gap-2 mb-1">
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-100">
-                        {product.Category}
-                      </span>
-                    </div> */}
-
                     <h3 className="font-semibold text-gray-800 mb-1 leading-snug">
                       {product.ProductName}
                     </h3>
                     <p className="text-xl font-bold text-[#01241a] flex items-center">
-                      ₦{product.ProductPrice.toLocaleString()}
+                      <TbCurrencyNaira />
+                      {product.ProductPrice.toLocaleString()}
                     </p>
 
                     <span
@@ -173,13 +193,14 @@ export default function ShopProductList() {
                     </span>
 
                     <Button
+                      type="button"
                       className="mt-4 bg-[#064e3b] text-white w-full py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 hover:bg-emerald-900 transition cursor-pointer"
                       onClick={() => {
                         dispatch(setClickedProduct(product));
                         navigate(`/product/${product.id}`);
                       }}
                     >
-                      View details
+                      <Package size={16} /> View details
                     </Button>
                   </div>
                 </div>

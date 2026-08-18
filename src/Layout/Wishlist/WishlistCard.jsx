@@ -2,20 +2,20 @@ import { Check, Trash2 } from 'lucide-react';
 import { TbCurrencyNaira } from 'react-icons/tb';
 
 export default function WishlistCard({ product, selected, onToggleSelect, onRemove, onViewDetails }) {
-  const condition = product.ProductStatus === 'In Stock' ? 'NEW' : 'USED';
+  const condition = product.ProductStatus === 'In Stock' ? 'Excellent' : product.ProductStatus || 'Good';
 
   return (
     <article
-      className={`group flex items-center gap-4 rounded-2xl border bg-white p-3 shadow-sm transition-all duration-200 hover:border-emerald-200 hover:bg-emerald-50/40 w-[300px] ${
-        selected ? 'border-emerald-200 bg-emerald-50/50' : 'border-gray-200'
+      className={`group flex w-full items-center gap-4 rounded-2xl border bg-white p-3 shadow-sm transition-all duration-200 hover:border-emerald-200 hover:bg-emerald-50/40 ${
+        selected ? 'border-emerald-200 bg-emerald-50/50 ring-1 ring-emerald-100' : 'border-gray-200'
       }`}
     >
-      <div className="flex items-center justify-center pl-1">
+      <div className="flex items-start justify-center pl-1">
         <button
           type="button"
           aria-label={`Select ${product.ProductName}`}
           onClick={() => onToggleSelect(product.id)}
-          className={`flex h-5 w-5 items-center justify-center rounded-md border transition-all ${
+          className={`flex h-6 w-6 min-w-[24px] items-center justify-center rounded-md border transition-all ${
             selected
               ? 'border-emerald-700 bg-emerald-700 text-white'
               : 'border-gray-300 bg-white text-transparent hover:border-emerald-400'
@@ -25,7 +25,7 @@ export default function WishlistCard({ product, selected, onToggleSelect, onRemo
         </button>
       </div>
 
-      <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl border border-gray-200 bg-gray-50">
+      <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl border border-gray-200 bg-gray-50 sm:h-20 sm:w-20">
         <img
           src={product.imageUrl}
           alt={product.ProductName}
@@ -37,7 +37,7 @@ export default function WishlistCard({ product, selected, onToggleSelect, onRemo
         <button
           type="button"
           onClick={() => onViewDetails(product)}
-          className="text-left text-base font-semibold text-[#01241a] transition hover:text-emerald-700"
+          className="text-left text-sm font-semibold text-[#01241a] transition hover:text-emerald-700 sm:text-base"
         >
           {product.ProductName}
         </button>
@@ -58,7 +58,7 @@ export default function WishlistCard({ product, selected, onToggleSelect, onRemo
         type="button"
         aria-label={`Remove ${product.ProductName} from wishlist`}
         onClick={() => onRemove(product)}
-        className="flex h-10 w-10 items-center justify-center rounded-full border border-red-100 bg-red-50 text-red-500 transition hover:bg-red-100"
+        className="flex h-9 w-9 items-center justify-center rounded-full border border-red-100 bg-red-50 text-red-500 transition hover:bg-red-100"
       >
         <Trash2 className="h-4 w-4" />
       </button>

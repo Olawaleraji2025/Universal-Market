@@ -73,3 +73,11 @@ feat: create LandingPage, ProductPage, ShopPage, and WishListPage
 - Implemented ProductPage for detailed product views.
 - Created ShopPage for product listings.
 - Developed WishListPage to manage user wishlists with loading and error states.
+
+21. I implement wishlist functionality with Redux integration
+
+- Added wishlist management using Redux, including actions for toggling, selecting, and removing items.
+- Integrated wishlist state into ProductCard, ProductDetails, ShopProductList, and WishListPage components.
+- Created a new SelectedRequestModal for handling requests from selected wishlist items.
+- Updated UI components to reflect wishlist state and provide user feedback on actions.
+- Persisted wishlist state in local storage for consistent user experience across sessions.

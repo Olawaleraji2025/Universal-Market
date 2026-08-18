@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
-import { Package } from "lucide-react";
-import { useSelector } from "react-redux";
+import { Package, Heart } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
 import { TbCurrencyNaira } from "react-icons/tb";
 import Button from "../../components/ui/button";
 import RequestModal from "./ProductRequestModal";
@@ -9,23 +9,40 @@ import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import useShopProducts from "../../Hooks/useShopProducts";
 import ErrorModal from '../../components/ui/ErrorModal.jsx';
+import { selectWishlistIds, toggleWishlist as toggleWishlistAction } from '../../features/wishlistSlice';
+import { toast } from 'sonner';
 
 
 
 export const ProductDetails = () => {
   const { id } = useParams();
+  const dispatch = useDispatch();
   const clickedProduct = useSelector((state) => state.productDetailsClicked?.clickedProduct);
+  const wishlistIds = useSelector(selectWishlistIds);
   const { data: products = [], isLoading, isError, isFetching, error, refetch  } = useShopProducts({
     staleTime: 5 * 60 * 1000,
   });
 
-  
-
   const selectedProduct =
     clickedProduct?.id != null ? clickedProduct : products.find((p) => String(p.id) === String(id));
 
-
   const [requestOpen, setRequestOpen] = useState(false);
+  const isWishlisted = selectedProduct ? wishlistIds.some((itemId) => String(itemId) === String(selectedProduct.id)) : false;
+
+  const handleToggleWishlist = () => {
+    if (!selectedProduct) return;
+
+    const productId = String(selectedProduct.id);
+    const willSave = !wishlistIds.some((itemId) => String(itemId) === productId);
+
+    dispatch(toggleWishlistAction(productId));
+
+    if (willSave) {
+      toast.success(`${selectedProduct.ProductName || 'Product'} added to wishlist.`, { id: 'wishlist-toast' });
+    } else {
+      toast.info(`${selectedProduct.ProductName || 'Product'} removed from wishlist.`, { id: 'wishlist-toast' });
+    }
+  };
 
   if (isLoading && !selectedProduct ) {
     return (
@@ -198,6 +215,20 @@ export const ProductDetails = () => {
                 onClick={() => setRequestOpen(true)}
               >
                 <Package size={16} /> Request Item
+              </Button>
+
+              <Button
+                type="button"
+                variant="outline"
+                className={`w-full border py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition ${
+                  isWishlisted
+                    ? 'border-red-200 bg-red-50 text-red-600 hover:bg-red-100'
+                    : 'border-gray-200 bg-white text-[#01241a] hover:bg-gray-50'
+                }`}
+                onClick={handleToggleWishlist}
+              >
+                <Heart className={`h-4 w-4 ${isWishlisted ? 'fill-current' : ''}`} strokeWidth={2} />
+                {isWishlisted ? 'Saved to Wishlist' : 'Wishlist'}
               </Button>
 
               {requestOpen && (

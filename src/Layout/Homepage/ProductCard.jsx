@@ -1,7 +1,11 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setClickedProduct } from '../../features/productDetailsClicked';
+import {
+  selectWishlistIds,
+  toggleWishlist as toggleWishlistAction,
+} from '../../features/wishlistSlice';
 import useShopProducts from '../../Hooks/useShopProducts';
 import { TbCurrencyNaira } from 'react-icons/tb';
 import { Package, Heart } from 'lucide-react';
@@ -10,25 +14,14 @@ import SkeletonCard from '../../components/ui/SkeletonLoader';
 import ErrorModal from '../../components/ui/ErrorModal.jsx';
 import { toast } from 'sonner';
 
-const WISHLIST_STORAGE_KEY = 'universal-market-wishlist';
-
-const getStoredWishlist = () => {
-  try {
-    const saved = localStorage.getItem(WISHLIST_STORAGE_KEY);
-    return saved ? JSON.parse(saved) : [];
-  } catch {
-    return [];
-  }
-};
-
 export const ProductCard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const wishlistIds = useSelector(selectWishlistIds);
 
   const { data: products, isLoading, isError, isFetching, error, refetch } = useShopProducts();
 
   const [loadedImages, setLoadedImages] = useState(new Set());
-  const [wishlist, setWishlist] = useState(() => new Set(getStoredWishlist()));
 
   const handleImageLoad = useCallback((productId) => {
     setLoadedImages((prev) => {
@@ -48,30 +41,16 @@ export const ProductCard = () => {
 
   const toggleWishlist = useCallback((product) => {
     const productId = String(product.id);
+    const isSaved = wishlistIds.some((id) => String(id) === productId);
 
-    setWishlist((prev) => {
-      const next = new Set(prev);
-      const isSaved = next.has(productId);
+    dispatch(toggleWishlistAction(productId));
 
-      // toast.dismiss('wishlist-toast');
-
-      if (isSaved) {
-        next.delete(productId);
-        toast.info(`${product.ProductName} removed from wishlist.`, { id: 'wishlist-toast' });
-      } else {
-        next.add(productId);
-        toast.success(`${product.ProductName} added to wishlist.`, { id: 'wishlist-toast' });
-      }
-
-      try {
-        localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify([...next]));
-      } catch {
-        // Ignore storage write problems silently.
-      }
-
-      return next;
-    });
-  }, []);
+    if (isSaved) {
+      toast.info(`${product.ProductName} removed from wishlist.`, { id: 'wishlist-toast' });
+    } else {
+      toast.success(`${product.ProductName} added to wishlist.`, { id: 'wishlist-toast' });
+    }
+  }, [dispatch, wishlistIds]);
 
   return (
     <section className="px-6 py-16 mx-auto">
@@ -117,6 +96,7 @@ export const ProductCard = () => {
                     loading="lazy"
                     onLoad={() => handleImageLoad(product.id)}
                   />
+                  
 
                   {/* Skeleton overlay — exists ONLY until image loads, same fence */}
                   {!hasFinishedLoading && (
@@ -125,22 +105,23 @@ export const ProductCard = () => {
                     </div>
                   )}
 
-                  <button
+<button
                     type="button"
-                    aria-label={wishlist.has(String(product.id)) ? `Remove ${product.ProductName} from wishlist` : `Add ${product.ProductName} to wishlist`}
-                    aria-pressed={wishlist.has(String(product.id))}
+                    aria-label={wishlistIds.some((id) => String(id) === String(product.id)) ? `Remove ${product.ProductName} from wishlist` : `Add ${product.ProductName} to wishlist`}
+                    aria-pressed={wishlistIds.some((id) => String(id) === String(product.id))}
                     onClick={() => toggleWishlist(product)}
                     className={`absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border shadow-sm backdrop-blur-sm transition hover:scale-105 ${
-                      wishlist.has(String(product.id))
+                      wishlistIds.some((id) => String(id) === String(product.id))
                         ? 'border-red-200 bg-red-50 text-red-500'
                         : 'border-white/80 bg-white/85 text-gray-700 hover:text-red-500'
                     }`}
                   >
                     <Heart
-                      className={`h-4 w-4 ${wishlist.has(String(product.id)) ? 'fill-current' : ''}`}
+                      className={`h-4 w-4 ${wishlistIds.some((id) => String(id) === String(product.id)) ? 'fill-current' : ''}`}
                       strokeWidth={2}
                     />
                   </button>
+                  
                 </div>
 
                 <div className="p-4 flex flex-col grow">
