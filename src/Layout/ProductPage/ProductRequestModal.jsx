@@ -141,7 +141,7 @@ const showImage = flowStep === "chooser" || flowStep === "guest" || flowStep ===
                   <TbCurrencyNaira />
                   {clickedProduct?.ProductPrice?.toLocaleString?.() ?? selectedProduct?.ProductPrice?.toLocaleString?.()}
                 </p>
-                <p className="text-[11px] text-gray-400 mt-0.5">Pre-owned</p>
+                <p className="text-[11px] text-gray-400 mt-0.5"> {clickedProduct?.ProductStatus ?? selectedProduct.ProductStatus}</p>
               </div>
             </motion.div>
             </div>
