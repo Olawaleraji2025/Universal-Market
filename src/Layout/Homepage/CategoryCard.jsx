@@ -1,53 +1,90 @@
 
-import { Smartphone, Laptop, Tv, Refrigerator, Gamepad2 } from "lucide-react";
+import { Smartphone, Laptop, Tv, ChevronLeft, ChevronRight, Refrigerator, Gamepad2  } from "lucide-react";
 import { GiWashingMachine } from "react-icons/gi";
 import { CiCircleMore } from "react-icons/ci";
 import { useNavigate } from 'react-router-dom';
+import { useRef } from 'react';
 
 const theIcons = [{ name: "Phones", icon: Smartphone },
   { name: "Laptops", icon: Laptop },
   { name: "TVs", icon: Tv },
-  // { name: "Refrigerators", icon: Refrigerator },
-  // { name: "Gaming Consoles", icon: Gamepad2 },
-  // { name: "Appliances", icon: GiWashingMachine },
-  // { name: "Others", icon: CiCircleMore },
+ { name: "Refrigerators", icon: Refrigerator },
+  { name: "Gaming Consoles", icon: Gamepad2 },
+  { name: "Appliances", icon: GiWashingMachine },
+  { name: "Others", icon: CiCircleMore },
 ];
 
-
 export default function CategoryCard() {
-const navigate = useNavigate();
+  const navigate = useNavigate();
+  const scrollRef = useRef(null);
 
-function onCategoryClick(category) {
-    navigate(`/shop?category=${encodeURIComponent(category)}`)
+  function onCategoryClick(category) {
+    navigate(`/shop?category=${encodeURIComponent(category)}`);
   }
 
-return(
- <section>
-  <div className='flex justify-between items-center mx-11'>
-      <h2 className='text-2xl font-bold'>Popular Categories</h2>
-      <span className="cursor-pointer text-emerald-900 underline">View all</span>
-      </div>
-  <div className=" border-gray-100 rounded-xl p-8 flex items-center justify-center gap-4 ">
-    
-    
-    <div className="flex justify-center p-4 rounded-lg gap-10">
-      {theIcons.map((item, index) => (
-        <div
-          key={index}
-          className="w-40 flex flex-col items-center gap-2 shadow-sm p-4 rounded-lg bg-gray-200 cursor-pointer hover:transition border hover:border-emerald-400 hover:text-emerald-600  hover:scale-110"
-          onClick={() => onCategoryClick(item.name)}
-        >
-          <item.icon className="w-6 h-6 cursor-pointer" />
-          <p className="text-xs font-medium uppercase tracking-wider">{item.name}</p>
-        </div>
-      ))}
-    </div>
-  </div>
+  function scrollCategories(direction) {
+    const container = scrollRef.current;
+    if (!container) return;
 
-</section>
-  
-    )
+    const cardWidth = container.querySelector('.category-card')?.offsetWidth ?? 160;
+    container.scrollBy({
+      left: direction * (cardWidth + 16),
+      behavior: 'smooth',
+    });
+  }
+
+  return (
+    <section className="mx-3 md:mx-11">
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="text-[18px] font-bold md:text-2xl">Popular Categories</h2>
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => scrollCategories(-1)}
+            aria-label="Scroll categories left"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-700 shadow-sm transition hover:border-emerald-400 hover:text-emerald-600"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => scrollCategories(1)}
+            aria-label="Scroll categories right"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-700 shadow-sm transition hover:border-emerald-400 hover:text-emerald-600"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+
+      <div
+        ref={scrollRef}
+        className="flex gap-4 overflow-x-auto pb-2 scroll-smooth"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
+        {theIcons.map((item, index) => (
+          <div
+            key={`${item.name}-${index}`}
+            className="text-center category-card min-w-35 flex flex-col items-center gap-2 rounded-lg border border-gray-200 bg-gray-100 p-4 shadow-sm transition duration-200 hover:scale-105 hover:border-emerald-400 hover:text-emerald-600 cursor-pointer sm:min-w-40"
+            onClick={() => onCategoryClick(item.name)}
+            tabIndex={0}
+            role="button"
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                onCategoryClick(item.name);
+              }
+            }}
+          >
+            <item.icon className="h-6 w-6 cursor-pointer" />
+            <p className="text-xs font-medium uppercase tracking-wider">{item.name}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
 }
-;
+
 
 

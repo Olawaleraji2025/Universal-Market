@@ -1,7 +1,8 @@
 
 import { useEffect, useState } from "react";
-import { LuLogIn, LuUserPlus } from "react-icons/lu";
+import { LogIn, UserPlus } from 'lucide-react';
 import Button from "../ui/button";
+import MobileSidebar from './MobileSidebar';
 import { useNavigate } from 'react-router-dom'
 
 export const Navbar = () => {
@@ -48,15 +49,19 @@ export const Navbar = () => {
           <a href="#" className="hover:text-emerald-600 transition">About</a>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-4">
           <Button variant="default" size="sm">
-            <LuLogIn className="mr-1" />
+            <LogIn className="mr-1 w-4 h-4" />
             Login
           </Button>
           <Button variant="secondary" size="sm">
-            <LuUserPlus className="mr-1" />
+            <UserPlus className="mr-1 w-4 h-4" />
             Sign up
           </Button>
+        </div>
+
+        <div className="md:hidden">
+          <MobileSidebar />
         </div>
       </nav>
     </header>

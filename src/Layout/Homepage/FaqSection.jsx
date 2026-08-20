@@ -10,7 +10,7 @@ export const FAQItem = ({ question, answer, isOpen }) => {
     <div className="border border-gray-200 rounded-lg mb-4 bg-white">
       <button
         type="button"
-        className="w-full flex items-center justify-between p-4 text-left font-medium text-gray-800"
+        className="text-[14px] w-full flex items-center justify-between p-4 text-left font-medium text-gray-800"
         onClick={toggleOpen}
       >
         {question}
@@ -20,7 +20,7 @@ export const FAQItem = ({ question, answer, isOpen }) => {
       </button>
 
       {open && (
-        <div className="px-4 pb-4 text-sm text-gray-500 leading-relaxed">{answer}</div>
+        <div className="text-[12px] px-4 pb-4 md:text-sm text-gray-500 leading-relaxed">{answer}</div>
       )}
     </div>
   );
@@ -28,7 +28,7 @@ export const FAQItem = ({ question, answer, isOpen }) => {
 
 export const FaqSection = () => (
   <section className="px-6 py-20 max-w-3xl mx-auto">
-    <h2 className="text-3xl font-bold text-[#01241a] text-center mb-12">Common Questions</h2>
+    <h2 className="text-[24px] md:text-3xl font-bold text-[#01241a] text-center mb-12">Common Questions</h2>
 
     <FAQItem
       isOpen={true}

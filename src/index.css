@@ -132,7 +132,7 @@
 
 @layer components {
   .market-info-card {
-    @apply flex flex-col items-center gap-2 w-[400px] p-6 rounded-sm ;
+    @apply w-[330px] flex flex-col items-center gap-2 md:w-100 p-6 rounded-sm ;
   }
   .market-info-card p {
     @apply font-bold;

@@ -55,13 +55,13 @@ export const ProductCard = () => {
   return (
     <section className="px-6 py-16 mx-auto">
       <div className="mb-10">
-        <h2 className="text-3xl font-bold text-[#01241a]">Fresh Arrivals</h2>
-        <p className="text-gray-500 mt-2">
+        <h2 className="text-[20px] md:text-3xl font-bold text-[#01241a]">Fresh Arrivals</h2>
+        <p className="text-[14px] text-gray-500 md:text-lg mt-2">
           Handpicked items that just landed in our shop.
         </p>
       </div>
 
-      <div className="flex gap-4">
+      <div className="flex gap-4 flex-1 flex-wrap justify-center">
         {/* Error state — ErrorModal replaces the skeleton cards */}
         {isError ? (
           <ErrorModal

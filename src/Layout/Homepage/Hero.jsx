@@ -9,10 +9,10 @@ export const Hero = () => {
   return (<>
   <section className="px-6 py-12 md:py-20 max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
     <div>
-      <h1 className="text-xl md:text-5xl font-bold text-[#01241a] leading-tight mb-6">
+      <h1 className="text-[31px] text-xl md:text-5xl font-bold text-[#01241a] leading-tight mb-6">
         Buy Quality Pre-Owned Gadgets & Appliances You Can Trust
       </h1>
-      <p className="text-gray-500 text-lg mb-8 max-w-md">
+      <p className="text-[14px] text-gray-500 md:text-lg mb-8 max-w-md">
         Verified devices, tested appliances, and direct WhatsApp support for smooth transactions. No middlemen, no surprises.
       </p>
       <div className="flex flex-col sm:flex-row gap-4">
@@ -25,7 +25,7 @@ export const Hero = () => {
       </div>
     </div>
     
-    <div className="relative">
+    <div className="hidden md:relative">
       <div className="">
         <img 
           src="src/assets/images/Hero-image.webp" 

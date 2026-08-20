@@ -3,12 +3,12 @@ import { TbCreditCard } from "react-icons/tb";
 
 export const Cards = () => (
   
-    <section className="bg-[#01241a] text-white py-20 px-6">
+    <section className="p-6.25 bg-[#01241a] text-white md:py-20 px-6">
              <div className="text-center mb-6">
-                <h2 className="text-3xl font-bold">Why you should Trusts Us?</h2>
-                <p className="text-emerald-100/60">We've built our reputation on honesty and quality.</p>
+                <h2 className="text-[25px] md:text-3xl font-bold">Why you should Trusts Us</h2>
+                <p className="text-[14px]  text-emerald-100/60">We've built our reputation on honesty and quality.</p>
               </div>
-    <div className="grid md:grid-cols-3 mb-8 gap-8 text-center">
+    <div className="grid md:grid-cols-3 mb-8 gap-8 text-center justify-center">
       <div className="market-info-card">
         <div className="bg-[#60e9c2] p-4 rounded-xl">
         <MdOutlineWorkspacePremium className="trust-icons"/>
