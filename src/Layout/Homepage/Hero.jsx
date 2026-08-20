@@ -25,10 +25,10 @@ export const Hero = () => {
       </div>
     </div>
     
-    <div className="hidden md:relative">
+    <div className="hidden md:relative md:flex">
       <div className="">
         <img 
-          src="src/assets/images/Hero-image.webp" 
+          src="./src/assets/images/Hero-image.webp" 
           alt="Gadgets montage" 
           className="rounded-2xl w-full h-100 object-cover"
         />

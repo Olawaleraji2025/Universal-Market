@@ -1,7 +1,7 @@
 import React from 'react';
 import { User, UserPlus, LogOut, ExternalLink } from 'lucide-react';
 
-export default function SidebarAuthActions({ role = 'admin', onNavigate, onLogout }) {
+export default function SidebarAuthActions({ role = 'user', onNavigate, onLogout }) {
   return (
     <div className="mt-4 border-t pt-4">
       {role === 'guest' && (

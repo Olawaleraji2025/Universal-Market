@@ -21,7 +21,7 @@ export const Navbar = () => {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 transition-all duration-300">
+    <header className="sticky top-0 z-40 transition-all duration-300">
       <nav
         className={`flex items-center justify-between px-6 py-4 h-16 border-b border-gray-200/80 transition-all duration-300 ${
           scrolled
@@ -31,7 +31,7 @@ export const Navbar = () => {
       >
         <div className="flex items-center gap-2">
           <img
-            src="src/assets/logos/UM-logo.png"
+            src="./src/assets/logos/UM-logo.png"
             alt="Universal Market Logo"
             className="w-25 h-auto cursor-pointer"
             onClick={() => navigate('/')}

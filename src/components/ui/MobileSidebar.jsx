@@ -6,7 +6,7 @@ import SidebarHeader from './mobile-sidebar/SidebarHeader';
 import SidebarNav from './mobile-sidebar/SidebarNav';
 import SidebarAuthActions from './mobile-sidebar/SidebarAuthActions';
 import SidebarWhatsAppCard from './mobile-sidebar/SidebarWhatsAppCard';
-// import { menus } from './mobile-sidebar/menus';
+import { menus } from './mobile-sidebar/menus';
 
 export default function MobileSidebar({ user = null }) {
   const navigate = useNavigate();
@@ -77,7 +77,7 @@ export default function MobileSidebar({ user = null }) {
     navigate(path);
   };
 
-  const role = user?.role || 'admin';
+  const role = user?.role || 'guest';
 
   return (
     <div className="md:hidden">
@@ -93,7 +93,7 @@ export default function MobileSidebar({ user = null }) {
       <AnimatePresence>
         {open && (
           <motion.div
-            className="fixed inset-0 z-50 flex"
+            className="fixed inset-0 z-[9999] flex"
             role="dialog"
             aria-modal="true"
             onClick={onOverlayClick}
@@ -110,7 +110,7 @@ export default function MobileSidebar({ user = null }) {
 
             <motion.aside
               ref={drawerRef}
-              className="relative z-50 w-80 max-w-full bg-white h-full shadow-xl"
+              className="relative z-[10000] w-80 max-w-full bg-white h-full shadow-xl"
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
@@ -118,7 +118,7 @@ export default function MobileSidebar({ user = null }) {
             >
             <SidebarHeader onClose={close} />
 
-            <div className="p-4 overflow-auto h-full flex flex-col">
+            <div className="p-4 h-auto flex flex-col bg-white z-[10000]">
               {role === 'user' && (
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
@@ -139,7 +139,7 @@ export default function MobileSidebar({ user = null }) {
 
               <SidebarAuthActions role={role} onNavigate={go} onLogout={() => { const evt = new CustomEvent('app:logout'); window.dispatchEvent(evt); setOpen(false); }} />
 
-              <SidebarWhatsAppCard />
+              {/* <SidebarWhatsAppCard /> */}
             </div>
             </motion.aside>
           </motion.div>

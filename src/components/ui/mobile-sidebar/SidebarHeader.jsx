@@ -3,7 +3,7 @@ import { X } from 'lucide-react';
 
 export default function SidebarHeader({ onClose, logo = '/src/assets/logos/UM-logo.png', title = 'Universal Market', subtitle = 'Quality you can trust.' }) {
   return (
-    <div className="flex items-start justify-between px-4 pt-5 pb-3 border-b">
+    <div className="flex items-start justify-between px-4 pt-5 border-b">
       <div>
         <div className="flex items-center gap-3">
           <img src={logo} alt="logo" className="w-18 h-auto" />

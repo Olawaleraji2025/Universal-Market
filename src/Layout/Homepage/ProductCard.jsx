@@ -61,7 +61,7 @@ export const ProductCard = () => {
         </p>
       </div>
 
-      <div className="flex gap-4 flex-1 flex-wrap justify-center">
+      <div className="flex gap-4 flex-1 flex-wrap">
         {/* Error state — ErrorModal replaces the skeleton cards */}
         {isError ? (
           <ErrorModal
@@ -105,7 +105,8 @@ export const ProductCard = () => {
                     </div>
                   )}
 
-<button
+{hasFinishedLoading && (
+                  <button
                     type="button"
                     aria-label={wishlistIds.some((id) => String(id) === String(product.id)) ? `Remove ${product.ProductName} from wishlist` : `Add ${product.ProductName} to wishlist`}
                     aria-pressed={wishlistIds.some((id) => String(id) === String(product.id))}
@@ -120,7 +121,8 @@ export const ProductCard = () => {
                       className={`h-4 w-4 ${wishlistIds.some((id) => String(id) === String(product.id)) ? 'fill-current' : ''}`}
                       strokeWidth={2}
                     />
-                  </button>
+                  </button>)}
+
                   
                 </div>
 

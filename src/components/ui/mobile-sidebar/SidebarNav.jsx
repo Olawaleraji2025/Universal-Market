@@ -27,7 +27,7 @@ const menus = {
 
 
 
-export default function SidebarNav({ menus, role='admin', onNavigate }) {
+export default function SidebarNav({ menus, role='user', onNavigate }) {
   const items = menus[role] || [];
   return (
     <nav className="flex-1">
