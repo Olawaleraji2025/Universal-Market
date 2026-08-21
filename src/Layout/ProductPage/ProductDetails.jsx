@@ -132,7 +132,7 @@ export const ProductDetails = () => {
               <>
                 <li aria-hidden>›</li>
                 <li>
-                  <Link to={`/shop?category=${encodeURIComponent(categoryName)}`} className="hover:underline">{categoryName}</Link>
+                  <Link to={`/shop?category=${encodeURIComponent(categoryName)}`} className="hover:underline text-[13px]">{categoryName}</Link>
                 </li>
               </>
             )}
@@ -228,7 +228,7 @@ export const ProductDetails = () => {
                 onClick={handleToggleWishlist}
               >
                 <Heart className={`h-4 w-4 ${isWishlisted ? 'fill-current' : ''}`} strokeWidth={2} />
-                {isWishlisted ? 'Saved to Wishlist' : 'Wishlist'}
+                {isWishlisted ? 'Saved to Wishlist' : 'Add to Wishlist'}
               </Button>
 
               {requestOpen && (

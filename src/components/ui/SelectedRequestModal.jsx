@@ -291,25 +291,20 @@ export default function SelectedRequestModal({ open, onClose, selectedProducts =
                   </button>
                 </div>
 
-                <div className="mt-5 grid gap-4 md:grid-cols-2">
+                <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mt-1 p-4">
                   <button
                     type="button"
                     onClick={handleGuestContinue}
-                    className="group relative w-full text-left rounded-2xl border-2 border-emerald-700 bg-emerald-50 p-5 shadow-sm hover:shadow-md transition-all"
+                    className="group relative w-full text-left rounded-2xl border-2 border-emerald-700 bg-emerald-50 p-3 sm:p-5 shadow-sm hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:ring-offset-2"
                   >
-                    <span className="absolute -top-3 left-4 inline-flex items-center gap-1 bg-emerald-700 text-white text-[11px] font-bold px-3 py-0.5 rounded-full shadow-sm">
-                      <Check className="w-3 h-3 fill-white" />
-                      Recommended
-                    </span>
-
-                    <div className="w-10 h-10 rounded-xl bg-emerald-700 flex items-center justify-center mb-3 mt-1 shadow-sm">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-700 flex items-center justify-center mb-3 mt-1 shadow-sm group-hover:scale-105 transition-transform duration-200">
                       <MessageCircle className="w-5 h-5 text-white" />
                     </div>
 
-                    <h4 className="text-base font-bold text-gray-900 mb-1">Continue as Guest</h4>
-                    <p className="text-sm text-gray-500 mb-4 leading-relaxed">No account required. Submit your request and continue on WhatsApp.</p>
+                    <h4 className="text-sm sm:text-base font-bold text-gray-900 mb-1">Continue as Guest</h4>
+                    <p className="text-xs sm:text-sm text-gray-500 mb-4 leading-relaxed">No account required. Submit your request and continue on WhatsApp.</p>
 
-                    <ul className="space-y-1.5 mb-5">
+                    <ul className="space-y-1.5 mb-5 hidden sm:block">
                       {guestBenefits.map((b) => (
                         <li key={b} className="flex items-center gap-2 text-sm text-emerald-800 font-medium">
                           <span className="w-4 h-4 rounded-full bg-emerald-700/20 flex items-center justify-center shrink-0">
@@ -320,7 +315,7 @@ export default function SelectedRequestModal({ open, onClose, selectedProducts =
                       ))}
                     </ul>
 
-                    <div className="flex items-center justify-between w-full bg-emerald-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl">
+                    <div className="flex items-center justify-between w-full bg-emerald-700 group-hover:bg-emerald-800 text-white text-sm font-semibold px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl transition-colors duration-150">
                       <span>Continue as Guest</span>
                       <ArrowRight className="w-4 h-4" />
                     </div>
@@ -329,16 +324,16 @@ export default function SelectedRequestModal({ open, onClose, selectedProducts =
                   <button
                     type="button"
                     onClick={handleLoginContinue}
-                    className="group w-full text-left rounded-2xl border-2 border-gray-200 bg-white p-5 shadow-sm hover:shadow-md transition-all"
+                    className="group w-full text-left rounded-2xl border-2 border-gray-200 bg-white p-3 sm:p-5 shadow-sm hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
                   >
-                    <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center mb-3 mt-1 group-hover:bg-gray-200 transition-colors duration-200">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gray-100 flex items-center justify-center mb-3 mt-1 group-hover:bg-gray-200 transition-colors duration-200">
                       <User className="w-5 h-5 text-gray-600" />
                     </div>
 
-                    <h4 className="text-base font-bold text-gray-900 mb-1">Login / Register</h4>
-                    <p className="text-sm text-gray-500 mb-4 leading-relaxed">Save products, track requests, and enjoy a faster experience next time.</p>
+                    <h4 className="text-sm sm:text-base font-bold text-gray-900 mb-1">Login or Register</h4>
+                    <p className="text-xs sm:text-sm text-gray-500 mb-4 leading-relaxed">Save products, track requests, and enjoy a faster experience next time.</p>
 
-                    <ul className="space-y-1.5 mb-5">
+                    <ul className="space-y-1.5 mb-5 hidden sm:block">
                       {accountBenefits.map((b) => (
                         <li key={b} className="flex items-center gap-2 text-sm text-gray-600 font-medium">
                           <span className="w-4 h-4 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
@@ -349,8 +344,8 @@ export default function SelectedRequestModal({ open, onClose, selectedProducts =
                       ))}
                     </ul>
 
-                    <div className="flex items-center justify-between w-full border-2 border-gray-200 text-gray-700 text-sm font-semibold px-4 py-2.5 rounded-xl group-hover:border-gray-300 group-hover:bg-gray-50">
-                      <span>Login / Register</span>
+                    <div className="flex items-center justify-between w-full border-2 border-gray-200 text-gray-700 text-sm font-semibold px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl group-hover:border-gray-300 group-hover:bg-gray-50 transition-colors duration-150 text-center">
+                      <span>Login or Register</span>
                       <ArrowRight className="w-4 h-4 text-gray-400" />
                     </div>
                   </button>

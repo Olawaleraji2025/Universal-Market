@@ -141,8 +141,8 @@ export default function WishListPage() {
 
             {/* Mobile sticky action bar */}
             {selectedCount > 0 && (
-              <div className="fixed bottom-0 left-0 right-0 z-40 flex items-center gap-3 bg-white px-4 py-3 shadow-lg md:hidden">
-                <div className="flex-1 text-sm font-medium text-gray-800">{selectedCount} selected</div>
+              <div className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-between gap-3 bg-white px-4 py-3 shadow-lg md:hidden">
+                {/* <div className="flex-1 text-sm font-medium text-gray-800">{selectedCount} selected</div> */}
                 <Button type="button" variant="outline" className="h-11 border-gray-200 text-gray-600" onClick={() => dispatch(deselectAll())}>Clear</Button>
                 <Button type="button" className="h-11 bg-[#064e3b] text-white" onClick={handleOpenSummary}>Request Selected ({selectedCount})</Button>
               </div>

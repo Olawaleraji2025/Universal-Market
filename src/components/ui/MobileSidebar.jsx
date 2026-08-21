@@ -110,7 +110,7 @@ export default function MobileSidebar({ user = null }) {
 
             <motion.aside
               ref={drawerRef}
-              className="relative z-[10000] w-80 max-w-full bg-white h-full shadow-xl"
+              className="relative z-[10000] w-80 max-w-full bg-white h-screen shadow-xl flex flex-col"
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
@@ -118,7 +118,7 @@ export default function MobileSidebar({ user = null }) {
             >
             <SidebarHeader onClose={close} />
 
-            <div className="p-4 h-auto flex flex-col bg-white z-[10000]">
+            <div className="p-4 flex flex-col flex-1 overflow-auto bg-white z-[10000]">
               {role === 'user' && (
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">

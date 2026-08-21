@@ -30,7 +30,7 @@ const menus = {
 export default function SidebarNav({ menus, role='user', onNavigate }) {
   const items = menus[role] || [];
   return (
-    <nav className="flex-1">
+    <nav className="w-full">
       <ul className="space-y-1">
         {items.map((item) => (
           <li key={item.label}>

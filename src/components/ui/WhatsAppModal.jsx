@@ -92,14 +92,6 @@ export default function WhatsAppModal({ open, onClose, onConfirm, isOpening, err
             <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button
                 type="button"
-                onClick={onClose}
-                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-md text-sm font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-400"
-              >
-                Cancel
-              </button>
-
-              <button
-                type="button"
                 onClick={onConfirm}
                 className="w-full px-4 py-3 bg-[#22c55e] text-white rounded-md text-sm font-semibold flex items-center justify-center gap-2 hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-400"
                 aria-disabled={isOpening}
@@ -118,6 +110,14 @@ export default function WhatsAppModal({ open, onClose, onConfirm, isOpening, err
                     Yes, Open WhatsApp
                   </>
                 )}
+              </button>
+
+              <button
+                type="button"
+                onClick={onClose}
+                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-md text-sm font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+              >
+                Cancel
               </button>
             </div>
           </div>

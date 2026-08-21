@@ -81,3 +81,7 @@ feat: create LandingPage, ProductPage, ShopPage, and WishListPage
 - Created a new SelectedRequestModal for handling requests from selected wishlist items.
 - Updated UI components to reflect wishlist state and provide user feedback on actions.
 - Persisted wishlist state in local storage for consistent user experience across sessions.
+
+22. Fix image paths and adjust layout for consistency across components
+
+23. Refactor layout and styling in various components for improved consistency and user experience

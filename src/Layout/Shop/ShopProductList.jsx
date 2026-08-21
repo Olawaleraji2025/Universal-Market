@@ -124,7 +124,7 @@ export default function ShopProductList() {
           </div>
         </div>
 
-        <div className="flex gap-6 overflow-x-auto pb-2">
+        <div className="flex gap-6 overflow-x-auto pb-2 flex-wrap">
           {isError ? (
             <ErrorModal
               onRetry={() => refetch()}
@@ -159,12 +159,13 @@ export default function ShopProductList() {
                       </div>
                     )}
 
-                    <button
-                      type="button"
-                      aria-label={wishlistIds.some((id) => String(id) === String(product.id)) ? `Remove ${product.ProductName} from wishlist` : `Add ${product.ProductName} to wishlist`}
-                      aria-pressed={wishlistIds.some((id) => String(id) === String(product.id))}
-                      onClick={() => toggleWishlist(product)}
-                      className={`absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border shadow-sm backdrop-blur-sm transition hover:scale-105 ${
+                    {hasFinishedLoading && (
+                      <button
+                        type="button"
+                        aria-label={wishlistIds.some((id) => String(id) === String(product.id)) ? `Remove ${product.ProductName} from wishlist` : `Add ${product.ProductName} to wishlist`}
+                        aria-pressed={wishlistIds.some((id) => String(id) === String(product.id))}
+                        onClick={() => toggleWishlist(product)}
+                        className={`absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border shadow-sm backdrop-blur-sm transition hover:scale-105 ${
                         wishlistIds.some((id) => String(id) === String(product.id))
                           ? 'border-red-200 bg-red-50 text-red-500'
                           : 'border-white/80 bg-white/85 text-gray-700 hover:text-red-500'
@@ -174,7 +175,7 @@ export default function ShopProductList() {
                         className={`h-4 w-4 ${wishlistIds.some((id) => String(id) === String(product.id)) ? 'fill-current' : ''}`}
                         strokeWidth={2}
                       />
-                    </button>
+                    </button>)}
                   </div>
 
                   <div className="p-4 flex flex-col grow">
