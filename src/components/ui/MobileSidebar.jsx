@@ -125,7 +125,7 @@ export default function MobileSidebar({ user = null }) {
                     {user?.avatar ? (
                       <img src={user.avatar} alt="avatar" className="w-full h-full object-cover" />
                     ) : (
-                      <img src="/src/assets/logos/UM-logo.png" alt="avatar" className="w-6 h-6 text-gray-500" />
+                      <img src="public/logos/UM-logo.png" alt="avatar" className="w-6 h-6 text-gray-500" />
                     )}
                   </div>
                   <div>

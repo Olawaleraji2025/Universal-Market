@@ -31,7 +31,7 @@ export const Navbar = () => {
       >
         <div className="flex items-center gap-2">
           <img
-            src="./src/assets/logos/UM-logo.png"
+            src="public/logos/UM-logo.png"
             alt="Universal Market Logo"
             className="w-25 h-auto cursor-pointer"
             onClick={() => navigate('/')}

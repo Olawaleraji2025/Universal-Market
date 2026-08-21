@@ -1,7 +1,7 @@
 import React from 'react';
 import { X } from 'lucide-react';
 
-export default function SidebarHeader({ onClose, logo = '/src/assets/logos/UM-logo.png', title = 'Universal Market', subtitle = 'Quality you can trust.' }) {
+export default function SidebarHeader({ onClose, logo = 'public/logos/UM-logo.png', title = 'Universal Market', subtitle = 'Quality you can trust.' }) {
   return (
     <div className="flex items-start justify-between px-4 pt-5 border-b">
       <div>
