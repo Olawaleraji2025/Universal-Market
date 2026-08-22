@@ -7,6 +7,7 @@ import SidebarNav from './mobile-sidebar/SidebarNav';
 import SidebarAuthActions from './mobile-sidebar/SidebarAuthActions';
 import SidebarWhatsAppCard from './mobile-sidebar/SidebarWhatsAppCard';
 import { menus } from './mobile-sidebar/menus';
+import logo from "../../assets/logos/UM-logo.png";
 
 export default function MobileSidebar({ user = null }) {
   const navigate = useNavigate();

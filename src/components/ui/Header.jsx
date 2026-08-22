@@ -4,6 +4,7 @@ import { LogIn, UserPlus } from 'lucide-react';
 import Button from "../ui/button";
 import MobileSidebar from './MobileSidebar';
 import { useNavigate } from 'react-router-dom'
+import logo from "../../assets/logos/UM-logo.png";
 
 export const Navbar = () => {
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ export const Navbar = () => {
       >
         <div className="flex items-center gap-2">
           <img
-            src="public/logos/UM-logo.png"
+            src={logo}
             alt="Universal Market Logo"
             className="w-25 h-auto cursor-pointer"
             onClick={() => navigate('/')}

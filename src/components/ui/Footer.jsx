@@ -1,10 +1,14 @@
+import logo from "../../assets/logos/UM-logo2.png";
+
+
+
 export const Footer = () => (
   <footer className="bg-[#011c15] text-emerald-100/80 py-20 px-6">
     <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
       <div>
         <div className="flex items-center gap-2 mb-6">
         
-          <img src="public/logos/UM-logo2.png" alt="Universal Market Logo" className="w-25 h-auto cursor-pointer"
+          <img src={logo} alt="Universal Market Logo" className="w-25 h-auto cursor-pointer"
       onClick={() => navigate('/')}  />
         </div>
         <p className="text-sm leading-relaxed opacity-60">
