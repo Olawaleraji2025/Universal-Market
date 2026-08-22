@@ -81,7 +81,7 @@ export const ProductCard = () => {
             return (
               <div
                 key={product.id}
-                className="w-3xs bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition flex flex-col h-full"
+                className="w-50 bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition flex flex-col h-full"
               >
                 <div className="relative aspect-square bg-gray-50">
                   {/* Permanent image — always in the DOM, fenced by THIS div */}
@@ -130,7 +130,7 @@ export const ProductCard = () => {
                   <h3 className="font-semibold text-gray-800 mb-1">
                     {product.ProductName}
                   </h3>
-                  <p className="text-xl font-bold text-[#01241a] flex items-center">
+                  <p className="text-[15px] font-bold text-[#01241a] flex items-center">
                     <TbCurrencyNaira />
                     {product.ProductPrice.toLocaleString()}
                   </p>
