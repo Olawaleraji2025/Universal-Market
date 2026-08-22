@@ -7,7 +7,7 @@ export default function SidebarHeader({ onClose, logo, title = 'Universal Market
     <div className="flex items-start justify-between px-4 pt-5 border-b">
       <div>
         <div className="flex items-center gap-3">
-          <img src={logo} alt="logo" className="w-18 h-auto" />
+          <img src="./src/assets/logos/UM-logo.png" alt="logo" className="w-18 h-auto" />
           <div>
             <div className="font-semibold">{title}</div>
             <div className="text-xs text-gray-500">{subtitle}</div>

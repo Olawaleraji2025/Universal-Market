@@ -61,7 +61,7 @@ export const ProductCard = () => {
         </p>
       </div>
 
-      <div className="flex gap-4 flex-1 flex-wrap">
+      <div className="justify-center flex gap-4 flex-1 flex-wrap md:justify-start">
         {/* Error state — ErrorModal replaces the skeleton cards */}
         {isError ? (
           <ErrorModal
