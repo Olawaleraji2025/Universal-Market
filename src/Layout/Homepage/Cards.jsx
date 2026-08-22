@@ -8,7 +8,7 @@ export const Cards = () => (
                 <h2 className="text-[25px] md:text-3xl font-bold">Why you should Trusts Us</h2>
                 <p className="text-[14px]  text-emerald-100/60">We've built our reputation on honesty and quality.</p>
               </div>
-    <div className="grid md:grid-cols-auto mb-8 gap-8 text-center justify-center">
+    <div className="grid md:flex flex-wrap mb-8 gap-8 text-center justify-center">
       <div className="market-info-card">
         <div className="bg-[#60e9c2] p-4 rounded-xl">
         <MdOutlineWorkspacePremium className="trust-icons"/>

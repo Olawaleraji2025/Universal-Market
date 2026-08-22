@@ -51,7 +51,7 @@ const App = () => {
   };
 
   return (
-    <>
+    <div className="max-w-[1440px] mx-auto">
       <Navbar />
       <div className="min-h-screen bg-[#f8fafc] font-sans text-gray-900 ">
         <ScrollToTop />
@@ -71,7 +71,7 @@ const App = () => {
       />
 
       <Toaster richColors />
-    </>
+    </div>
   );
 };
 

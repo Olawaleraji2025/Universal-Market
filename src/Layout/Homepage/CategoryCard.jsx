@@ -35,7 +35,7 @@ export default function CategoryCard() {
 
   return (
     <section className="mx-3 md:mx-11">
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex items-center justify-between min-[1300px]:hidden">
         <h2 className="text-[18px] font-bold md:text-2xl">Popular Categories</h2>
 
         <div className="flex items-center gap-2">
