@@ -11,6 +11,7 @@ import useShopProducts from "../../Hooks/useShopProducts";
 import ErrorModal from '../../components/ui/ErrorModal.jsx';
 import { selectWishlistIds, toggleWishlist as toggleWishlistAction } from '../../features/wishlistSlice';
 import { toast } from 'sonner';
+import ProductImageGallery from '../../components/ui/ProductImageGallery';
 
 
 
@@ -71,7 +72,17 @@ export const ProductDetails = () => {
     
   }
 
-  const activeImage = selectedProduct.imageUrl;
+
+  // Build the gallery image array.
+  // Today products have a single `imageUrl` from Supabase storage.
+  // If a product ever gains an `images` array field, it will be used instead.
+  const galleryImages = (() => {
+    if (Array.isArray(selectedProduct.images) && selectedProduct.images.length > 0) {
+      return selectedProduct.images.filter(Boolean);
+    }
+    if (selectedProduct.imageUrl) return [selectedProduct.imageUrl];
+    return [];
+  })();
 
   // Derived fields (handle variations in product shape)
   const categoryName = selectedProduct.Category || selectedProduct.category || selectedProduct.ProductCategory || "";
@@ -143,15 +154,10 @@ export const ProductDetails = () => {
         <div className="grid lg:grid-cols-2 gap-10 items-start">
           {/* Images */}
           <div className="space-y-4">
-            <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-              <div className="aspect-[4/3] w-full">
-                <img
-                  src={activeImage}
-                  alt={selectedProduct.ProductName}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </div>
+            <ProductImageGallery
+              images={galleryImages}
+              alt={productName}
+            />
           </div>
 
           {/* Info */}
