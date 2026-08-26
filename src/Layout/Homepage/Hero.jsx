@@ -26,7 +26,7 @@ export const Hero = () => {
       </div>
     </div>
     
-    <div className="hidden min-[500px]:block object-contain">
+    <div className="hidden min-[450px]:block object-contain">
       <div className="">
         <img 
           src={heroImage} 

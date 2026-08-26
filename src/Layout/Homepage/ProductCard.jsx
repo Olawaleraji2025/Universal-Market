@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setClickedProduct } from '../../features/productDetailsClicked';
@@ -8,7 +8,7 @@ import {
 } from '../../features/wishlistSlice';
 import useShopProducts from '../../Hooks/useShopProducts';
 import { TbCurrencyNaira } from 'react-icons/tb';
-import { Package, Heart } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Package, Heart } from 'lucide-react';
 import Button from '/src/components/ui/button.jsx';
 import SkeletonCard from '../../components/ui/SkeletonLoader';
 import ErrorModal from '../../components/ui/ErrorModal.jsx';
@@ -18,6 +18,7 @@ export const ProductCard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const wishlistIds = useSelector(selectWishlistIds);
+  const scrollRef = useRef(null);
 
   const { data: products, isLoading, isError, isFetching, error, refetch } = useShopProducts();
 
@@ -52,16 +53,54 @@ export const ProductCard = () => {
     }
   }, [dispatch, wishlistIds]);
 
+  const scrollProducts = useCallback((direction) => {
+    const container = scrollRef.current;
+    if (!container) return;
+
+    const card = container.querySelector('.product-card');
+    const cardWidth = card?.getBoundingClientRect().width ?? 240;
+
+    container.scrollBy({
+      left: direction * (cardWidth + 16),
+      behavior: 'smooth',
+    });
+  }, []);
+
   return (
     <section className="px-6 py-16 mx-auto">
-      <div className="mb-10">
-        <h2 className="text-[20px] md:text-3xl font-bold text-[#01241a]">Fresh Arrivals</h2>
-        <p className="text-[14px] text-gray-500 md:text-lg mt-2">
-          Handpicked items that just landed in our shop.
-        </p>
+      <div className="mb-10 flex items-end justify-between gap-4">
+        <div>
+          <h2 className="text-[20px] md:text-3xl font-bold text-[#01241a]">Fresh Arrivals</h2>
+          <p className="text-[14px] text-gray-500 md:text-lg mt-2">
+            Handpicked items that just landed in our shop.
+          </p>
+        </div>
+
+        <div className="flex shrink-0 items-center gap-2">
+          <button
+            type="button"
+            onClick={() => scrollProducts(-1)}
+            aria-label="Scroll products left"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-700 shadow-sm transition hover:border-emerald-400 hover:text-emerald-600"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => scrollProducts(1)}
+            aria-label="Scroll products right"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-700 shadow-sm transition hover:border-emerald-400 hover:text-emerald-600"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
       </div>
 
-      <div className="justify-center flex gap-4 flex-1 flex-wrap md:justify-start">
+      <div
+        ref={scrollRef}
+        className="flex gap-4 overflow-x-auto pb-3 scroll-smooth"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
         {/* Error state — ErrorModal replaces the skeleton cards */}
         {isError ? (
           <ErrorModal
@@ -81,7 +120,7 @@ export const ProductCard = () => {
             return (
               <div
                 key={product.id}
-                className="w-50 bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition flex flex-col h-full"
+                className="product-card w-50 min-w-50 flex-none bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition flex flex-col h-full"
               >
                 <div className="relative aspect-square bg-gray-50">
                   {/* Permanent image — always in the DOM, fenced by THIS div */}

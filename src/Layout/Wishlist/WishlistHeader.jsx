@@ -11,7 +11,7 @@ export default function WishlistHeader({ count, allSelected = false, onToggleSel
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 text-center">
           <div className="flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-sm font-semibold text-emerald-800">
             <Heart className="h-4 w-4 fill-current" />
             <span>{count} Item{count === 1 ? '' : 's'}</span>

@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useRef } from "react";
 
 import Button from "../../components/ui/button";
 import NoProductFound from "../../components/ui/NoProductFound";
@@ -12,7 +12,7 @@ import { useSearchParams } from 'react-router-dom';
 import { clearShopSearchQuery } from "../../features/shopSearchSlice";
 import RequestModal from "../../components/ui/CustomRequestModal";
 import SkeletonCard from "../../components/ui/SkeletonLoader";
-import { Heart, Package } from "lucide-react";
+import { Heart, Package, ChevronLeft, ChevronRight } from "lucide-react";
 import { TbCurrencyNaira } from "react-icons/tb";
 import { toast } from "sonner";
 
@@ -32,6 +32,15 @@ export default function ShopProductList() {
   const wishlistIds = useSelector(selectWishlistIds);
   const [requestOpen, setRequestOpen] = useState(false);
   const [loadedImages, setLoadedImages] = useState(new Set());
+  const scrollRef = useRef(null);
+
+  const scrollProducts = useCallback((direction) => {
+    const container = scrollRef.current;
+    if (!container) return;
+    const card = container.querySelector('.shop-product-card');
+    const cardWidth = card?.getBoundingClientRect().width ?? 240;
+    container.scrollBy({ left: direction * (cardWidth + 16), behavior: 'smooth' });
+  }, []);
 
   const handleImageLoad = useCallback((productId) => {
     setLoadedImages((prev) => {
@@ -93,56 +102,80 @@ export default function ShopProductList() {
   return (
     <section className="px-6 py-10">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
-          <div className="flex gap-3 overflow-x-auto pb-1">
-            {filters.map((f) => {
-              const isActive = f === effectiveCategory;
-              return (
-                <Button
-                  key={f}
-                  type="button"
-                  onClick={() => {
-                    setSearchParams((prev) => {
-                      const next = new URLSearchParams(prev);
-                      if (f === "All"){
-                        next.delete("category");
-                      } else next.set("category", f);
-                      return next;
-                    });
-                  }}
-                  className={
-                    "whitespace-nowrap px-4 py-2 rounded-full border text-sm font-semibold transition " +
-                    (isActive
-                      ? "bg-[#064e3b] border-[#064e3b] text-white"
-                      : "bg-white border-gray-200 text-[#01241a] hover:bg-gray-50")
-                  }
-                >
-                  {f}
-                </Button>
-              );
-            })}
-          </div>
+
+        {/* ── Header: filter pills ── */}
+        <div className="flex gap-3 overflow-x-auto pb-1 mb-6" style={{ scrollbarWidth: 'none' }}>
+          {filters.map((f) => {
+            const isActive = f === effectiveCategory;
+            return (
+              <Button
+                key={f}
+                type="button"
+                onClick={() => {
+                  setSearchParams((prev) => {
+                    const next = new URLSearchParams(prev);
+                    if (f === "All") {
+                      next.delete("category");
+                    } else next.set("category", f);
+                    return next;
+                  });
+                }}
+                className={
+                  "whitespace-nowrap px-4 py-2 rounded-full border text-sm font-semibold transition " +
+                  (isActive
+                    ? "bg-[#064e3b] border-[#064e3b] text-white"
+                    : "bg-white border-gray-200 text-[#01241a] hover:bg-gray-50")
+                }
+              >
+                {f}
+              </Button>
+            );
+          })}
         </div>
 
-        <div className="flex gap-6 overflow-x-auto pb-2 flex-wrap">
-          {isError ? (
-            <ErrorModal
-              onRetry={() => refetch()}
-              isRetrying={isFetching}
-              error={error}
-              title="Failed to load products"
-              message="We couldn't load the products. Please check your internet connection and try again."
-            />
-          ) : isLoading ? (
+        {/* ── Carousel rail ── */}
+        {isError ? (
+          <ErrorModal
+            onRetry={() => refetch()}
+            isRetrying={isFetching}
+            error={error}
+            title="Failed to load products"
+            message="We couldn't load the products. Please check your internet connection and try again."
+          />
+        ) : isLoading ? (
+          <div className="flex gap-4 overflow-x-auto pb-3" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             <SkeletonCard count={3} />
-          ) : (
-            filteredProducts.map((product) => {
+          </div>
+        ) : filteredProducts.length === 0 ? (
+          <>
+            <NoProductFound
+              searchQuery={query}
+              category={effectiveCategory}
+              onRequestCustomItem={() => setRequestOpen(true)}
+              onBrowseCategories={() => {
+                setSearchParams((prev) => {
+                  const next = new URLSearchParams(prev);
+                  next.delete('category');
+                  return next;
+                });
+                dispatch(clearShopSearchQuery());
+              }}
+            />
+            <RequestModal open={requestOpen} onClose={() => setRequestOpen(false)} initialItemName={query} />
+          </>
+        ) : (
+          <div
+            ref={scrollRef}
+            className="flex gap-4 overflow-x-auto pb-3 scroll-smooth"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            {filteredProducts.map((product) => {
               const hasFinishedLoading = loadedImages.has(product.id);
 
               return (
                 <div
                   key={product.id}
-                  className="w-3xs bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition flex flex-col"
+                  className="shop-product-card w-50 min-w-50 flex-none bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition flex flex-col"
                 >
                   <div className="relative aspect-square bg-gray-50">
                     <img
@@ -166,16 +199,17 @@ export default function ShopProductList() {
                         aria-pressed={wishlistIds.some((id) => String(id) === String(product.id))}
                         onClick={() => toggleWishlist(product)}
                         className={`absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border shadow-sm backdrop-blur-sm transition hover:scale-105 ${
-                        wishlistIds.some((id) => String(id) === String(product.id))
-                          ? 'border-red-200 bg-red-50 text-red-500'
-                          : 'border-white/80 bg-white/85 text-gray-700 hover:text-red-500'
-                      }`}
-                    >
-                      <Heart
-                        className={`h-4 w-4 ${wishlistIds.some((id) => String(id) === String(product.id)) ? 'fill-current' : ''}`}
-                        strokeWidth={2}
-                      />
-                    </button>)}
+                          wishlistIds.some((id) => String(id) === String(product.id))
+                            ? 'border-red-200 bg-red-50 text-red-500'
+                            : 'border-white/80 bg-white/85 text-gray-700 hover:text-red-500'
+                        }`}
+                      >
+                        <Heart
+                          className={`h-4 w-4 ${wishlistIds.some((id) => String(id) === String(product.id)) ? 'fill-current' : ''}`}
+                          strokeWidth={2}
+                        />
+                      </button>
+                    )}
                   </div>
 
                   <div className="p-4 flex flex-col grow">
@@ -206,30 +240,32 @@ export default function ShopProductList() {
                   </div>
                 </div>
               );
-            })
-          )}
+            })}
+          </div>
+        )}
 
-          {!isLoading && !isError && filteredProducts.length === 0 && (
-            <>
-              <NoProductFound
-                searchQuery={query}
-                category={effectiveCategory}
-                onRequestCustomItem={() => setRequestOpen(true)}
-                onBrowseCategories={() => {
-                  // Clear URL category param and clear search query in redux
-                  setSearchParams((prev) => {
-                    const next = new URLSearchParams(prev);
-                    next.delete('category');
-                    return next;
-                  });
-                  dispatch(clearShopSearchQuery());
-                }}
-              />
+        {/* ── Centered scroll nav below the carousel ── */}
+        {!isError && !isLoading && filteredProducts.length > 0 && (
+          <div className="flex justify-center items-center gap-3 mt-5">
+            <button
+              type="button"
+              onClick={() => scrollProducts(-1)}
+              aria-label="Scroll products left"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-700 shadow-sm transition hover:border-emerald-400 hover:text-emerald-600"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollProducts(1)}
+              aria-label="Scroll products right"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-700 shadow-sm transition hover:border-emerald-400 hover:text-emerald-600"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          </div>
+        )}
 
-              <RequestModal open={requestOpen} onClose={() => setRequestOpen(false)} initialItemName={query} />
-            </>
-          )}
-        </div>
       </div>
     </section>
   );
