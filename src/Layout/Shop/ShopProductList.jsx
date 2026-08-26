@@ -175,7 +175,7 @@ export default function ShopProductList() {
               return (
                 <div
                   key={product.id}
-                  className="shop-product-card w-50 min-w-50 flex-none bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition flex flex-col"
+                  className="shop-product-card w-40 min-w-40 flex-none bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition flex flex-col"
                 >
                   <div className="relative aspect-square bg-gray-50">
                     <img
@@ -216,7 +216,7 @@ export default function ShopProductList() {
                     <h3 className="font-semibold text-gray-800 mb-1 leading-snug">
                       {product.ProductName}
                     </h3>
-                    <p className="text-xl font-bold text-[#01241a] flex items-center">
+                    <p className="text-[15px] font-bold text-[#01241a] flex items-center">
                       <TbCurrencyNaira />
                       {product.ProductPrice.toLocaleString()}
                     </p>

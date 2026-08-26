@@ -237,9 +237,9 @@ export default function SelectedRequestModal({ open, onClose, selectedProducts =
                     value={guestForm.fullName}
                     onChange={(event) => setGuestForm((current) => ({ ...current, fullName: event.target.value }))}
                     placeholder="e.g. John Doe"
-                    className="bg-white"
+                    className="bg-white text-[14px]"
                   />
-                  {formErrors.fullName && <p className="text-sm text-red-600">{formErrors.fullName}</p>}
+                  {formErrors.fullName && <p className="text-sm text-red-600 text-[14px]">{formErrors.fullName}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -248,9 +248,9 @@ export default function SelectedRequestModal({ open, onClose, selectedProducts =
                     value={guestForm.contact}
                     onChange={(event) => setGuestForm((current) => ({ ...current, contact: event.target.value }))}
                     placeholder="e.g. 234 800 000 0000"
-                    className="bg-white"
+                    className="bg-white text-[14px]"
                   />
-                  {formErrors.contact && <p className="text-sm text-red-600">{formErrors.contact}</p>}
+                  {formErrors.contact && <p className="text-sm text-red-600 text-[14px]">{formErrors.contact}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -259,7 +259,7 @@ export default function SelectedRequestModal({ open, onClose, selectedProducts =
                     value={message}
                     onChange={(event) => setMessage(event.target.value)}
                     placeholder="Tell us about the item you want, condition, or preferred delivery details."
-                    className="min-h-[100px] bg-white"
+                    className="min-h-[100px] bg-white text-[14px]"
                   />
                 </div>
 
@@ -270,9 +270,9 @@ export default function SelectedRequestModal({ open, onClose, selectedProducts =
                   />
                   <label className="text-sm text-gray-700">I agree to be contacted regarding this request.</label>
                 </div>
-                {formErrors.termsAccepted && <p className="text-sm text-red-600">{formErrors.termsAccepted}</p>}
+                {formErrors.termsAccepted && <p className="text-sm text-red-600 text-[14px]">{formErrors.termsAccepted}</p>}
 
-                <div className="flex items-center justify-end gap-3 pt-2">
+                <div className="flex items-center justify-between gap-3 pt-2">
                   <Button type="button" variant="outline" onClick={() => setStep('authChoice')} className="h-10 border-gray-200 text-gray-600">Back</Button>
                   <Button type="submit" disabled={isSubmitting} className="h-10 bg-[#064e3b] text-white">
                     {isSubmitting ? 'Submitting...' : 'Submit request'}

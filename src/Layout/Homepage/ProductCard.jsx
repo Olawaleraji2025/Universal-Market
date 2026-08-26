@@ -120,7 +120,7 @@ export const ProductCard = () => {
             return (
               <div
                 key={product.id}
-                className="product-card w-50 min-w-50 flex-none bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition flex flex-col h-full"
+                className=" w-40 min-w-40 flex-none bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition flex flex-col h-full"
               >
                 <div className="relative aspect-square bg-gray-50">
                   {/* Permanent image — always in the DOM, fenced by THIS div */}
