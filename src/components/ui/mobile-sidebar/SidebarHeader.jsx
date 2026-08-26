@@ -2,12 +2,13 @@ import React from 'react';
 import { X } from 'lucide-react';
 // import logo from "../../assets/logos/UM-logo.png";
 
-export default function SidebarHeader({ onClose, logo, title = 'Universal Market', subtitle = 'Quality you can trust.' }) {
+
+export default function SidebarHeader({ onClose, umLogo, title = 'Universal Market', subtitle = 'Quality you can trust.' }) {
   return (
     <div className="flex items-start justify-between px-4 pt-5 border-b">
       <div>
         <div className="flex items-center gap-3">
-          <img src="../../assets/logos/UM-logo.png" alt="logo" className="w-18 h-auto" />
+          <img src={umLogo} alt="logo" className="w-18 h-auto" />
           <div>
             <div className="font-semibold">{title}</div>
             <div className="text-xs text-gray-500">{subtitle}</div>

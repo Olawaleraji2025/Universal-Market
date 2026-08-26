@@ -117,7 +117,7 @@ export default function MobileSidebar({ user = null }) {
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             >
-            <SidebarHeader onClose={close} />
+            <SidebarHeader onClose={close} umLogo={logo} />
 
             <div className="p-4 flex flex-col flex-1 overflow-auto bg-white z-[10000]">
               {role === 'user' && (
@@ -126,7 +126,7 @@ export default function MobileSidebar({ user = null }) {
                     {user?.avatar ? (
                       <img src={user.avatar} alt="avatar" className="w-full h-full object-cover" />
                     ) : (
-                      <img src="./src/assets/logos/UM-logo.png" alt="avatar" className="w-6 h-6 text-gray-500" />
+                      <img src={logo} alt="avatar" className="w-6 h-6 text-gray-500" />
                     )}
                   </div>
                   <div>
