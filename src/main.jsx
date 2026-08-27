@@ -9,7 +9,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Provider } from 'react-redux'
 import { store } from './store.js'
 import { ThemeProvider } from 'next-themes'
-import ErrorBoundary from './components/ErrorBoundary.jsx'
+import ErrorBoundary from './components/ui/ErrorBoundary.jsx'
 
 // 2. We create the "Brain" of the assistant
 const queryClient = new QueryClient()
