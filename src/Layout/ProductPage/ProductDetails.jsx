@@ -151,9 +151,9 @@ export const ProductDetails = () => {
             <li className="text-gray-700">{productName}</li>
           </ol>
         </nav>
-        <div className="grid lg:grid-cols-2 gap-10 items-start">
+        <div className="grid md:grid-cols-2 gap-10 items-start">
           {/* Images */}
-          <div className="space-y-4">
+          <div className="space-y-4 block my-0 mx-auto max-w-[400px] lg:max-w-full">
             <ProductImageGallery
               images={galleryImages}
               alt={productName}
@@ -214,10 +214,10 @@ export const ProductDetails = () => {
               
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-3 flex justify-center items-center gap-2 flex-wrap">
               <Button
                 asChild={false}
-                className="w-full bg-[#064e3b] text-white py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:bg-emerald-900 transition"
+                className="w-full min-[460px]:max-w-50 bg-[#064e3b] text-white py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 mb-auto hover:bg-emerald-900 transition "
                 onClick={() => setRequestOpen(true)}
               >
                 <Package size={16} /> Request Item
@@ -226,11 +226,11 @@ export const ProductDetails = () => {
               <Button
                 type="button"
                 variant="outline"
-                className={`w-full border py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition ${
+                className={`w-full min-[460px]:max-w-50 border py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition ${
                   isWishlisted
                     ? 'border-red-200 bg-red-50 text-red-600 hover:bg-red-100'
                     : 'border-gray-200 bg-white text-[#01241a] hover:bg-gray-50'
-                }`}
+                } ` }
                 onClick={handleToggleWishlist}
               >
                 <Heart className={`h-4 w-4 ${isWishlisted ? 'fill-current' : ''}`} strokeWidth={2} />
@@ -247,11 +247,11 @@ export const ProductDetails = () => {
               )}
 
 
+
+            </div>
               <p className="text-center text-sm text-gray-600">
                 Product negotiation continues on WhatsApp.
               </p>
-
-            </div>
           </div>
         </div>
       </div>
