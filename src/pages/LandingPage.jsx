@@ -21,7 +21,7 @@ export const HomePage = () => {
       </AnimatedSection>
 
       <AnimatedSection>
-        <ProductCard />
+        <ProductCa />
       </AnimatedSection>
 
       <AnimatedSection>
