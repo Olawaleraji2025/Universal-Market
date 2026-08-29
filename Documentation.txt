@@ -87,3 +87,5 @@ feat: create LandingPage, ProductPage, ShopPage, and WishListPage
 23. Refactor layout and styling in various components for improved consistency and user experience
 
 24. Refactor layout structure and styling for improved responsiveness and consistency across components
+
+25. I implement user authentication flow including login/signup forms, Redux state management, and Supabase integration.

@@ -11,6 +11,7 @@ import WishListPage from './pages/WishListPage';
 import { Toaster } from './components/ui/sonner';
 import NetworkConnectionModal from './components/ui/NetworkConnectionModal';
 import { useEffect, useState } from 'react';
+import { useAuthListener } from './Hooks/useAuthListener';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -19,6 +20,7 @@ function ScrollToTop() {
 }
 
 const App = () => {
+  useAuthListener();
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [isRetrying, setIsRetrying] = useState(false);
 

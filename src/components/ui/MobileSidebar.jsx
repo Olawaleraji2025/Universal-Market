@@ -2,15 +2,29 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useDispatch, useSelector } from 'react-redux';
 import SidebarHeader from './mobile-sidebar/SidebarHeader';
 import SidebarNav from './mobile-sidebar/SidebarNav';
 import SidebarAuthActions from './mobile-sidebar/SidebarAuthActions';
-import SidebarWhatsAppCard from './mobile-sidebar/SidebarWhatsAppCard';
 import { menus } from './mobile-sidebar/menus';
 import logo from "../../assets/logos/UM-logo.png";
+import { supabase } from '../../supabaseClient';
+import { clearAuth } from '../../features/authSlice';
+import { toast } from 'sonner';
 
-export default function MobileSidebar({ user = null }) {
+export default function MobileSidebar({ user: userProp = null, onOpenAuth }) {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { user: authUser, profile } = useSelector((state) => state.auth);
+
+  const activeUser = userProp || (authUser ? {
+    name: profile?.full_name || authUser?.user_metadata?.full_name || authUser?.email?.split('@')[0],
+    email: authUser?.email,
+    avatar: profile?.avatar_url || authUser?.user_metadata?.avatar_url,
+    role: profile?.role || authUser?.user_metadata?.role || 'user',
+  } : null);
+
   const [open, setOpen] = useState(false);
   const drawerRef = useRef(null);
   const triggerRef = useRef(null);
@@ -20,7 +34,6 @@ export default function MobileSidebar({ user = null }) {
     if (open) {
       previouslyFocused.current = document.activeElement;
       document.body.style.overflow = 'hidden';
-      // focus first focusable
       const els = drawerRef.current?.querySelectorAll(
         'a,button,input,textarea,select,[tabindex]:not([tabindex="-1"])'
       );
@@ -38,7 +51,6 @@ export default function MobileSidebar({ user = null }) {
       document.body.style.overflow = '';
       window.removeEventListener('keydown', handleKeydown);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   const handleKeydown = (e) => {
@@ -47,7 +59,6 @@ export default function MobileSidebar({ user = null }) {
       return;
     }
     if (e.key !== 'Tab') return;
-    // trap focus
     const focusable = drawerRef.current?.querySelectorAll(
       'a,button,input,textarea,select,[tabindex]:not([tabindex="-1"])'
     );
@@ -78,7 +89,26 @@ export default function MobileSidebar({ user = null }) {
     navigate(path);
   };
 
-  const role = user?.role || 'guest';
+  const handleOpenAuth = (mode) => {
+    close();
+    if (onOpenAuth) {
+      onOpenAuth(mode);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      dispatch(clearAuth());
+      setOpen(false);
+      toast.success("Logged out successfully");
+    } catch (err) {
+      console.error("Logout error:", err);
+      toast.error("Error signing out");
+    }
+  };
+
+  const role = activeUser?.role || 'guest';
 
   return (
     <div className="md:hidden">
@@ -117,31 +147,45 @@ export default function MobileSidebar({ user = null }) {
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             >
-            <SidebarHeader onClose={close} umLogo={logo} />
+              <SidebarHeader onClose={close} umLogo={logo} />
 
-            <div className="p-4 flex flex-col flex-1 overflow-auto bg-white z-[10000]">
-              {role === 'user' && (
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
-                    {user?.avatar ? (
-                      <img src={user.avatar} alt="avatar" className="w-full h-full object-cover" />
-                    ) : (
-                      <img src={logo} alt="avatar" className="w-6 h-6 text-gray-500" />
-                    )}
+              <div className="p-4 flex flex-col flex-1 overflow-auto bg-white z-[10000]">
+                {activeUser && (
+                  <div className="flex items-center gap-3 mb-4 p-2 bg-gray-50 rounded-xl border border-gray-100">
+                    <div className="w-11 h-11 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center overflow-hidden font-bold text-base flex-shrink-0">
+                      {activeUser?.avatar ? (
+                        <img
+                          src={activeUser.avatar}
+                          alt="avatar"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        activeUser?.name?.charAt(0)?.toUpperCase() || 'U'
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-semibold text-gray-900 truncate flex items-center gap-1.5">
+                        {activeUser?.name || 'User'}
+                        {role === 'admin' && (
+                          <span className="text-[10px] font-bold bg-emerald-700 text-white px-1.5 py-0.5 rounded-full">
+                            Admin
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-xs text-gray-500 truncate">{activeUser?.email || ''}</div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="font-medium">{user?.name || ''}</div>
-                    <div className="text-xs text-gray-500">{user?.email || ''}</div>
-                  </div>
-                </div>
-              )}
+                )}
 
-              <SidebarNav menus={menus} role={role} onNavigate={go} />
+                <SidebarNav menus={menus} role={role} onNavigate={go} />
 
-              <SidebarAuthActions role={role} onNavigate={go} onLogout={() => { const evt = new CustomEvent('app:logout'); window.dispatchEvent(evt); setOpen(false); }} />
-
-              {/* <SidebarWhatsAppCard /> */}
-            </div>
+                <SidebarAuthActions
+                  role={role}
+                  onNavigate={go}
+                  onOpenAuth={handleOpenAuth}
+                  onLogout={handleLogout}
+                />
+              </div>
             </motion.aside>
           </motion.div>
         )}

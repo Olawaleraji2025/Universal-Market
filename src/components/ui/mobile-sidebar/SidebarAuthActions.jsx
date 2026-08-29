@@ -1,22 +1,22 @@
 import React from 'react';
 import { User, UserPlus, LogOut, ExternalLink } from 'lucide-react';
 
-export default function SidebarAuthActions({ role = 'user', onNavigate, onLogout }) {
+export default function SidebarAuthActions({ role = 'user', onNavigate, onOpenAuth, onLogout }) {
   return (
     <div className="mt-4 border-t pt-4">
       {role === 'guest' && (
         <div className="space-y-2">
           <button
-            onClick={() => onNavigate('/login')}
-            className="w-full flex items-center gap-2 px-3 py-2 rounded-md border border-gray-300 text-gray-700 justify-center"
+            onClick={() => onOpenAuth ? onOpenAuth('login') : onNavigate('/login')}
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-md border border-gray-300 text-gray-700 justify-center hover:bg-gray-50 transition"
           >
             <User className="w-4 h-4" />
             Log in
           </button>
 
           <button
-            onClick={() => onNavigate('/signup')}
-            className="w-full flex items-center gap-2 px-3 py-2 rounded-md bg-emerald-600 text-white justify-center"
+            onClick={() => onOpenAuth ? onOpenAuth('signup') : onNavigate('/signup')}
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-md bg-[#064e3b] hover:bg-emerald-900 text-white justify-center transition"
           >
             <UserPlus className="w-4 h-4" />
             Create account

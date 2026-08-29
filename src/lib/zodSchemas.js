@@ -129,4 +129,56 @@ export const requestItemSchema = z.object({
   contact: requestContactSchema,
 });
 
+// ---------------------------------------------------------------------------
+// Authentication Schemas (Login & Signup)
+// ---------------------------------------------------------------------------
+
+// Schema for Login Form
+export const loginSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .min(1, { message: "Email is required." })
+    .email({ message: "Please enter a valid email address." }),
+  password: z
+    .string()
+    .min(1, { message: "Password is required." })
+    .min(6, { message: "Password must be at least 6 characters." }),
+});
+
+// Schema for Signup Form
+export const signupSchema = z
+  .object({
+    full_name: z
+      .string()
+      .trim()
+      .min(1, { message: "Full Name is required." })
+      .min(2, { message: "Full Name must be at least 2 characters." }),
+    phone_number: z
+      .string()
+      .trim()
+      .min(1, { message: "Phone number is required." })
+      .min(7, { message: "Enter a valid phone number." })
+      .regex(/^[0-9+\-()\s]+$/, {
+        message: "Phone number contains invalid characters.",
+      }),
+    email: z
+      .string()
+      .trim()
+      .min(1, { message: "Email is required." })
+      .email({ message: "Please enter a valid email address." }),
+    password: z
+      .string()
+      .min(1, { message: "Password is required." })
+      .min(6, { message: "Password must be at least 6 characters." }),
+    confirmPassword: z
+      .string()
+      .min(1, { message: "Please confirm your password." }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match.",
+    path: ["confirmPassword"],
+  });
+
+
 
