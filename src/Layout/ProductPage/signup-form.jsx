@@ -87,6 +87,8 @@ export function SignupForm({
         },
       });
 
+      console.log({ data, error });
+
       if (error) {
         setSignupError(error.message);
         toast.error(error.message || "Failed to create account.");
