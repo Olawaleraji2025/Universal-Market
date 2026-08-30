@@ -91,3 +91,18 @@ feat: create LandingPage, ProductPage, ShopPage, and WishListPage
 25. I implement user authentication flow including login/signup forms, Redux state management, and Supabase integration and Zod validation
 
 26. Enhance user authentication flow with wishlist synchronization and autofill features
+
+27. Refactor wishlist handling to support guest users and enhance synchronization logic:
+- Before the fix:
+
+A guest user could add items to a basket saved in the browser.
+Then they logged in, and the app merged that basket with their saved account basket.
+But when they logged out and a guest later removed items from the browser basket, it was still using the same shared storage slot.
+So the browser would overwrite the saved account basket, even though the user was no longer logged in.
+
+- After the fix:
+
+guest items live in their own separate basket
+logged-in user items live in their own separate basket
+the app only writes to the real saved account basket when the user is actively logged in
+so logging out or browsing as a guest no longer destroys the saved wishlist

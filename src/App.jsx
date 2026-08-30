@@ -14,7 +14,7 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useAuthListener } from './Hooks/useAuthListener';
 import { selectCurrentUser } from './features/authSlice';
-import { selectWishlistIds, syncWishlistToSupabase } from './features/wishlistSlice';
+import { canSyncWishlistToSupabase, selectWishlistIds, syncWishlistToSupabase } from './features/wishlistSlice';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -30,7 +30,7 @@ const App = () => {
   const [isRetrying, setIsRetrying] = useState(false);
 
   useEffect(() => {
-    if (!currentUser?.id) return;
+    if (!currentUser?.id || !canSyncWishlistToSupabase(currentUser.id)) return;
 
     syncWishlistToSupabase(wishlistIds, currentUser).catch((err) => {
       console.error('Failed to persist wishlist for authenticated user:', err);

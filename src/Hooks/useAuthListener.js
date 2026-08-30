@@ -11,6 +11,7 @@ import {
   fetchWishlistFromSupabase,
   mergeWishlistIds,
   readWishlist,
+  setActiveWishlistUser,
   setWishlist,
   syncWishlistToSupabase,
 } from '../features/wishlistSlice';
@@ -41,10 +42,11 @@ export const useAuthListener = () => {
     const hydrateWishlistAfterLogin = async (user) => {
       if (!user?.id) return;
 
-      const localWishlist = readWishlist();
+      const guestWishlist = readWishlist(null);
       const remoteWishlist = await fetchWishlistFromSupabase(user);
-      const mergedWishlist = mergeWishlistIds(localWishlist, remoteWishlist);
+      const mergedWishlist = mergeWishlistIds(guestWishlist, remoteWishlist);
 
+      setActiveWishlistUser(user.id);
       dispatch(setWishlist(mergedWishlist));
       await syncWishlistToSupabase(mergedWishlist, user);
     };
@@ -58,6 +60,7 @@ export const useAuthListener = () => {
           await hydrateWishlistAfterLogin(session.user);
         }
       } else {
+        setActiveWishlistUser(null);
         dispatch(clearAuth());
       }
       dispatch(setAuthLoading(false));
@@ -72,6 +75,7 @@ export const useAuthListener = () => {
         await fetchUserProfile(session.user.id);
         await hydrateWishlistAfterLogin(session.user);
       } else {
+        setActiveWishlistUser(null);
         dispatch(clearAuth());
       }
       dispatch(setAuthLoading(false));
