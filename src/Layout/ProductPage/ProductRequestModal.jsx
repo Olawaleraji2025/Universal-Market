@@ -15,6 +15,7 @@ import { clearClickedProduct } from "../../features/productDetailsClicked"
 import { resetForm } from "../../Hooks/formValidation";
 import { useParams } from "react-router-dom";
 import useShopProducts from "../../Hooks/useShopProducts";
+import { selectIsAuthenticated } from "../../features/authSlice";
 
 
 
@@ -47,9 +48,16 @@ export default function RequestModal({ open, onClose }) {
 
 
   const flowStep = useSelector((state) => state.flow.step);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
   // console.log(flowStep)
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (open && isAuthenticated && flowStep === "chooser") {
+      dispatch(setStep("guest"));
+    }
+  }, [open, isAuthenticated, flowStep, dispatch]);
 
   useEffect(() => {
     if (!open) return;
@@ -75,7 +83,8 @@ export default function RequestModal({ open, onClose }) {
   onClose();
 };
 
-const showImage = flowStep === "chooser" || flowStep === "guest" || flowStep === "login" || flowStep === "signup";
+const activeStep = isAuthenticated && flowStep === "chooser" ? "guest" : flowStep;
+const showImage = activeStep === "chooser" || activeStep === "guest" || activeStep === "login" || activeStep === "signup";
 
   if (!open) return null;
 
@@ -149,29 +158,29 @@ const showImage = flowStep === "chooser" || flowStep === "guest" || flowStep ===
 
         )}
 
-              {flowStep === "guest" && (
+              {activeStep === "guest" && (
                 <motion.div
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: 0.1 }}
                   className="mt-1 p-4"
                 >
-                  <GuestForm />
+                  <GuestForm onClose={onClose} />
                 </motion.div>
               )}
 
-              {flowStep === "login" && (
+              {activeStep === "login" && (
                 <motion.div
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: 0.1 }}
                   className="mt-1 p-4"
                 >
-                  <LoginForm />
+                  <LoginForm onSuccess={() => dispatch(setStep("guest"))} />
                 </motion.div>
               )}
 
-              {flowStep === "success" && (
+              {activeStep === "success" && (
                 <motion.div
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -182,18 +191,18 @@ const showImage = flowStep === "chooser" || flowStep === "guest" || flowStep ===
                 </motion.div>
               )}
 
-              {flowStep === "signup" && (
+              {activeStep === "signup" && (
                 <motion.div
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: 0.1 }}
                   className="mt-1 p-4"
                 >
-                  <SignupForm />
+                  <SignupForm onSuccess={() => dispatch(setStep("guest"))} />
                 </motion.div>
               )}
 
-              {flowStep === "chooser" && (
+              {activeStep === "chooser" && (
                 <motion.div
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}

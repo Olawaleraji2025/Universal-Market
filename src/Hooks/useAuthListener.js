@@ -7,6 +7,13 @@ import {
   clearAuth,
   setAuthLoading,
 } from '../features/authSlice';
+import {
+  fetchWishlistFromSupabase,
+  mergeWishlistIds,
+  readWishlist,
+  setWishlist,
+  syncWishlistToSupabase,
+} from '../features/wishlistSlice';
 
 export const useAuthListener = () => {
   const dispatch = useDispatch();
@@ -31,12 +38,24 @@ export const useAuthListener = () => {
       }
     };
 
+    const hydrateWishlistAfterLogin = async (user) => {
+      if (!user?.id) return;
+
+      const localWishlist = readWishlist();
+      const remoteWishlist = await fetchWishlistFromSupabase(user);
+      const mergedWishlist = mergeWishlistIds(localWishlist, remoteWishlist);
+
+      dispatch(setWishlist(mergedWishlist));
+      await syncWishlistToSupabase(mergedWishlist, user);
+    };
+
     // 1. Initial Session Check on app mount
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session) {
         dispatch(setSession(session));
         if (session.user?.id) {
-          fetchUserProfile(session.user.id);
+          await fetchUserProfile(session.user.id);
+          await hydrateWishlistAfterLogin(session.user);
         }
       } else {
         dispatch(clearAuth());
@@ -51,6 +70,7 @@ export const useAuthListener = () => {
       if (session?.user) {
         dispatch(setSession(session));
         await fetchUserProfile(session.user.id);
+        await hydrateWishlistAfterLogin(session.user);
       } else {
         dispatch(clearAuth());
       }

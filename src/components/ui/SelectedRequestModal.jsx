@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { X, Trash2, MessageCircle, User, Check, ArrowRight } from 'lucide-react';
 import { TbCurrencyNaira } from 'react-icons/tb';
 import { toast } from 'sonner';
+import { useSelector } from 'react-redux';
 import Button from './button';
 import { Textarea } from './textarea';
 import { Input } from './input';
@@ -10,6 +11,7 @@ import { Checkbox } from './checkbox';
 import { guestFormSchema } from '../../lib/zodSchemas';
 import { supabase } from '../../supabaseClient';
 import { buildWhatsAppUrl, WHATSAPP_NUMBER } from '../../lib/whatsappConfig';
+import { selectCurrentUser, selectUserProfile, selectIsAuthenticated } from '../../features/authSlice';
 
 const guestBenefits = [
   'Quick Request',
@@ -24,6 +26,10 @@ const accountBenefits = [
 ];
 
 export default function SelectedRequestModal({ open, onClose, selectedProducts = [], onRemoveItem, onConfirm }) {
+  const user = useSelector(selectCurrentUser);
+  const profile = useSelector(selectUserProfile);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+
   const [message, setMessage] = useState('');
   const [step, setStep] = useState('summary');
   const [guestForm, setGuestForm] = useState({ fullName: '', contact: '', termsAccepted: false });
@@ -41,6 +47,29 @@ export default function SelectedRequestModal({ open, onClose, selectedProducts =
       setStep('summary');
     }
   }, [open]);
+
+  useEffect(() => {
+    if (open && (user || profile)) {
+      const autofillName =
+        profile?.full_name ||
+        user?.user_metadata?.full_name ||
+        user?.user_metadata?.name ||
+        '';
+      const autofillContact =
+        profile?.phone_number ||
+        profile?.phone ||
+        user?.user_metadata?.phone_number ||
+        user?.user_metadata?.phone ||
+        user?.phone ||
+        '';
+
+      setGuestForm((current) => ({
+        ...current,
+        fullName: current.fullName || autofillName,
+        contact: current.contact || autofillContact,
+      }));
+    }
+  }, [open, user, profile]);
 
   const total = selectedProducts.reduce((s, p) => s + Number(p.ProductPrice || p.price || 0), 0);
 
@@ -95,7 +124,7 @@ export default function SelectedRequestModal({ open, onClose, selectedProducts =
       setSubmittedProducts(snapshot);
 
       onConfirm({
-        mode: 'guest',
+        mode: isAuthenticated ? 'user' : 'guest',
         message: parsed.data.message || message,
         contact: parsed.data.contact,
         fullName: parsed.data.fullName,
@@ -183,7 +212,7 @@ export default function SelectedRequestModal({ open, onClose, selectedProducts =
                   <div className="text-sm text-gray-600">Total: <span className="font-semibold text-[#01241a]">₦{Number(total).toLocaleString()}</span></div>
                   <div className="flex items-center gap-3">
                     <Button type="button" variant="outline" onClick={onClose} className="h-10 border-gray-200 text-gray-600">Cancel</Button>
-                    <Button type="button" onClick={() => setStep('authChoice')} className="h-10 bg-[#064e3b] text-white">Continue</Button>
+                    <Button type="button" onClick={() => setStep(isAuthenticated ? 'guestForm' : 'authChoice')} className="h-10 bg-[#064e3b] text-white">Continue</Button>
                   </div>
                 </div>
               </>
@@ -223,8 +252,12 @@ export default function SelectedRequestModal({ open, onClose, selectedProducts =
               <form onSubmit={handleGuestSubmit} className="space-y-4 p-1">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-lg font-bold text-[#01241a]">Guest request details</h3>
-                    <p className="text-sm text-gray-500">Complete the form below to send your request.</p>
+                    <h3 className="text-lg font-bold text-[#01241a]">
+                      {isAuthenticated ? 'Request details' : 'Guest request details'}
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      {isAuthenticated ? 'Confirm your details and send your request.' : 'Complete the form below to send your request.'}
+                    </p>
                   </div>
                   <button type="button" onClick={onClose} aria-label="Close" className="rounded p-1 text-gray-600 hover:bg-gray-100">
                     <X className="h-5 w-5" />
@@ -273,7 +306,7 @@ export default function SelectedRequestModal({ open, onClose, selectedProducts =
                 {formErrors.termsAccepted && <p className="text-sm text-red-600 text-[14px]">{formErrors.termsAccepted}</p>}
 
                 <div className="flex items-center justify-between gap-3 pt-2">
-                  <Button type="button" variant="outline" onClick={() => setStep('authChoice')} className="h-10 border-gray-200 text-gray-600">Back</Button>
+                  <Button type="button" variant="outline" onClick={() => setStep(isAuthenticated ? 'summary' : 'authChoice')} className="h-10 border-gray-200 text-gray-600">Back</Button>
                   <Button type="submit" disabled={isSubmitting} className="h-10 bg-[#064e3b] text-white">
                     {isSubmitting ? 'Submitting...' : 'Submit request'}
                   </Button>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Textarea } from "../../components/ui/textarea";
 import { Checkbox } from "../../components/ui/checkbox";
 import { Field, FieldLabel, FieldContent, FieldError } from "../../components/ui/field";
@@ -13,43 +13,85 @@ import { validate, errors, resetForm } from "../../Hooks/formValidation";
 import { useParams } from "react-router-dom";
 import useShopProducts from "../../Hooks/useShopProducts";
 import { toast } from 'sonner';
+import { selectCurrentUser, selectUserProfile, selectIsAuthenticated } from "../../features/authSlice";
 
 
 
-export default function GuestForm() {
+export default function GuestForm({ onClose }) {
   const dispatch = useDispatch();
 
+  const user = useSelector(selectCurrentUser);
+  const profile = useSelector(selectUserProfile);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
 
   // This state tracks any submission error messages to display to the user.
-const [submissionError, setSubmissionError] = useState("");
+  const [submissionError, setSubmissionError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // This will get the selected product's ID from the URL parameters and fetch the product data.
-   const { id } = useParams();
-const { data: products = [] } = useShopProducts({
+  const { id } = useParams();
+  const { data: products = [] } = useShopProducts({
     staleTime: 5 * 60 * 1000,
-});
+  });
 
 
-    const clickedProduct = useSelector((state) => state.productDetailsClicked?.clickedProduct);
- const selectedProduct =
+  const clickedProduct = useSelector((state) => state.productDetailsClicked?.clickedProduct);
+  const selectedProduct =
     clickedProduct?.id != null ? clickedProduct : products.find((p) => String(p.id) === String(id));
 
-const rawPrice = selectedProduct?.ProductPrice != null ? selectedProduct.ProductPrice : null;
+  const rawPrice = selectedProduct?.ProductPrice != null ? selectedProduct.ProductPrice : null;
 
-   // This will reset the form and refresh the page
-    const handleContinueShopping = () => {
-      dispatch(resetForm());
-      dispatch(resetFlow());
-    };
-    
-    // This will get the user inputs from the store
-const guestFormState = useSelector((state) => state.guestForm);
+  // This will get the user inputs from the store
+  const guestFormState = useSelector((state) => state.guestForm);
 
-// These are the form data and field errors from the Redux store
+  // These are the form data and field errors from the Redux store
   const { formData = {}, errors: fieldErrors = {} } = guestFormState;
 
- // Updates the Redux form slice with the latest input values.
+  // Autofill user details when logged in
+  useEffect(() => {
+    if (user || profile) {
+      const autofillName =
+        profile?.full_name ||
+        user?.user_metadata?.full_name ||
+        user?.user_metadata?.name ||
+        "";
+      const autofillContact =
+        profile?.phone_number ||
+        profile?.phone ||
+        user?.user_metadata?.phone_number ||
+        user?.user_metadata?.phone ||
+        user?.phone ||
+        "";
+
+      const updates = {};
+      if (!formData.fullName && autofillName) {
+        updates.fullName = autofillName;
+      }
+      if (!formData.contact && autofillContact) {
+        updates.contact = autofillContact;
+      }
+
+      if (Object.keys(updates).length > 0) {
+        dispatch(
+          validate({
+            ...formData,
+            ...updates,
+          })
+        );
+      }
+    }
+  }, [user, profile, dispatch]);
+
+  // This will reset the form and refresh the page / close modal
+  const handleContinueShopping = () => {
+    dispatch(resetForm());
+    dispatch(resetFlow());
+    if (isAuthenticated && onClose) {
+      onClose();
+    }
+  };
+    
+  // Updates the Redux form slice with the latest input values.
   // This is the function responsible for synchronizing form data into Redux.
   const updateField = (patch) => {
     const nextFormData = { ...formData, ...patch };
@@ -93,9 +135,9 @@ const onSubmit = async (values) => {
     userMessages: values.message ?? "",
 
     // Ensure the mapping matches your Supabase table expectations
-    itemImage: selectedProduct?.ProductName ?? null,
+    itemImage: selectedProduct?.imageUrl ?? null,
     itemPrice: rawPrice ?? null,
-    itemName: selectedProduct?.imageUrl ?? null,
+    itemName: selectedProduct?.ProductName ?? null,
   };
 
   const { error } = await supabase.from("UsersRequests").insert([payload]);
@@ -207,6 +249,9 @@ return (
           </FieldLabel>
         </Field>
       </div>
+
+       
+
 
       <div>
         <FieldError errors={fieldErrors.termsAccepted} />

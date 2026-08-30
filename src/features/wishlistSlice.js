@@ -1,21 +1,94 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { supabase } from '../supabaseClient';
 
-const WISHLIST_STORAGE_KEY = 'universal-market-wishlist';
+export const WISHLIST_STORAGE_KEY = 'universal-market-wishlist';
 
-const readWishlist = () => {
+export const normalizeWishlistIds = (ids = []) => {
+  const uniqueIds = new Set((ids || []).filter(Boolean).map(String));
+  return [...uniqueIds];
+};
+
+export const readWishlist = () => {
   try {
     const raw = localStorage.getItem(WISHLIST_STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
+    return raw ? normalizeWishlistIds(JSON.parse(raw)) : [];
   } catch {
     return [];
   }
 };
 
-const writeWishlist = (ids) => {
+export const writeWishlist = (ids) => {
   try {
-    localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(ids));
+    localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(normalizeWishlistIds(ids)));
   } catch {
     // ignore
+  }
+};
+
+export const mergeWishlistIds = (localIds = [], remoteIds = []) => {
+  return normalizeWishlistIds([...(localIds || []), ...(remoteIds || [])]);
+};
+
+export const fetchWishlistFromSupabase = async (user) => {
+  if (!user?.id) return [];
+
+  try {
+    const metadataWishlist = Array.isArray(user.user_metadata?.wishlist)
+      ? user.user_metadata.wishlist
+      : [];
+
+    if (metadataWishlist.length) {
+      return normalizeWishlistIds(metadataWishlist);
+    }
+
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('wishlist')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (error) {
+      console.warn('Unable to fetch wishlist from profiles table:', error.message);
+      return [];
+    }
+
+    if (Array.isArray(data?.wishlist)) {
+      return normalizeWishlistIds(data.wishlist);
+    }
+
+    return [];
+  } catch (err) {
+    console.error('Failed to read wishlist from Supabase:', err);
+    return [];
+  }
+};
+
+export const syncWishlistToSupabase = async (wishlistIds, user) => {
+  if (!user?.id) return [];
+
+  const ids = normalizeWishlistIds(wishlistIds);
+
+  try {
+    const { error: authError } = await supabase.auth.updateUser({
+      data: { wishlist: ids },
+    });
+
+    if (authError) {
+      console.warn('Failed to save wishlist to auth metadata:', authError.message);
+    }
+
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .upsert({ id: user.id, wishlist: ids }, { onConflict: 'id' });
+
+    if (profileError) {
+      console.warn('Failed to save wishlist to profiles table:', profileError.message);
+    }
+
+    return ids;
+  } catch (err) {
+    console.error('Failed to sync wishlist to Supabase:', err);
+    return ids;
   }
 };
 
@@ -28,6 +101,17 @@ const slice = createSlice({
   name: 'wishlist',
   initialState,
   reducers: {
+    setWishlist(state, action) {
+      state.wishlistIds = (action.payload || []).map(String);
+      // Clean up selectedIds to keep only valid items
+      state.selectedIds = state.selectedIds.filter((s) => state.wishlistIds.includes(String(s)));
+      writeWishlist(state.wishlistIds);
+    },
+    clearWishlist(state) {
+      state.wishlistIds = [];
+      state.selectedIds = [];
+      writeWishlist([]);
+    },
     toggleWishlist(state, action) {
       const id = String(action.payload);
       const set = new Set(state.wishlistIds.map(String));
@@ -68,6 +152,8 @@ const slice = createSlice({
 });
 
 export const {
+  setWishlist,
+  clearWishlist,
   toggleWishlist,
   removeWishlistItem,
   toggleSelected,

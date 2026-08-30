@@ -11,7 +11,10 @@ import WishListPage from './pages/WishListPage';
 import { Toaster } from './components/ui/sonner';
 import NetworkConnectionModal from './components/ui/NetworkConnectionModal';
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useAuthListener } from './Hooks/useAuthListener';
+import { selectCurrentUser } from './features/authSlice';
+import { selectWishlistIds, syncWishlistToSupabase } from './features/wishlistSlice';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -21,8 +24,18 @@ function ScrollToTop() {
 
 const App = () => {
   useAuthListener();
+  const currentUser = useSelector(selectCurrentUser);
+  const wishlistIds = useSelector(selectWishlistIds);
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [isRetrying, setIsRetrying] = useState(false);
+
+  useEffect(() => {
+    if (!currentUser?.id) return;
+
+    syncWishlistToSupabase(wishlistIds, currentUser).catch((err) => {
+      console.error('Failed to persist wishlist for authenticated user:', err);
+    });
+  }, [currentUser, wishlistIds]);
 
   useEffect(() => {
     const updateConnectionStatus = () => {
