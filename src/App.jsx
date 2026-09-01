@@ -8,6 +8,8 @@ import { HomePage } from './pages/LandingPage';
 import ShopPage from './pages/ShopPage';
 import { ProductPage } from './pages/ProductPage';
 import WishListPage from './pages/WishListPage';
+import MyRequestsPage from './pages/MyRequestsPage';
+import RequestDetailsPage from './pages/RequestDetailsPage';
 import { Toaster } from './components/ui/sonner';
 import NetworkConnectionModal from './components/ui/NetworkConnectionModal';
 import { useEffect, useState } from 'react';
@@ -74,6 +76,8 @@ const App = () => {
           <Route path="/" element={<HomePage />} />
           <Route path="/shop" element={<ShopPage />} />
           <Route path="/wishlist" element={<WishListPage />} />
+          <Route path="/my-requests" element={<MyRequestsPage />} />
+          <Route path="/requests/:id" element={<RequestDetailsPage />} />
           <Route path="/product/:id" element={<ProductPage />} />
         </Routes>
       </div>

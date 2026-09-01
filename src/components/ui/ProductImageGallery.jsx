@@ -167,7 +167,7 @@ export default function ProductImageGallery({ images = [], alt = 'Product image'
       {/* ── Thumbnail strip — only rendered when multiple images ──────────── */}
       {isMulti && (
         <div
-          className="flex gap-2 overflow-x-auto pb-1"
+          className="flex gap-2 overflow-x-auto pb-1 justify-center"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           role="list"
           aria-label="Product image thumbnails"

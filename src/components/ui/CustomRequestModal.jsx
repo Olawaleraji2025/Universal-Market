@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion } from "framer-motion";
@@ -19,6 +20,7 @@ import {
 import { TbCurrencyNaira } from "react-icons/tb";
 import { supabase } from "../../supabaseClient";
 import { requestItemSchema } from "../../lib/zodSchemas";
+import { selectCurrentUser } from "../../features/authSlice";
 
 import Button from "./button";
 import { Input } from "./input";
@@ -85,6 +87,7 @@ const parseBudgetToNumber = (value) => {
 };
 
 export default function RequestModal({ open, onClose, initialItemName = "" }) {
+  const currentUser = useSelector(selectCurrentUser);
   const [status, setStatus] = useState("idle"); // idle | submitting | success | error
   const [submitError, setSubmitError] = useState("");
   const [requestId, setRequestId] = useState("");
@@ -143,6 +146,7 @@ export default function RequestModal({ open, onClose, initialItemName = "" }) {
     setRequestId(`UM-${Math.floor(100000 + Math.random() * 900000)}`);
 
     const payload = {
+      user_id: currentUser?.id || null,
       ItemName: data.itemName.trim(),
       UserPhoneNumber: data.contact.trim(),
       ItemDetails: (data.details || "").trim(),
@@ -152,7 +156,7 @@ export default function RequestModal({ open, onClose, initialItemName = "" }) {
     };
 
     try {
-      const { error } = await supabase.from("UserCustomRequests").insert([payload]);
+      const { error } = await supabase.from("All_Requests").insert([payload]);
       if (error) {
         // Graceful fallback so the demo still shows success even if the
         // table schema differs from the payload columns.

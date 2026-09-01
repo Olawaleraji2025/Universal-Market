@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { LogIn, UserPlus, X, LogOut, User as UserIcon, Shield } from "lucide-react";
+import { LogIn, UserPlus, X, Shield } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import Button from "../ui/button";
 import MobileSidebar from "./MobileSidebar";
+import UserMenu from "./UserMenu";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/logos/UM-logo.png";
 import LoginForm from "../../Layout/ProductPage/LoginForm";
@@ -62,6 +63,8 @@ export const Navbar = () => {
       toast.error("Error signing out");
     }
   };
+
+  
 
   return (
     <>
@@ -127,38 +130,16 @@ export const Navbar = () => {
           <div className="hidden md:flex items-center gap-4">
             {user ? (
               <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-full">
-                  <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-semibold text-xs overflow-hidden">
-                    {avatarUrl ? (
-                      <img
-                        src={avatarUrl}
-                        alt={displayName}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      displayName.charAt(0).toUpperCase()
-                    )}
-                  </div>
-                  <span className="text-sm font-medium text-gray-700 max-w-[120px] truncate">
-                    {displayName}
+                <UserMenu
+                  user={{ name: displayName, email: user.email, avatar: avatarUrl, role }}
+                  onLogout={handleLogout}
+                />
+                {role === "admin" && (
+                  <span className="flex items-center gap-1 text-[11px] font-semibold bg-emerald-700 text-white px-2 py-0.5 rounded-full">
+                    <Shield className="w-3 h-3" />
+                    Admin
                   </span>
-                  {role === "admin" && (
-                    <span className="flex items-center gap-1 text-[11px] font-semibold bg-emerald-700 text-white px-2 py-0.5 rounded-full">
-                      <Shield className="w-3 h-3" />
-                      Admin
-                    </span>
-                  )}
-                </div>
-
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleLogout}
-                  className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 cursor-pointer"
-                >
-                  <LogOut className="mr-1 w-4 h-4" />
-                  Logout
-                </Button>
+                )}
               </div>
             ) : (
               <>
