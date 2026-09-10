@@ -67,7 +67,7 @@ export const fetchWishlistFromSupabase = async (user) => {
     }
 
     const { data, error } = await supabase
-      .from('profiles')
+      .from('RegUsersWishlists')
       .select('wishlist')
       .eq('id', user.id)
       .maybeSingle();
@@ -99,7 +99,7 @@ export const syncWishlistToSupabase = async (wishlistIds, user) => {
 
   try {
     const { error: profileError } = await supabase
-      .from('profiles')
+      .from('RegUsersWishlists')
       .upsert({ id: user.id, wishlist: ids }, { onConflict: 'id' });
 
     if (profileError) {

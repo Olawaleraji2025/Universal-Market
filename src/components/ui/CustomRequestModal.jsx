@@ -20,27 +20,27 @@ import {
 import { TbCurrencyNaira } from "react-icons/tb";
 import { supabase } from "../../supabaseClient";
 import { requestItemSchema } from "../../lib/zodSchemas";
-import { selectCurrentUser } from "../../features/authSlice";
+import { selectCurrentUser, selectUserProfile } from "../../features/authSlice";
 
 import Button from "./button";
 import { Input } from "./input";
 import { Textarea } from "./textarea";
 import { toast } from 'sonner';
 
-/**
- * RequestModal
- * ------------
- * A custom, animated modal for requesting an item that the user could not
- * find in the Shop / product list. It is self-contained and reusable
- * anywhere (Homepage CTA, Shop, Product page).
- *
- * Form validation is handled by Zod via react-hook-form's zodResolver,
- * so the form is validated right before it is sent to Supabase.
- *
- * Usage:
- *   const [open, setOpen] = useState(false);
- *   <RequestModal open={open} onClose={() => setOpen(false)} />
- */
+// /**
+//  * RequestModal
+//  * ------------
+//  * A custom, animated modal for requesting an item that the user could not
+//  * find in the Shop / product list. It is self-contained and reusable
+//  * anywhere (Homepage CTA, Shop, Product page).
+//  *
+//  * Form validation is handled by Zod via react-hook-form's zodResolver,
+//  * so the form is validated right before it is sent to Supabase.
+//  *
+//  * Usage:
+//  *   const [open, setOpen] = useState(false);
+//  *   <RequestModal open={open} onClose={() => setOpen(false)} />
+//  */
 
 const SUGGESTED_ITEMS = [
   "iPhone",
@@ -64,11 +64,11 @@ const CATEGORY_OPTIONS = [
 ];
 
 const initialForm = {
-  itemName: "",
-  category: "",
-  budget: "",
-  details: "",
-  contact: "",
+  ItemName: "",
+  ItemCategory: "",
+  ItemBudget: "",
+  ItemDetails: "",
+  UserPhoneNumber: "",
 };
 
 /**
@@ -88,6 +88,7 @@ const parseBudgetToNumber = (value) => {
 
 export default function RequestModal({ open, onClose, initialItemName = "" }) {
   const currentUser = useSelector(selectCurrentUser);
+  const userProfile = useSelector(selectUserProfile);
   const [status, setStatus] = useState("idle"); // idle | submitting | success | error
   const [submitError, setSubmitError] = useState("");
   const [requestId, setRequestId] = useState("");
@@ -104,20 +105,111 @@ export default function RequestModal({ open, onClose, initialItemName = "" }) {
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(requestItemSchema),
-    defaultValues: { ...initialForm, itemName: initialItemName || initialForm.itemName },
+    defaultValues: { ...initialForm, ItemName: initialItemName || initialForm.ItemName },
     mode: "onSubmit",
     reValidateMode: "onChange",
   });
 
-  // Keep the itemName in sync if a parent passes a new initialItemName
+  // Keep the ItemName in sync if a parent passes a new initialItemName
   useEffect(() => {
     if (!open) return;
     if (initialItemName && initialItemName.trim()) {
-      setValue("itemName", initialItemName, { shouldValidate: true, shouldDirty: true });
+      setValue("ItemName", initialItemName, { shouldValidate: true, shouldDirty: true });
     }
   }, [initialItemName, open, setValue]);
 
+  // Autofill contact if user is logged in and phone field is empty
+  useEffect(() => {
+    if (!open) return;
+    const currentPhone = getValues("UserPhoneNumber");
+    if (!currentPhone) {
+      const autofill =
+        userProfile?.phone_number ||
+        userProfile?.phone ||
+        currentUser?.user_metadata?.phone_number ||
+        currentUser?.user_metadata?.phone ||
+        currentUser?.phone ||
+        "";
+      if (autofill) {
+        setValue("UserPhoneNumber", autofill, { shouldValidate: true, shouldDirty: false });
+      }
+    }
+  }, [open, currentUser, userProfile, getValues, setValue]);
+
   const form = watch();
+
+  const getRequestUserName = async () => {
+    if (!currentUser?.id) {
+      return {
+        userName: "Guest",
+        userPhoneNumber: "",
+        UserPhoneNumber: "",
+        toString() {
+          return this.userName;
+        },
+      };
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("full_name, phone_number")
+        .eq("id", currentUser.id)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      const userName =
+        data?.full_name ||
+        userProfile?.full_name ||
+        currentUser?.user_metadata?.full_name ||
+        currentUser?.user_metadata?.name ||
+        currentUser?.email?.split("@")[0] ||
+        "Guest";
+
+      const userPhoneNumber =
+        data?.phone_number ||
+        userProfile?.phone_number ||
+        userProfile?.phone ||
+        currentUser?.user_metadata?.phone_number ||
+        currentUser?.user_metadata?.phone ||
+        currentUser?.phone ||
+        "";
+
+      return {
+        userName,
+        userPhoneNumber,
+        UserPhoneNumber: userPhoneNumber,
+        toString() {
+          return this.userName;
+        },
+      };
+    } catch {
+      const userName =
+        userProfile?.full_name ||
+        currentUser?.user_metadata?.full_name ||
+        currentUser?.user_metadata?.name ||
+        currentUser?.email?.split("@")[0] ||
+        "Guest";
+
+      const userPhoneNumber =
+        userProfile?.phone_number ||
+        userProfile?.phone ||
+        currentUser?.user_metadata?.phone_number ||
+        currentUser?.user_metadata?.phone ||
+        currentUser?.phone ||
+        "";
+
+      return {
+        userName,
+        userPhoneNumber,
+        UserPhoneNumber: userPhoneNumber,
+        toString() {
+          return this.userName;
+        },
+      };
+    }
+  };
 
   // Lock body scroll while the modal is open.
   useEffect(() => {
@@ -145,23 +237,30 @@ export default function RequestModal({ open, onClose, initialItemName = "" }) {
     setSubmitError("");
     setRequestId(`UM-${Math.floor(100000 + Math.random() * 900000)}`);
 
-    const payload = {
-      user_id: currentUser?.id || null,
-      ItemName: data.itemName.trim(),
-      UserPhoneNumber: data.contact.trim(),
-      ItemDetails: (data.details || "").trim(),
-      // "450,000" -> 450000   |   "" -> null
-      ItemBudget: parseBudgetToNumber(data.budget),
-      ItemCategory: data.category || null,
-    };
-
     try {
+      const { userName, userPhoneNumber, UserPhoneNumber } = await getRequestUserName();
+      const payload = {
+        user_id: currentUser?.id || null,
+        userName: userName || 'Guest',
+        status: "pending",
+        ReqType: "Custom Request",
+        ItemName: (data.ItemName || data.itemName || "").trim(),
+        UserPhoneNumber: (data.UserPhoneNumber || data.contact || userPhoneNumber || UserPhoneNumber || "").trim(),
+        ItemDetails: (data.ItemDetails || data.details || "").trim(),
+        // "450,000" -> 450000   |   "" -> null
+        ItemBudget: parseBudgetToNumber(data.ItemBudget ?? data.budget),
+        ItemCategory: data.ItemCategory || data.category || null,
+      };
+
       const { error } = await supabase.from("All_Requests").insert([payload]);
+      console.log("payload: ", payload);
+
       if (error) {
         // Graceful fallback so the demo still shows success even if the
         // table schema differs from the payload columns.
         toast.error("Failed to submit request. Please try again.");
         setStatus("idle");
+        console.log({error})
       } else {
         toast.success("Request submitted successfully!");
         setStatus("success");
@@ -256,20 +355,21 @@ export default function RequestModal({ open, onClose, initialItemName = "" }) {
                 />
               ) : (
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-                  {/* Item name */}
+                  {/* Item Name */}
                   <div className="space-y-1.5">
-                    <label className="flex items-center gap-1.5 text-sm font-semibold text-[#01241a]">
+                    <label htmlFor="ItemName" className="flex items-center gap-1.5 text-sm font-semibold text-[#01241a]">
                       <Search className="size-4 text-[#064e3b]" />
-                      Item you're looking for
+                      Item Name
                       <span className="text-red-500">*</span>
                     </label>
                     <Input
-                      {...register("itemName")}
+                      id="ItemName"
+                      {...register("ItemName")}
                       placeholder="e.g. iPhone 14 Pro Max 256GB"
                       className="h-11 bg-white border-gray-200 focus:border-emerald-500"
                     />
-                    {errors.itemName && (
-                      <p className="text-xs font-medium text-red-600">{errors.itemName.message}</p>
+                    {errors.ItemName && (
+                      <p className="text-xs font-medium text-red-600">{errors.ItemName.message}</p>
                     )}
                   </div>
 
@@ -277,13 +377,13 @@ export default function RequestModal({ open, onClose, initialItemName = "" }) {
                   <div className="flex flex-wrap gap-2">
                     {SUGGESTED_ITEMS.map((item) => {
                       const active =
-                        form.itemName.trim().toLowerCase() === item.toLowerCase();
+                        form.ItemName?.trim().toLowerCase() === item.toLowerCase();
                       return (
                         <button
                           key={item}
                           type="button"
                           onClick={() =>
-                            setValue("itemName", item, {
+                            setValue("ItemName", item, {
                               shouldValidate: true,
                               shouldDirty: true,
                             })
@@ -303,13 +403,14 @@ export default function RequestModal({ open, onClose, initialItemName = "" }) {
                   {/* Category + Budget */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <label className="flex items-center gap-1.5 text-sm font-semibold text-[#01241a]">
+                      <label htmlFor="ItemCategory" className="flex items-center gap-1.5 text-sm font-semibold text-[#01241a]">
                         <ListChecks className="size-4 text-[#064e3b]" />
                         Category
                         <span className="text-red-500">*</span>
                       </label>
                       <select
-                        {...register("category")}
+                        id="ItemCategory"
+                        {...register("ItemCategory")}
                         className="h-11 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-800 outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
                       >
                         <option value="" disabled>
@@ -321,33 +422,34 @@ export default function RequestModal({ open, onClose, initialItemName = "" }) {
                           </option>
                         ))}
                       </select>
-                      {errors.category && (
-                        <p className="text-xs font-medium text-red-600">{errors.category.message}</p>
+                      {errors.ItemCategory && (
+                        <p className="text-xs font-medium text-red-600">{errors.ItemCategory.message}</p>
                       )}
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="flex items-center gap-1.5 text-sm font-semibold text-[#01241a]">
+                      <label htmlFor="ItemBudget" className="flex items-center gap-1.5 text-sm font-semibold text-[#01241a]">
                         <Wallet className="size-4 text-[#064e3b]" />
-                        Estimated budget
+                        Estimated Budget
                       </label>
                       <div className="relative">
                         <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                           <TbCurrencyNaira className="size-4" />
                         </span>
                         <Input
-                          {...register("budget")}
+                          id="ItemBudget"
+                          {...register("ItemBudget")}
                           onChange={(e) =>
                             setValue(
-                              "budget",
+                              "ItemBudget",
                               sanitizeBudgetInput(e.target.value),
                               { shouldValidate: true, shouldDirty: true }
                             )
                           }
                           onBlur={() => {
-                            const current = String(getValues("budget") || "");
+                            const current = String(getValues("ItemBudget") || "");
                             setValue(
-                              "budget",
+                              "ItemBudget",
                               current
                                 ? Number(current.replace(/,/g, "")).toLocaleString()
                                 : "",
@@ -359,44 +461,46 @@ export default function RequestModal({ open, onClose, initialItemName = "" }) {
                           className="h-11 bg-white border-gray-200 pl-9 focus:border-emerald-500"
                         />
                       </div>
-                      {errors.budget && (
-                        <p className="text-xs font-medium text-red-600">{errors.budget.message}</p>
+                      {errors.ItemBudget && (
+                        <p className="text-xs font-medium text-red-600">{errors.ItemBudget.message}</p>
                       )}
                     </div>
                   </div>
 
                   {/* Details */}
                   <div className="space-y-1.5">
-                    <label className="flex items-center gap-1.5 text-sm font-semibold text-[#01241a]">
+                    <label htmlFor="ItemDetails" className="flex items-center gap-1.5 text-sm font-semibold text-[#01241a]">
                       <Sparkles className="size-4 text-[#064e3b]" />
-                      Item details / specs
+                      Item Details / Specs
                     </label>
                     <Textarea
-                      {...register("details")}
+                      id="ItemDetails"
+                      {...register("ItemDetails")}
                       placeholder="Condition, model, quantity, preferred delivery, etc."
                       className="min-h-[90px] resize-none bg-white border-gray-200 focus:border-emerald-500"
                     />
-                    {errors.details && (
-                      <p className="text-xs font-medium text-red-600">{errors.details.message}</p>
+                    {errors.ItemDetails && (
+                      <p className="text-xs font-medium text-red-600">{errors.ItemDetails.message}</p>
                     )}
                   </div>
 
                   {/* Contact */}
                   <div className="space-y-1.5">
-                    <label className="flex items-center gap-1.5 text-sm font-semibold text-[#01241a]">
+                    <label htmlFor="UserPhoneNumber" className="flex items-center gap-1.5 text-sm font-semibold text-[#01241a]">
                       <Phone className="size-4 text-[#064e3b]" />
-                      WhatsApp / Phone number
+                      WhatsApp / Phone Number
                       <span className="text-red-500">*</span>
                     </label>
                     <Input
-                      {...register("contact")}
+                      id="UserPhoneNumber"
+                      {...register("UserPhoneNumber")}
                       placeholder="e.g. 234 80 1234 5678"
                       inputMode="tel"
                       autoComplete="tel"
                       className="h-11 bg-white border-gray-200 focus:border-emerald-500"
                     />
-                    {errors.contact && (
-                      <p className="text-xs font-medium text-red-600">{errors.contact.message}</p>
+                    {errors.UserPhoneNumber && (
+                      <p className="text-xs font-medium text-red-600">{errors.UserPhoneNumber.message}</p>
                     )}
                   </div>
 
@@ -483,7 +587,7 @@ function SuccessView({ form, requestId, onStartOver, onClose }) {
       <h3 className="mt-5 text-xl font-bold text-[#01241a]">Request submitted!</h3>
       <p className="mt-1.5 max-w-xs text-sm text-gray-500">
         We've received your request for{" "}
-        <span className="font-semibold text-[#01241a]">{form.itemName || "your item"}</span>.
+        <span className="font-semibold text-[#01241a]">{form.ItemName || form.itemName || "your item"}</span>.
         Our team will reach out on WhatsApp shortly.
       </p>
 
@@ -502,7 +606,7 @@ function SuccessView({ form, requestId, onStartOver, onClose }) {
         <div className="mt-2 flex items-center gap-2 text-sm text-gray-600">
           <Phone className="size-4 text-emerald-600" />
           <span className="font-medium text-[#01241a]">Contact:</span>
-          <span>{form.contact}</span>
+          <span>{form.UserPhoneNumber || form.contact}</span>
         </div>
       </motion.div>
 

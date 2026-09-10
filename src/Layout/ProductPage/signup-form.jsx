@@ -74,6 +74,8 @@ export function SignupForm({
     setFieldErrors({});
     setIsSubmitting(true);
 
+
+
     try {
       // 2. Supabase Auth Sign Up with metadata in options.data for database trigger
       const { data, error } = await supabase.auth.signUp({
@@ -86,8 +88,6 @@ export function SignupForm({
           },
         },
       });
-
-      console.log({ data, error });
 
       if (error) {
         setSignupError(error.message);

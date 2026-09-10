@@ -5,7 +5,7 @@ import { supabase } from '../supabaseClient';
 const fetchProducts = async () => {
   // 1) Fetch all products
   const { data: products, error } = await supabase
-    .from('ProductInformation')
+    .from('EachProductInformation')
     .select('*');
 
   if (error) throw error;

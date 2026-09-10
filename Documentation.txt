@@ -108,3 +108,7 @@ the app only writes to the real saved account basket when the user is actively l
 so logging out or browsing as a guest no longer destroys the saved wishlist
 
 28. I Built the My Requests page. refactor the layout of the Header compnent fr logged in users. Added a request empty state and error display. changed the UsercustomRequest database to All_Requests database. Guests and users share the same custom request modal component.
+
+29. I implemented scroll to top feature to fix the issue of the user not being able to scroll to the top of the page after navigating to a new page.
+
+30. I refactor, changed, the UserCustomRequest and UserRequest database into a single database i.e ALL_Request, which accepts both custom and product Requests from Guests and registered user. I encountered error during SIgnup or Auth which was solved using SQL function, security definer (This acts like giving the script a "Master Key" (admin rights) so strict database security rules (RLS) won't stop it from saving the profile) and triggers (that says it's ok for the backend function to insert or update rows in the profiles table). Now the login and signup process works perfectly for all users, even without an email address. I updated the CustomRequestModal to fetch the registered user phone number and autofill it in the contact filed input, the payload should contain the registered user name, phone number or else it should display as Guest.
