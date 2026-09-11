@@ -29,6 +29,7 @@ export default function SelectedRequestModal({ open, onClose, selectedProducts =
   const user = useSelector(selectCurrentUser);
   const profile = useSelector(selectUserProfile);
   const isAuthenticated = useSelector(selectIsAuthenticated);
+  const userId = isAuthenticated && (user?.id || profile?.id) ? (user?.id || profile?.id) : null;
 
   const [message, setMessage] = useState('');
   const [step, setStep] = useState('summary');
@@ -109,15 +110,19 @@ export default function SelectedRequestModal({ open, onClose, selectedProducts =
     try {
       const snapshot = [...selectedProducts];
       const payload = snapshot.map((product) => ({
-        userName: parsed.data.fullName,
-        userNumber: parsed.data.contact,
-        userMessages: parsed.data.message || message || '',
-        itemImage: product.imageUrl || product.ImageUrl || product.ProductName || '',
-        itemPrice: Number(product.ProductPrice || product.price || 0),
-        itemName: product.ProductName || product.name || 'Selected item',
+        user_id: userId || null,
+        userName: parsed.data.fullName || null,
+        UserPhoneNumber: parsed.data.contact || null,
+        ItemDetails: parsed.data.message || message || null,
+        ItemCategory: product?.Category ?? null,
+        ItemImage: product?.imageUrl ?? product?.ImageUrl ?? null,
+        ItemPrice: Number(product?.ProductPrice ?? product?.price ?? 0),
+        ItemName: product?.ProductName ?? product?.name ?? 'Selected item',
+        ReqType: 'Product Request',
+        status: 'pending',
       }));
 
-      const { error } = await supabase.from('UsersRequests').insert(payload);
+      const { error } = await supabase.from('All_Requests').insert(payload);
 
       if (error) throw error;
 
@@ -203,10 +208,10 @@ export default function SelectedRequestModal({ open, onClose, selectedProducts =
                   ))}
                 </div>
 
-                <div className="mt-4">
+                {/* <div className="mt-4">
                   <label className="mb-2 block text-sm font-medium text-gray-700">Optional message</label>
                   <Textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Add an optional message for this request (e.g. preferred color, condition)" />
-                </div>
+                </div> */}
 
                 <div className="mt-4 flex items-center justify-between">
                   <div className="text-sm text-gray-600">Total: <span className="font-semibold text-[#01241a]">₦{Number(total).toLocaleString()}</span></div>

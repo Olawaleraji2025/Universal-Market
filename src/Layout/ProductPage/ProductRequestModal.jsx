@@ -1,17 +1,15 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
-import { setStep, loginSetStep} from "../../features/FlowSlice";
+import { setStep, loginSetStep, resetFlow } from "../../features/FlowSlice";
 import { useNavigate } from "react-router-dom";
-import { MessageCircle, User, Check, Star, ArrowRight } from "lucide-react";
-import { TbCurrencyNaira } from "react-icons/tb";
+import { MessageCircle, User, Check, ArrowRight } from "lucide-react";
 import { IoCloseCircleOutline } from "react-icons/io5";
-import { resetFlow } from "../../features/FlowSlice";
 import GuestForm from "./GuestForm";
 import LoginForm from "./LoginForm";
-import {SignupForm} from "./signup-form"
+import { SignupForm } from "./signup-form";
 import { SuccessPage } from "./SuccessPage";
-import { clearClickedProduct } from "../../features/productDetailsClicked"
+import { clearClickedProduct } from "../../features/productDetailsClicked";
 import { resetForm } from "../../Hooks/formValidation";
 import { useParams } from "react-router-dom";
 import useShopProducts from "../../Hooks/useShopProducts";
@@ -34,44 +32,55 @@ const accountBenefits = [
 
 export default function RequestModal({ open, onClose }) {
   const { id } = useParams();
-   const { data: products = [] } = useShopProducts({
-        staleTime: 5 * 60 * 1000,
-      });
-      
+  const { data: products = [] } = useShopProducts({
+    staleTime: 5 * 60 * 1000,
+  });
+
   const clickedProduct = useSelector(
     (state) => state.productDetailsClicked?.clickedProduct
   );
 
-       const selectedProduct =
+  const selectedProduct =
     clickedProduct?.id != null ? clickedProduct : products.find((p) => String(p.id) === String(id));
-
-
 
   const flowStep = useSelector((state) => state.flow.step);
   const isAuthenticated = useSelector(selectIsAuthenticated);
-  // console.log(flowStep)
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const hasInitializedRef = useRef(false);
 
   useEffect(() => {
-    if (open && isAuthenticated && flowStep === "chooser") {
-      dispatch(setStep("guest"));
+    if (!open) {
+      hasInitializedRef.current = false;
+      return;
+    }
+
+    if (!hasInitializedRef.current) {
+      hasInitializedRef.current = true;
+
+      if (isAuthenticated && flowStep === "chooser") {
+        dispatch(setStep("guest"));
+      }
     }
   }, [open, isAuthenticated, flowStep, dispatch]);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      dispatch(resetFlow());
+      dispatch(resetForm());
+      return;
+    }
 
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
-  dispatch(resetFlow());
+        dispatch(resetFlow());
+        dispatch(resetForm());
         onClose();
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => {
-  dispatch(resetFlow());
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [open, onClose, dispatch]);
@@ -90,6 +99,8 @@ const showImage = activeStep === "chooser" || activeStep === "guest" || activeSt
 
   const handleBackdropClick = (event) => {
     if (event.target === event.currentTarget) {
+      dispatch(resetFlow());
+      dispatch(resetForm());
       onClose();
     }
   };
@@ -116,7 +127,13 @@ const showImage = activeStep === "chooser" || activeStep === "guest" || activeSt
                   Complete your request.
                 </p>
               </div> 
-              <IoCloseCircleOutline size={24} onClick={() => handleContinueShopping()} />
+              <IoCloseCircleOutline
+                size={24}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  handleContinueShopping();
+                }}
+              />
             </div>
 
             
@@ -211,7 +228,10 @@ const showImage = activeStep === "chooser" || activeStep === "guest" || activeSt
                 >
                   <motion.div>
                     <button
-                      onClick={() => dispatch(setStep("guest"))}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        dispatch(setStep("guest"));
+                      }}
                       className="group relative w-full text-left rounded-2xl border-2 border-emerald-700 bg-emerald-50 p-3 sm:p-5 shadow-sm hover:shadow-md hover:border-emerald-700 hover:bg-emerald-100/60 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:ring-offset-2"
                     >
                       {/* <span className="absolute -top-3 left-4 hidden sm:inline-flex items-center gap-1 bg-emerald-700 text-white text-[11px] font-bold px-3 py-0.5 rounded-full shadow-sm">
@@ -236,8 +256,8 @@ const showImage = activeStep === "chooser" || activeStep === "guest" || activeSt
                             key={b}
                             className="flex items-center gap-2 text-sm text-emerald-800 font-medium"
                           >
-                            <span className="w-4 h-4 rounded-full bg-emerald-700/20 flex items-center justify-center flex-shrink-0">
-                              <Check className="w-2.5 h-2.5 text-emerald-700 stroke-[3]" />
+                            <span className="w-4 h-4 rounded-full bg-emerald-700/20 flex items-center justify-center shrink-0">
+                              <Check className="w-2.5 h-2.5 text-emerald-700 stroke-3" />
                             </span>
                             {b}
                           </li>
@@ -253,7 +273,10 @@ const showImage = activeStep === "chooser" || activeStep === "guest" || activeSt
 
                   <motion.div>
                     <button
-                      onClick={() => dispatch(loginSetStep("login"))}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        dispatch(loginSetStep("login"));
+                      }}
                       className="group w-full text-left rounded-2xl border-2 border-gray-200 bg-white p-3 sm:p-5 shadow-sm hover:shadow-md hover:border-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
                     >
                       <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gray-100 flex items-center justify-center mb-3 mt-1 group-hover:bg-gray-200 transition-colors duration-200">
@@ -273,8 +296,8 @@ const showImage = activeStep === "chooser" || activeStep === "guest" || activeSt
                             key={b}
                             className="flex items-center gap-2 text-sm text-gray-600 font-medium"
                           >
-                            <span className="w-4 h-4 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
-                              <Check className="w-2.5 h-2.5 text-gray-500 stroke-[3]" />
+                            <span className="w-4 h-4 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
+                              <Check className="w-2.5 h-2.5 text-gray-500 stroke-3" />
                             </span>
                             {b}
                           </li>
