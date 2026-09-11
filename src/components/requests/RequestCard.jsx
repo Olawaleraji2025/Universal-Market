@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ChevronRight, ShoppingBag } from 'lucide-react';
 
 const statusStyles = {
@@ -9,6 +9,15 @@ const statusStyles = {
 };
 
 export default function RequestCard({ item, onClick }) {
+  const [imageError, setImageError] = useState(false);
+
+  const isProductRequest =
+    (item?.ReqType || item?.reqType || '')?.trim()?.toLowerCase() === 'product request' ||
+    Boolean(item?.isProductRequest) ||
+    (!item?.isCustom && Boolean(item?.ProductImage));
+
+  const showProductImage = isProductRequest && Boolean(item?.ProductImage) && !imageError;
+
   return (
     <button
       onClick={onClick}
@@ -16,10 +25,19 @@ export default function RequestCard({ item, onClick }) {
       aria-label={`${item.title} request, status ${item.status}`}
     >
       <div className="flex-shrink-0 w-14 h-14 rounded-lg bg-gray-50 flex items-center justify-center">
-        {item.isCustom ? (
-          <div className="text-emerald-700"><ShoppingBag className="w-6 h-6" /></div>
+        {showProductImage ? (
+          <div className="w-12 h-12 bg-gray-100 rounded-md overflow-hidden flex items-center justify-center">
+            <img
+              src={item.ProductImage}
+              alt={item.title || 'Product'}
+              className="w-full h-full object-cover"
+              onError={() => setImageError(true)}
+            />
+          </div>
         ) : (
-          <div className="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center text-gray-500 font-semibold">IMG</div>
+          <div className="text-emerald-700">
+            <ShoppingBag className="w-6 h-6" />
+          </div>
         )}
       </div>
 

@@ -98,14 +98,7 @@ export default function MyRequestsPage() {
             filtered.map((r) => (
               <RequestCard
                 key={r.id}
-                item={{
-                  id: r.id,
-                  title: r.title,
-                  specs: r.specs,
-                  date: r.date,
-                  status: r.status,
-                  isCustom: r.isCustom,
-                }}
+                item={r}
                 onClick={() => navigate(`/requests/${r.id}`)}
               />
             ))

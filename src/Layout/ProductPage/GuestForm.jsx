@@ -24,6 +24,9 @@ export default function GuestForm({ onClose }) {
   const profile = useSelector(selectUserProfile);
   const isAuthenticated = useSelector(selectIsAuthenticated);
 
+  // Registered userId if logged in, else null for guest
+  const userId = (isAuthenticated && (user?.id || profile?.id)) ? (user?.id || profile?.id) : null;
+
   // This state tracks any submission error messages to display to the user.
   const [submissionError, setSubmissionError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -130,22 +133,28 @@ const onSubmit = async (values) => {
 
   // Step 3: If the Guard says "Yes!", send to Supabase
   const payload = {
-    userName: values.fullName,
-    userNumber: values.contact,
-    userMessages: values.message ?? "",
+    user_id: userId || null,
+    userName: values.fullName || null,
+    UserPhoneNumber: values.contact || null,
+    ItemDetails: values.message || null,
 
     // Ensure the mapping matches your Supabase table expectations
-    itemImage: selectedProduct?.imageUrl ?? null,
-    itemPrice: rawPrice ?? null,
-    itemName: selectedProduct?.ProductName ?? null,
+    ItemCategory: selectedProduct?.Category ?? null,
+    ItemImage: selectedProduct?.imageUrl ?? null,
+    ItemPrice: rawPrice ?? null,
+    ItemName: selectedProduct?.ProductName ?? null,
+    ReqType: "Product Request",
+    status: "pending"
   };
 
-  const { error } = await supabase.from("UsersRequests").insert([payload]);
+  const { error } = await supabase.from("All_Requests").insert([payload]);
 
+  console.log({payload, selectedProduct})
 
   if (error) {
     // setSubmissionError(error.message);
-     toast.error("Failed to submit request. Please try again.");
+    toast.error("Failed to submit request. Please try again.");
+    setIsSubmitting(false);
   } else {
     dispatch(SuccessSetStep());
   }

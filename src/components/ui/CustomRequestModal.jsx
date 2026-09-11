@@ -8,6 +8,7 @@ import {
   X,
   Search,
   Phone,
+  User,
   Wallet,
   ListChecks,
   Send,
@@ -64,6 +65,7 @@ const CATEGORY_OPTIONS = [
 ];
 
 const initialForm = {
+  userName: "",
   ItemName: "",
   ItemCategory: "",
   ItemBudget: "",
@@ -105,7 +107,22 @@ export default function RequestModal({ open, onClose, initialItemName = "" }) {
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(requestItemSchema),
-    defaultValues: { ...initialForm, ItemName: initialItemName || initialForm.ItemName },
+    defaultValues: {
+      ...initialForm,
+      userName:
+        userProfile?.full_name ||
+        currentUser?.user_metadata?.full_name ||
+        currentUser?.user_metadata?.name ||
+        "",
+      ItemName: initialItemName || initialForm.ItemName,
+      UserPhoneNumber:
+        userProfile?.phone_number ||
+        userProfile?.phone ||
+        currentUser?.user_metadata?.phone_number ||
+        currentUser?.user_metadata?.phone ||
+        currentUser?.phone ||
+        "",
+    },
     mode: "onSubmit",
     reValidateMode: "onChange",
   });
@@ -118,9 +135,22 @@ export default function RequestModal({ open, onClose, initialItemName = "" }) {
     }
   }, [initialItemName, open, setValue]);
 
-  // Autofill contact if user is logged in and phone field is empty
+  // Autofill name and contact if user is logged in
   useEffect(() => {
     if (!open) return;
+
+    const currentName = getValues("userName");
+    if (!currentName) {
+      const autofillName =
+        userProfile?.full_name ||
+        currentUser?.user_metadata?.full_name ||
+        currentUser?.user_metadata?.name ||
+        "";
+      if (autofillName) {
+        setValue("userName", autofillName, { shouldValidate: true, shouldDirty: false });
+      }
+    }
+
     const currentPhone = getValues("UserPhoneNumber");
     if (!currentPhone) {
       const autofill =
@@ -238,10 +268,19 @@ export default function RequestModal({ open, onClose, initialItemName = "" }) {
     setRequestId(`UM-${Math.floor(100000 + Math.random() * 900000)}`);
 
     try {
-      const { userName, userPhoneNumber, UserPhoneNumber } = await getRequestUserName();
+      const { userName: fallbackUserName, userPhoneNumber, UserPhoneNumber } = await getRequestUserName();
+      const submittedName = (
+        data.userName ||
+        fallbackUserName ||
+        userProfile?.full_name ||
+        currentUser?.user_metadata?.full_name ||
+        currentUser?.user_metadata?.name ||
+        "Guest"
+      ).trim();
+
       const payload = {
         user_id: currentUser?.id || null,
-        userName: userName || 'Guest',
+        userName: submittedName || 'Guest',
         status: "pending",
         ReqType: "Custom Request",
         ItemName: (data.ItemName || data.itemName || "").trim(),
@@ -484,6 +523,25 @@ export default function RequestModal({ open, onClose, initialItemName = "" }) {
                     )}
                   </div>
 
+                  {/* Full Name */}
+                  <div className="space-y-1.5">
+                    <label htmlFor="userName" className="flex items-center gap-1.5 text-sm font-semibold text-[#01241a]">
+                      <User className="size-4 text-[#064e3b]" />
+                      Full Name
+                      <span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      id="userName"
+                      {...register("userName")}
+                      placeholder="e.g. Raji Olawale"
+                      autoComplete="name"
+                      className="h-11 bg-white border-gray-200 focus:border-emerald-500"
+                    />
+                    {errors.userName && (
+                      <p className="text-xs font-medium text-red-600">{errors.userName.message}</p>
+                    )}
+                  </div>
+
                   {/* Contact */}
                   <div className="space-y-1.5">
                     <label htmlFor="UserPhoneNumber" className="flex items-center gap-1.5 text-sm font-semibold text-[#01241a]">
@@ -603,6 +661,13 @@ function SuccessView({ form, requestId, onStartOver, onClose }) {
           <span className="font-medium text-[#01241a]">Request ID:</span>
           <span className="font-mono text-emerald-700">{requestId}</span>
         </div>
+        {form.userName && (
+          <div className="mt-2 flex items-center gap-2 text-sm text-gray-600">
+            <User className="size-4 text-emerald-600" />
+            <span className="font-medium text-[#01241a]">Name:</span>
+            <span>{form.userName}</span>
+          </div>
+        )}
         <div className="mt-2 flex items-center gap-2 text-sm text-gray-600">
           <Phone className="size-4 text-emerald-600" />
           <span className="font-medium text-[#01241a]">Contact:</span>

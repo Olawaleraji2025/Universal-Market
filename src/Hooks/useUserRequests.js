@@ -18,26 +18,47 @@ export const normalizeRequest = (r) => {
       formattedDate = String(rawDate);
     }
   }
+  
+  const productImage =
+    r?.ProductImage ||
+    r?.ItemImage ||
+    r?.itemImage ||
+    r?.imageUrl ||
+    r?.ImageUrl ||
+    r?.image ||
+    null;
+
+  const rawReqType = r?.ReqType || r?.reqType || r?.req_type || '';
+  const isProductRequest =
+    rawReqType.trim().toLowerCase() === 'product request' ||
+    (!rawReqType && Boolean(productImage));
+  const reqType = isProductRequest ? 'Product Request' : (rawReqType || 'Custom Request');
+
+  const itemPrice = r?.ItemPrice ?? r?.itemPrice ?? r?.price ?? r?.ProductPrice ?? null;
+  const itemBudget = r?.ItemBudget ?? r?.itemBudget ?? r?.budget ?? null;
 
   return {
     ...r,
     id: r?.id,
     title: r?.ItemName || r?.title || r?.request_title || r?.name || 'Custom Request',
-    specs:
-      r?.ItemDetails ||
-      r?.specs ||
-      r?.description ||
-      r?.details ||
-      (r?.ItemCategory ? `Category: ${r.ItemCategory}` : 'No additional specifications provided'),
+    specs: r?.ItemDetails || r?.userMessages || 'No extra specifications provided.',
     date: formattedDate || 'Recently',
     rawDate: rawDate,
     status: r?.status || 'Pending',
-    isCustom: r?.is_custom !== undefined ? !!r.is_custom : true,
+    ReqType: reqType,
+    reqType: reqType,
+    isProductRequest: isProductRequest,
+    isCustom: !isProductRequest,
     category: r?.ItemCategory || r?.category || 'General',
-    budget: r?.ItemBudget || r?.budget || null,
+    budget: itemBudget,
+    ItemBudget: itemBudget,
+    price: itemPrice,
+    ItemPrice: itemPrice,
     contact: r?.UserPhoneNumber || r?.contact || '',
+    ProductImage: productImage,
   };
 };
+
 
 const fetchUserRequests = async (userId) => {
   let query = supabase

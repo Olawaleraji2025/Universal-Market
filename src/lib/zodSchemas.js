@@ -122,6 +122,10 @@ export const requestContactSchema = z
 // The final schema for the RequestModal form.
 // It describes the exact shape of the data react-hook-form validates.
 export const requestItemSchema = z.object({
+  userName: z
+    .string()
+    .trim()
+    .min(1, { message: "Full Name is required." }),
   ItemName: itemNameSchema,
   ItemCategory: categorySchema,
   ItemBudget: budgetSchema,
