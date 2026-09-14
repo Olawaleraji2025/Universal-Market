@@ -48,6 +48,7 @@ export const {
 
 export const selectCurrentUser = (state) => state.auth.user;
 export const selectUserProfile = (state) => state.auth.profile;
+export const selectAuthLoading = (state) => state.auth.loading;
 export const selectUserRole = (state) =>
   state.auth.profile?.role ||
   state.auth.user?.user_metadata?.role ||

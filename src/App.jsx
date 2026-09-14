@@ -3,19 +3,22 @@ import './App.css'
 
 import { Navbar } from './components/ui/Header';
 import { Footer } from './components/ui/Footer';
-import { Routes, Route, useLocation } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { HomePage } from './pages/LandingPage';
 import ShopPage from './pages/ShopPage';
 import { ProductPage } from './pages/ProductPage';
 import WishListPage from './pages/WishListPage';
 import MyRequestsPage from './pages/MyRequestsPage';
 import RequestDetailsPage from './pages/RequestDetailsPage';
+import ProfilePage from './pages/ProfilePage';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
 import { Toaster } from './components/ui/sonner';
 import NetworkConnectionModal from './components/ui/NetworkConnectionModal';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useAuthListener } from './Hooks/useAuthListener';
-import { selectCurrentUser } from './features/authSlice';
+import { selectAuthLoading, selectCurrentUser, selectIsAuthenticated } from './features/authSlice';
 import { canSyncWishlistToSupabase, selectWishlistIds, syncWishlistToSupabase } from './features/wishlistSlice';
 
 function ScrollToTop() {
@@ -27,6 +30,27 @@ function ScrollToTop() {
 
   return null;
 }
+
+const ProtectedRoute = ({ children }) => {
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const isAuthLoading = useSelector(selectAuthLoading);
+
+  if (isAuthLoading) {
+    return (
+      <div className="min-h-[50vh] flex items-center justify-center px-4">
+        <div className="h-10 w-10 animate-spin rounded-full border-2 border-emerald-200 border-t-emerald-700" aria-label="Loading" />
+      </div>
+    );
+  }
+
+  const location = useLocation();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
+
+  return children;
+};
 
 const App = () => {
   useAuthListener();
@@ -71,21 +95,28 @@ const App = () => {
     }, 800);
   };
 
+  const { pathname } = useLocation();
+
+  const hideShell = pathname === '/login' || pathname === '/signup';
+
   return (
-    <div className="max-w-[1440px] mx-auto">
-      <Navbar />
+    <div className="mx-auto max-w-[90rem]">
+      {!hideShell && <Navbar />}
       <div className="min-h-screen bg-[#f8fafc] font-sans text-gray-900 ">
         <ScrollToTop />
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
           <Route path="/shop" element={<ShopPage />} />
           <Route path="/wishlist" element={<WishListPage />} />
-          <Route path="/my-requests" element={<MyRequestsPage />} />
-          <Route path="/requests/:id" element={<RequestDetailsPage />} />
           <Route path="/product/:id" element={<ProductPage />} />
+          <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+          <Route path="/my-requests" element={<ProtectedRoute><MyRequestsPage /></ProtectedRoute>} />
+          <Route path="/requests/:id" element={<ProtectedRoute><RequestDetailsPage /></ProtectedRoute>} />
         </Routes>
       </div>
-      <Footer />
+      {!hideShell && <Footer />}
 
       <NetworkConnectionModal
         open={isOffline}

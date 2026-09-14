@@ -58,6 +58,7 @@ export const Navbar = () => {
       await supabase.auth.signOut();
       dispatch(clearAuth());
       toast.success("Logged out successfully");
+      navigate('/login', { replace: true });
     } catch (err) {
       console.error("Logout error:", err);
       toast.error("Error signing out");
