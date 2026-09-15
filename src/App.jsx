@@ -13,6 +13,8 @@ import RequestDetailsPage from './pages/RequestDetailsPage';
 import ProfilePage from './pages/ProfilePage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import UpdatePasswordPage from './pages/UpdatePasswordPage';
 import { Toaster } from './components/ui/sonner';
 import NetworkConnectionModal from './components/ui/NetworkConnectionModal';
 import { useEffect, useState } from 'react';
@@ -23,11 +25,11 @@ import { canSyncWishlistToSupabase, selectWishlistIds, syncWishlistToSupabase } 
 
 function ScrollToTop() {
   const { pathname } = useLocation();
-
+  
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, [pathname]);
-
+  
   return null;
 }
 
@@ -42,9 +44,9 @@ const ProtectedRoute = ({ children }) => {
       </div>
     );
   }
-
+  
   const location = useLocation();
-
+  
   if (!isAuthenticated) {
     return <Navigate to="/login" replace state={{ from: location }} />;
   }
@@ -97,7 +99,7 @@ const App = () => {
 
   const { pathname } = useLocation();
 
-  const hideShell = pathname === '/login' || pathname === '/signup';
+  const hideShell = pathname === '/login' || pathname === '/signup' || pathname === '/forgot-password' || pathname === '/update-password';
 
   return (
     <div className="mx-auto max-w-[90rem]">
@@ -108,6 +110,8 @@ const App = () => {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/update-password" element={<UpdatePasswordPage />} />
           <Route path="/shop" element={<ShopPage />} />
           <Route path="/wishlist" element={<WishListPage />} />
           <Route path="/product/:id" element={<ProductPage />} />

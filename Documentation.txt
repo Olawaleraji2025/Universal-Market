@@ -116,3 +116,64 @@ so logging out or browsing as a guest no longer destroys the saved wishlist
 31. I updated the My Requests page to display the product image in the request card if the request is a product request. Added an error modal to handle error cases. I added an input field for users to input their name, it autofills if the user is logged in. it has a validation to ensure that it is filled, if not it displays an error message. I modified the Request Card to display the product image if the request is a product request. I adjust staleTime for user requests and enhance SelectedRequestModal payload structure
 
 32. I realized that some pages like my-requests, wishlist e.t.c can be access by guest using the search parameter, so i need to provide a protected route or create a 404 page or a page asking to sign up or login for guests trying to access it, just like the profile page is protected by urlsearchparameter query. I removed the navbar after the user logged out and added a Home button.
+
+33. Implemented a delete account feature. I leant that deleting a sensitive data like this requires Admin previledge and the service Anon key should not be expose in the Client side. In Supabase: 
+Backend Logic	Create a SECURITY DEFINER SQL function with auth.uid().
+Child Tables	Set Foreign Keys to ON DELETE CASCADE.
+Frontend Call	Use supabase.rpc('function_name').
+Session Cleanup	Call supabase.auth.signOut() immediately after a successful delete.
+
+34. I Implemented the forgot password feature. I learnt that:
+Here is a complete summary of all the key lessons, architectural decisions, and
+security insights we covered for implementing the Forgot / Reset Password
+feature in React and Supabase:
+
+1. The Two-Phase Recovery Model
+
+Password recovery is broken into two isolated phases:
+
+  - Phase 1 (Request): supabase.auth.resetPasswordForEmail(email, { redirectTo
+    }) tells Supabase to generate a secure, temporary token and email it to the
+    user.
+  - Phase 2 (Update): When clicked, the link automatically establishes an
+    authenticated recovery session in the browser, allowing
+    supabase.auth.updateUser({ password }) to work without asking for the old
+    password.
+
+2. Don’t Check Email Existence on the Client (User Enumeration)
+
+  - What you learned: You do not need to manually check if an email exists
+    before sending a reset link.
+  - Why: Supabase checks this on the server automatically. If an email doesn't
+    exist, Supabase silently does nothing and returns a success response to
+    prevent attackers from finding out who has an account on your app (User
+    Enumeration Protection).
+
+3. The Dashboard Redirect URL is Mandatory
+
+  - The Rule: If the URL in your frontend redirectTo parameter (e.g.,
+    http://localhost:5173/update-password) is not explicitly added to Supabase
+    Dashboard \rightarrow Authentication \rightarrow URL Configuration
+    \rightarrow Redirect URLs, Supabase will reject the link for security
+    reasons.
+
+4. Default SMTP vs. Production Providers
+
+  - For Testing/Development: Supabase provides an out-of-the-box email service
+    immediately without any third-party setup (rate-limited to ~30 emails/hr).
+  - For Production: You should connect a custom SMTP provider (Resend, SendGrid,
+    Postmark) to improve deliverability, prevent spam folder issues, and use
+    your own domain name.
+
+5. The "Unattended Laptop" Security Realization
+
+  - The Vulnerability: supabase.auth.updateUser() only checks for an active
+    session. If a logged-in user or an attacker with access to an open browser
+    visits /update-password, they could change the password without providing
+    the old one.
+  - The Good Architecture:
+      - Forgot Password (Logged Out): Must strictly require the
+        PASSWORD_RECOVERY auth event triggered by the email link.
+      - Change Password (Logged In / Account Settings): Must prompt the user for
+        their Current / Old Password before calling updateUser.
+

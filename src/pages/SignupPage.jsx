@@ -17,10 +17,11 @@ export default function SignupPage() {
           <div className="mt-4">
             <button
               type="button"
-              className="w-full px-4 py-2 rounded-xl bg-indigo-600 text-white border border-indigo-600 hover:bg-indigo-700"
+              className="w-full px-4 py-2 rounded-xl text-gray-600
+hover:text-green-700 hover:underline transition-colors duration-200 cursor-pointer"
               onClick={() => navigate('/')}
             >
-              Go back home
+              Home
             </button>
           </div>
         </div>

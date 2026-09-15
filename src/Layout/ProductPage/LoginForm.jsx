@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from "react-redux";
 import {
   Field,
@@ -20,7 +21,8 @@ export default function LoginForm({
   onSuccess,
 }) {
   const dispatch = useDispatch();
-
+ const navigate = useNavigate();
+  const location = useLocation();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -157,6 +159,14 @@ export default function LoginForm({
           </FieldContent>
         </Field>
       </div>
+
+       <button
+              type="button"
+              onClick={() => navigate('/forgot-password')}
+              className="w-full px-4 py-2 rounded-xl text-emerald-600 font-medium hover:text-emerald-700 hover:bg-emerald-50 transition-colors duration-200 cursor-pointer"
+            >
+              Forgot Password?
+            </button>
 
       <div className="block gap-3 items-center">
         <Button

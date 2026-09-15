@@ -5,6 +5,7 @@ import { ArrowLeft, Mail, Phone, UserRound } from 'lucide-react';
 import { selectCurrentUser, selectUserProfile, setProfile } from '../features/authSlice';
 import { supabase } from '../supabaseClient';
 import Button from '../components/ui/button';
+import DeleteAccountModal from '../components/ui/DeleteAccountModal';
 
 const formatLabel = (value, fallback = 'Not provided') => {
   if (typeof value === 'string') {
@@ -197,15 +198,25 @@ export default function ProfilePage() {
               ))}
             </section>
 
-            <div className="flex justify-center pt-2">
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => navigate('/')}
-                className="w-full max-w-xs border border-emerald-600 bg-white text-emerald-700 hover:bg-emerald-50"
-              >
-                Back to home
-              </Button>
+            <div className="space-y-3">
+              <div className="flex justify-center">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => navigate('/')}
+                  className="w-full max-w-xs border border-emerald-600 bg-white text-emerald-700 hover:bg-emerald-50"
+                >
+                  Back to home
+                </Button>
+              </div>
+
+              {/* Delete Account Section */}
+              <div className="rounded-2xl border border-gray-200 bg-white px-4 py-4 shadow-sm sm:px-6">
+                <p className="mb-4 text-sm text-slate-600">
+                  Permanently delete your account and all associated data.
+                </p>
+                <DeleteAccountModal />
+              </div>
             </div>
           </main>
         )}
