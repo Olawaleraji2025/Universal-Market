@@ -20,10 +20,11 @@ const filters = [
   "All",
   "Phones",
   "Laptops",
-  "TVs",
-  "Refrigerators",
-  "Gaming Consoles",
-  "Appliances",
+  "Gadgets",
+  "Audio & Studio Equipment",
+  "Home Appliances",
+  "Real Estate",
+  "Cars & Motorcycles",
 ];
 
 export default function ShopProductList() {

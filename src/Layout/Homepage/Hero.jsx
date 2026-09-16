@@ -8,7 +8,7 @@ export const Hero = () => {
     const navigate = useNavigate();
 
   return (<>
-  <section className="px-6 py-12 max-w-7xl mx-auto grid grid-cols-auto gap-12 items-center min-[750px]:grid-cols-2 min-[750px]:py-6.25">
+  <section className="px-6 py-12 max-w-7xl mx-auto grid grid-cols-auto gap-2 items-center min-[750px]:grid-cols-2 min-[750px]:py-6.25">
     <div className="block my-0 mx-auto text-center max-w-100 min-[750px]:text-left max-w-max ">
       <h1 className="text-[31px] text-xl font-bold text-[#01241a] leading-tight mb-6 lg:text-[40px] lg:leading-tight">
         Buy Quality Pre-Owned Gadgets & Appliances You Can Trust
@@ -26,12 +26,12 @@ export const Hero = () => {
       </div>
     </div>
     
-    <div className="hidden min-[450px]:block object-contain">
+    <div className="max-w-[424px]:object-cover ">
       <div className="">
         <img 
           src={heroImage} 
           alt="Gadgets montage" 
-          className="rounded-2xl w-full h-100 object-contain min-[900px]:object-cover"
+          className="rounded-2xl w-full h-100 min-[900px]:object-cover"
         />
         {/* <div className="absolute bottom-10 -left-6 bg-[#99f6e4] p-4 rounded-xl shadow-lg">
           <p className="text-2xl font-bold text-[#01241a]">₦150k+</p>

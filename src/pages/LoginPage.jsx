@@ -2,20 +2,19 @@ import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import LoginForm from '../Layout/ProductPage/LoginForm';
 import { selectIsAuthenticated } from '../features/authSlice';
-import { ArrowLeft } from 'lucide-react';
+import { resolveAuthRedirect, saveReturnTarget } from '../lib/authRedirect';
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const isAuthenticated = useSelector(selectIsAuthenticated);
+  const from = resolveAuthRedirect(location, '/profile');
 
   if (isAuthenticated) {
-    const from = location.state?.from?.pathname || '/profile';
     return <Navigate to={from} replace />;
   }
 
-  const handleSuccess = (data) => {
-    const from = location.state?.from?.pathname || '/profile';
+  const handleSuccess = () => {
     navigate(from, { replace: true });
   };
 
@@ -26,7 +25,14 @@ export default function LoginPage() {
           <LoginForm
             showBackButton={false}
             onSuccess={handleSuccess}
-            onSwitchToSignup={() => navigate('/signup')}
+            onSwitchToSignup={() => {
+              saveReturnTarget(location);
+              navigate('/signup', {
+                state: {
+                  from: location.state?.from || { pathname: from },
+                },
+              });
+            }}
           />
 
           <div className="mt-4 flex items-center justify-between gap-2 ">

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 
 export default function MobileSidebar({ user: userProp = null, onOpenAuth }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
 
   const { user: authUser, profile } = useSelector((state) => state.auth);
@@ -101,6 +102,18 @@ export default function MobileSidebar({ user: userProp = null, onOpenAuth }) {
       await supabase.auth.signOut();
       dispatch(clearAuth());
       setOpen(false);
+
+      const isAuthRequiredRoute =
+        location.pathname === '/profile' ||
+        location.pathname === '/my-requests' ||
+        location.pathname.startsWith('/requests/') ||
+        location.pathname === '/update-password';
+
+      if (isAuthRequiredRoute) {
+        navigate('/login', { replace: true });
+        return;
+      }
+
       toast.success("Logged out successfully");
     } catch (err) {
       console.error("Logout error:", err);

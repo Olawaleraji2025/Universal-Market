@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Button from "../ui/button";
 import MobileSidebar from "./MobileSidebar";
 import UserMenu from "./UserMenu";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import logo from "../../assets/logos/UM-logo.png";
 import LoginForm from "../../Layout/ProductPage/LoginForm";
 import { SignupForm } from "../../Layout/ProductPage/signup-form";
@@ -15,6 +15,7 @@ import { toast } from "sonner";
 
 export const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
 
   const { user, profile } = useSelector((state) => state.auth);
@@ -57,8 +58,19 @@ export const Navbar = () => {
     try {
       await supabase.auth.signOut();
       dispatch(clearAuth());
+
+      const isAuthRequiredRoute =
+        location.pathname === '/profile' ||
+        location.pathname === '/my-requests' ||
+        location.pathname.startsWith('/requests/') ||
+        location.pathname === '/update-password';
+
+      if (isAuthRequiredRoute) {
+        navigate('/login', { replace: true });
+        return;
+      }
+
       toast.success("Logged out successfully");
-      navigate('/login', { replace: true });
     } catch (err) {
       console.error("Logout error:", err);
       toast.error("Error signing out");

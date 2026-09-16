@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Lock, CheckCircle, AlertCircle, ArrowLeft } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 import Button from '../components/ui/button';
 import { Input } from '../components/ui/input';
+import { resolveAuthRedirect } from '../lib/authRedirect';
 
 const MIN_PASSWORD_LENGTH = 6;
 
@@ -27,6 +28,8 @@ const MIN_PASSWORD_LENGTH = 6;
  */
 export default function UpdatePasswordPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const returnTo = resolveAuthRedirect(location, '/profile');
 
   // Auth verification state
   const [isVerifying, setIsVerifying] = useState(true);
@@ -186,9 +189,9 @@ export default function UpdatePasswordPage() {
       setNewPassword('');
       setConfirmPassword('');
 
-      // Auto-redirect to login after 2 seconds
+      // Resume the user where they left off after a successful reset.
       setTimeout(() => {
-        navigate('/login', { replace: true });
+        navigate(returnTo, { replace: true });
       }, 2000);
     } catch (err) {
       console.error('Password update failed:', err);

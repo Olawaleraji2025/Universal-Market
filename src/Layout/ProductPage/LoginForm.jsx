@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Navigate, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from "react-redux";
 import {
   Field,
@@ -14,6 +14,7 @@ import { resetFlow, SignupSetStep } from "../../features/FlowSlice";
 import { loginSchema } from "../../lib/zodSchemas";
 import { supabase } from "../../supabaseClient";
 import { toast } from "sonner";
+import { saveReturnTarget } from "../../lib/authRedirect";
 
 export default function LoginForm({
   showBackButton = true,
@@ -44,6 +45,8 @@ export default function LoginForm({
 
   const handleSwitchToSignup = (e) => {
     e?.preventDefault();
+    const returnFrom = location.state?.from || { pathname: '/' };
+    saveReturnTarget({ state: { from: returnFrom } });
     if (onSwitchToSignup) {
       onSwitchToSignup();
     } else {
@@ -162,8 +165,12 @@ export default function LoginForm({
 
        <button
               type="button"
-              onClick={() => navigate('/forgot-password')}
-              className="w-full px-4 py-2 rounded-xl text-emerald-600 font-medium hover:text-emerald-700 hover:bg-emerald-50 transition-colors duration-200 cursor-pointer"
+              onClick={() => {
+                const returnFrom = location.state?.from || { pathname: '/' };
+                saveReturnTarget({ state: { from: returnFrom } });
+                navigate('/forgot-password', { state: { from: returnFrom } });
+              }}
+              className="underline text-green-800 font-semibold cursor-pointer hover:text-green-950 p-0 bg-transparent border-none text-sm block ml-auto"
             >
               Forgot Password?
             </button>

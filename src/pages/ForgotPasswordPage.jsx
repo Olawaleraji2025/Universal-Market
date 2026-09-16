@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 import Button from '../components/ui/button';
 import { Input } from '../components/ui/input';
+import { saveReturnTarget } from '../lib/authRedirect';
 
 /**
  * ForgotPasswordPage Component
@@ -20,6 +21,7 @@ import { Input } from '../components/ui/input';
  */
 export default function ForgotPasswordPage() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Form state
   const [email, setEmail] = useState('');
@@ -86,7 +88,9 @@ export default function ForgotPasswordPage() {
 
       // Auto-redirect after 3 seconds
       setTimeout(() => {
-        navigate('/login');
+        const returnFrom = location.state?.from || { pathname: '/' };
+        saveReturnTarget({ state: { from: returnFrom } });
+        navigate('/login', { state: { from: returnFrom } });
       }, 3000);
     } catch (err) {
       console.error('Password reset request failed:', err);
@@ -106,7 +110,11 @@ export default function ForgotPasswordPage() {
         <div className="mb-8">
           <button
             type="button"
-            onClick={() => navigate('/login')}
+            onClick={() => {
+              const returnFrom = location.state?.from || { pathname: '/' };
+              saveReturnTarget({ state: { from: returnFrom } });
+              navigate('/login', { state: { from: returnFrom } });
+            }}
             className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-emerald-700 transition hover:text-emerald-800"
             aria-label="Back to login"
           >
@@ -213,7 +221,11 @@ export default function ForgotPasswordPage() {
             Remember your password?{' '}
             <button
               type="button"
-              onClick={() => navigate('/login')}
+              onClick={() => {
+                const returnFrom = location.state?.from || { pathname: '/' };
+                saveReturnTarget({ state: { from: returnFrom } });
+                navigate('/login', { state: { from: returnFrom } });
+              }}
               className="font-medium text-emerald-600 transition hover:text-emerald-700"
             >
               Log in

@@ -1,8 +1,11 @@
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { SignupForm } from '../Layout/ProductPage/signup-form';
+import { resolveAuthRedirect, saveReturnTarget } from '../lib/authRedirect';
 
 export default function SignupPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const returnTo = resolveAuthRedirect(location, '/profile');
 
   return (
     <div className="min-h-screen bg-[#f8fafc] px-4 py-8">
@@ -10,8 +13,15 @@ export default function SignupPage() {
         <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
           <SignupForm
             showBackButton={false}
-            onSuccess={() => navigate('/profile', { replace: true })}
-            onSwitchToLogin={() => navigate('/login')}
+            onSuccess={() => navigate(returnTo, { replace: true })}
+            onSwitchToLogin={() => {
+              saveReturnTarget(location);
+              navigate('/login', {
+                state: {
+                  from: location.state?.from || { pathname: returnTo },
+                },
+              });
+            }}
           />
 
           <div className="mt-4">

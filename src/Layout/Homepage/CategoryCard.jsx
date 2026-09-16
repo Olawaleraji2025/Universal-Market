@@ -1,16 +1,27 @@
 
-import { Smartphone, Laptop, Tv, ChevronLeft, ChevronRight, Refrigerator, Gamepad2  } from "lucide-react";
-import { GiWashingMachine } from "react-icons/gi";
+import {
+  Smartphone,
+  Laptop,
+  Home,
+  Building2,
+  CarFront,
+  Headphones,
+  ChevronLeft,
+  ChevronRight,
+  Cpu,
+} from "lucide-react";
 import { CiCircleMore } from "react-icons/ci";
 import { useNavigate } from 'react-router-dom';
 import { useRef } from 'react';
 
-const theIcons = [{ name: "Phones", icon: Smartphone },
+const theIcons = [
+  { name: "Phones", icon: Smartphone },
   { name: "Laptops", icon: Laptop },
-  { name: "TVs", icon: Tv },
- { name: "Refrigerators", icon: Refrigerator },
-  { name: "Gaming Consoles", icon: Gamepad2 },
-  { name: "Appliances", icon: GiWashingMachine },
+  { name: "Gadgets", icon: Cpu },
+  { name: "Audio & Studio Equipment", icon: Headphones },
+  { name: "Home Appliances", icon: Home },
+  { name: "Real Estate", icon: Building2 },
+  { name: "Cars & Motorcycles", icon: CarFront },
   { name: "Others", icon: CiCircleMore },
 ];
 
@@ -33,9 +44,11 @@ export default function CategoryCard() {
     });
   }
 
+
+
   return (
     <section className="mx-3 md:mx-11">
-      <div className="mb-4 flex items-center justify-between min-[1300px]:hidden">
+      <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="text-[18px] font-bold md:text-2xl">Popular Categories</h2>
 
         <div className="flex items-center gap-2">
@@ -60,7 +73,7 @@ export default function CategoryCard() {
 
       <div
         ref={scrollRef}
-        className="flex gap-4 overflow-x-auto pb-2 scroll-smooth"
+        className="flex gap-4 overflow-x-auto py-2 scroll-smooth"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {theIcons.map((item, index) => (

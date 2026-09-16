@@ -22,6 +22,7 @@ import { useSelector } from 'react-redux';
 import { useAuthListener } from './Hooks/useAuthListener';
 import { selectAuthLoading, selectCurrentUser, selectIsAuthenticated } from './features/authSlice';
 import { canSyncWishlistToSupabase, selectWishlistIds, syncWishlistToSupabase } from './features/wishlistSlice';
+import { saveReturnTarget } from './lib/authRedirect';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -34,6 +35,7 @@ function ScrollToTop() {
 }
 
 const ProtectedRoute = ({ children }) => {
+  const location = useLocation();
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const isAuthLoading = useSelector(selectAuthLoading);
 
@@ -44,10 +46,9 @@ const ProtectedRoute = ({ children }) => {
       </div>
     );
   }
-  
-  const location = useLocation();
-  
+
   if (!isAuthenticated) {
+    saveReturnTarget(location);
     return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
