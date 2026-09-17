@@ -119,7 +119,7 @@ export const Navbar = () => {
             >
               Wishlist
             </a>
-            <a
+            {/* <a
               href="#"
               className="hover:text-emerald-600 transition"
               onClick={(e) => {
@@ -136,7 +136,7 @@ export const Navbar = () => {
               }}
             >
               About
-            </a>
+            </a> */}
           </div>
 
           {/* Desktop Auth State / User Controls */}

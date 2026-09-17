@@ -99,9 +99,9 @@ const dispatch = useDispatch()
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ type: 'spring', duration: 0.6, delay: 0.1 }}
-        className="flex justify-center"
+        className="hidden min-w-[768px]:flex justify-center"
       >
-        <div className="w-20 h-20 bg-teal-100 rounded-full flex items-center justify-center">
+        <div className=" w-20 h-20 bg-teal-100 rounded-full flex items-center justify-center">
           <motion.svg
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
@@ -135,7 +135,7 @@ const dispatch = useDispatch()
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="mt-2 text-sm text-gray-600"
+          className="hidden max-w-[768px]:block mt-2 text-sm text-gray-600"
         >
           We've received your request and will continue the conversation on WhatsApp shortly.
         </motion.p>

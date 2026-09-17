@@ -5,6 +5,7 @@ import { createSlice } from "@reduxjs/toolkit";
 // guest    -> show GuestForm
 const initialState = {
   step: "chooser",
+  submitting: false,
 };
 
 const flowSlice = createSlice({
@@ -23,12 +24,15 @@ const flowSlice = createSlice({
     SuccessSetStep(state) {
       state.step = "success";
     },
+    setSubmitting(state, action) {
+      state.submitting = !!action.payload;
+    },
     resetFlow(state) {
       state.step = "chooser";
     },
   },
 });
 
-export const { setStep, loginSetStep, SignupSetStep, resetFlow, SuccessSetStep } = flowSlice.actions;
+export const { setStep, loginSetStep, SignupSetStep, resetFlow, SuccessSetStep, setSubmitting } = flowSlice.actions;
 export default flowSlice.reducer;
 

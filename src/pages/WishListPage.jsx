@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -21,9 +21,11 @@ import WishlistHeader from '../Layout/Wishlist/WishlistHeader';
 import WishlistEmptyState from '../Layout/Wishlist/WishlistEmptyState';
 import WishlistCard from '../Layout/Wishlist/WishlistCard';
 import { supabase } from '../supabaseClient';
+import { saveReturnTarget } from '../lib/authRedirect';
 
 export default function WishListPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { data: products = [], isLoading, isError, refetch } = useShopProducts();
   const dispatch = useDispatch();
   const wishlistIds = useSelector(selectWishlistIds);
@@ -64,17 +66,25 @@ export default function WishListPage() {
     message,
     fullName,
     contact,
-    selectedProducts = [],
+    selectWishlistIds,
     mode = 'guest',
   } = {}) => {
-    if (!selectedProducts.length) {
-      toast.error('Please select at least one product before submitting.');
+    // if (!selectWishlistIds.length) {
+    //   toast.error('Please select at least one product before submitting.');
+    //   return;
+    // }
+
+    if (mode === 'login') {
+      saveReturnTarget(location);
+      setShowSummary(false);
+      navigate('/login', { state: { from: location.state?.from || { pathname: '/wishlist' } } });
       return;
     }
 
-    if (mode === 'login') {
-      toast.info('Please log in or create an account to continue with your wishlist request.');
+    if (mode === 'signup') {
+      saveReturnTarget(location);
       setShowSummary(false);
+      navigate('/signup', { state: { from: location.state?.from || { pathname: '/wishlist' } } });
       return;
     }
 

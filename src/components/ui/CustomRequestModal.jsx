@@ -57,10 +57,11 @@ const SUGGESTED_ITEMS = [
 const CATEGORY_OPTIONS = [
   "Phones",
   "Laptops",
-  "TVs",
-  "Refrigerators",
-  "Gaming Consoles",
-  "Appliances",
+  "Gadgets",
+  "Audio & Studio Equipment",
+  "Home Appliances",
+  "Real Estate",
+  "Cars & Motorcycles",
   "Other",
 ];
 

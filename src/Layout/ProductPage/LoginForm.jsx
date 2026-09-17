@@ -10,16 +10,18 @@ import {
 } from "../../components/ui/field";
 import Button from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
-import { resetFlow, SignupSetStep } from "../../features/FlowSlice";
+import { resetFlow, SignupSetStep, setSubmitting } from "../../features/FlowSlice";
 import { loginSchema } from "../../lib/zodSchemas";
 import { supabase } from "../../supabaseClient";
 import { toast } from "sonner";
 import { saveReturnTarget } from "../../lib/authRedirect";
 
+
 export default function LoginForm({
   showBackButton = true,
   onSwitchToSignup,
   onSuccess,
+  onBack,
 }) {
   const dispatch = useDispatch();
  const navigate = useNavigate();
@@ -72,6 +74,7 @@ export default function LoginForm({
 
     setFieldErrors({});
     setIsSubmitting(true);
+    dispatch(setSubmitting(true));
 
     try {
       // 2. Supabase Auth Sign In
@@ -97,6 +100,7 @@ export default function LoginForm({
       toast.error(errMsg);
     } finally {
       setIsSubmitting(false);
+      dispatch(setSubmitting(false));
     }
   };
 
@@ -209,7 +213,13 @@ export default function LoginForm({
             <Button
               type="button"
               className="w-full px-6 py-3.5 bg-white text-gray-600 font-medium hover:bg-gray-50 transition-colors my-2 hover:text-black"
-              onClick={() => dispatch(resetFlow())}
+              onClick={() => {
+                if (onBack) {
+                  onBack();
+                } else {
+                  dispatch(resetFlow());
+                }
+              }}
               disabled={isSubmitting}
             >
               Back

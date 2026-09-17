@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { guestFormSchema } from "../../lib/zodSchemas";
 import { setClickedProduct } from "../../features/productDetailsClicked";
 import { supabase } from "../../supabaseClient";
-import { resetFlow, SuccessSetStep } from "../../features/FlowSlice";
+import { resetFlow, SuccessSetStep, setSubmitting } from "../../features/FlowSlice";
 import { validate, errors, resetForm } from "../../Hooks/formValidation";
 import { useParams } from "react-router-dom";
 import useShopProducts from "../../Hooks/useShopProducts";
@@ -103,11 +103,13 @@ export default function GuestForm({ onClose }) {
 
 const onSubmit = async (values) => {
   setIsSubmitting(true);
+  dispatch(setSubmitting(true));
   setSubmissionError("");
 
   if (!selectedProduct) {
     setSubmissionError("Product not found. Please try again.");
     setIsSubmitting(false);
+    dispatch(setSubmitting(false));
     return;
   }
 
@@ -128,6 +130,7 @@ const onSubmit = async (values) => {
     
     dispatch(errors(nextErrors)); // Show errors in the UI
     setIsSubmitting(false);
+    dispatch(setSubmitting(false));
     return;
   }
 
@@ -149,16 +152,18 @@ const onSubmit = async (values) => {
 
   const { error } = await supabase.from("All_Requests").insert([payload]);
 
-  console.log({payload, selectedProduct})
+  // console.log({payload, selectedProduct})
 
   if (error) {
     // setSubmissionError(error.message);
     toast.error("Failed to submit request. Please try again.");
     setIsSubmitting(false);
+    dispatch(setSubmitting(false));
   } else {
     dispatch(SuccessSetStep());
   }
   setIsSubmitting(false);
+  dispatch(setSubmitting(false));
 };
 
 

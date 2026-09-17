@@ -1,12 +1,15 @@
 import logo from "../../assets/logos/UM-logo2.png";
+import { useNavigate, useLocation } from 'react-router-dom';
 
 
+export const Footer = () => {
+  const navigate = useNavigate();
 
-export const Footer = () => (
-  <footer className="bg-[#011c15] text-emerald-100/80 py-20 px-6">
-    <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
-      <div>
-        <div className="flex items-center gap-2 mb-6">
+  return (
+    <footer className="bg-[#011c15] text-emerald-100/80 py-20 px-6">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
+        <div>
+          <div className="flex items-center gap-2 mb-6">
         
           <img src={logo} alt="Universal Market Logo" className="w-25 h-auto cursor-pointer"
       onClick={() => navigate('/')}  />
@@ -20,24 +23,24 @@ export const Footer = () => (
         <h4 className="font-bold text-white mb-6 uppercase text-xs tracking-widest">Shop</h4>
         <ul className="space-y-4 text-sm">
           <li>
-            <a href="#" className="hover:text-white transition">
+            <span onClick={() => navigate('/shop')}className="hover:text-white transition">
               Phones & Tablets
-            </a>
+            </span>
           </li>
           <li>
-            <a href="#" className="hover:text-white transition">
+            <span onClick={() => navigate('/shop')}className="hover:text-white transition">
               Laptops
-            </a>
+            </span>
           </li>
           <li>
-            <a href="#" className="hover:text-white transition">
+            <span onClick={() => navigate('/shop')} className="hover:text-white transition">
               Home Appliances
-            </a>
+            </span>
           </li>
         </ul>
       </div>
 
-      <div>
+      {/* <div>
         <h4 className="font-bold text-white mb-6 uppercase text-xs tracking-widest">Quick Links</h4>
         <ul className="space-y-4 text-sm">
           <li>
@@ -77,12 +80,12 @@ export const Footer = () => (
             </a>
           </li>
         </ul>
-      </div>
+      </div> */}
     </div>
 
     <div className="max-w-7xl mx-auto mt-20 pt-8 border-t border-emerald-900 flex justify-between text-xs opacity-60">
-      <p>© 2026 Universal Market, Ibadan's Premium Recommerce.</p>
+      <p>© 2026 Universal Market .</p>
     </div>
   </footer>
-);
+)};
 

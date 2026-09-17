@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { X, Trash2, MessageCircle, User, Check, ArrowRight } from 'lucide-react';
 import { TbCurrencyNaira } from 'react-icons/tb';
 import { toast } from 'sonner';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Button from './button';
 import { Textarea } from './textarea';
 import { Input } from './input';
@@ -12,6 +12,9 @@ import { guestFormSchema } from '../../lib/zodSchemas';
 import { supabase } from '../../supabaseClient';
 import { buildWhatsAppUrl, WHATSAPP_NUMBER } from '../../lib/whatsappConfig';
 import { selectCurrentUser, selectUserProfile, selectIsAuthenticated } from '../../features/authSlice';
+import LoginForm from "../../Layout/ProductPage/LoginForm";
+import { SignupForm } from "../../Layout/ProductPage/signup-form";
+
 
 const guestBenefits = [
   'Quick Request',
@@ -26,6 +29,7 @@ const accountBenefits = [
 ];
 
 export default function SelectedRequestModal({ open, onClose, selectedProducts = [], onRemoveItem, onConfirm }) {
+     const dispatch = useDispatch();
   const user = useSelector(selectCurrentUser);
   const profile = useSelector(selectUserProfile);
   const isAuthenticated = useSelector(selectIsAuthenticated);
@@ -73,6 +77,7 @@ export default function SelectedRequestModal({ open, onClose, selectedProducts =
   }, [open, user, profile]);
 
   const total = selectedProducts.reduce((s, p) => s + Number(p.ProductPrice || p.price || 0), 0);
+  const hasSelection = Array.isArray(selectedProducts) && selectedProducts.length > 0;
 
   const handleGuestContinue = (event) => {
     event?.stopPropagation?.();
@@ -81,8 +86,7 @@ export default function SelectedRequestModal({ open, onClose, selectedProducts =
 
   const handleLoginContinue = (event) => {
     event?.stopPropagation?.();
-    onConfirm({ message, mode: 'login' });
-    setStep('summary');
+    setStep('login');
   };
 
   const handleGuestSubmit = async (event) => {
@@ -217,7 +221,14 @@ export default function SelectedRequestModal({ open, onClose, selectedProducts =
                   <div className="text-sm text-gray-600">Total: <span className="font-semibold text-[#01241a]">₦{Number(total).toLocaleString()}</span></div>
                   <div className="flex items-center gap-3">
                     <Button type="button" variant="outline" onClick={onClose} className="h-10 border-gray-200 text-gray-600">Cancel</Button>
-                    <Button type="button" onClick={() => setStep(isAuthenticated ? 'guestForm' : 'authChoice')} className="h-10 bg-[#064e3b] text-white">Continue</Button>
+                    <Button
+                      type="button"
+                      onClick={() => setStep(isAuthenticated ? 'guestForm' : 'authChoice')}
+                      disabled={!hasSelection}
+                      className={`${hasSelection ? 'h-10 bg-[#064e3b] text-white' : 'h-10 bg-gray-200 text-gray-400 cursor-not-allowed'}`}
+                    >
+                      Continue
+                    </Button>
                   </div>
                 </div>
               </>
@@ -317,6 +328,16 @@ export default function SelectedRequestModal({ open, onClose, selectedProducts =
                   </Button>
                 </div>
               </form>
+            ) : (step === "login") ? (
+              <LoginForm
+                showBackButton={true}
+                onBack={() => setStep('summary')}
+                onClose={onClose}
+                onSuccess={() => setStep('guestForm')}
+                onSwitchToSignup={() => setStep('signup')}
+              />
+            ) : (step === "signup") ? (
+              <SignupForm showBackButton={true} onClose={onClose} onSuccess={() => setStep('guestForm')} onSwitchToLogin={() => setStep('login')} onBack={() => setStep('summary')}/>
             ) : (
               <>
                 <div className="flex items-center justify-between">

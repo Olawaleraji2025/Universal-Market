@@ -44,6 +44,7 @@ export default function RequestModal({ open, onClose }) {
     clickedProduct?.id != null ? clickedProduct : products.find((p) => String(p.id) === String(id));
 
   const flowStep = useSelector((state) => state.flow.step);
+  const flowSubmitting = useSelector((state) => state.flow.submitting);
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -129,7 +130,12 @@ const showImage = activeStep === "chooser" || activeStep === "guest" || activeSt
               </div> 
               <IoCloseCircleOutline
                 size={24}
+                className={flowSubmitting || flowStep === 'login' || flowStep === 'signup' ? 'opacity-40 pointer-events-none' : 'cursor-pointer'}
                 onClick={(event) => {
+                  if (flowSubmitting || flowStep === 'login' || flowStep === 'signup') {
+                    event.stopPropagation();
+                    return;
+                  }
                   event.stopPropagation();
                   handleContinueShopping();
                 }}

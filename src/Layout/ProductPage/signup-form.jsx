@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useDispatch } from "react-redux";
-import { loginSetStep, resetFlow } from "../../features/FlowSlice";
+import { loginSetStep, resetFlow, setSubmitting } from "../../features/FlowSlice";
 import Button from "../../components/ui/button";
 import {
   Field,
@@ -20,6 +20,7 @@ export function SignupForm({
   showBackButton = true,
   onSwitchToLogin,
   onSuccess,
+  onBack,
   ...props
 }) {
   const dispatch = useDispatch();
@@ -73,6 +74,7 @@ export function SignupForm({
 
     setFieldErrors({});
     setIsSubmitting(true);
+    dispatch(setSubmitting(true));
 
 
 
@@ -113,6 +115,7 @@ export function SignupForm({
       toast.error(errMsg);
     } finally {
       setIsSubmitting(false);
+      dispatch(setSubmitting(false));
     }
   };
 
@@ -269,7 +272,13 @@ export function SignupForm({
             <Button
               type="button"
               className="w-full px-6 py-3.5 bg-white text-gray-600 font-medium hover:bg-gray-50 transition-colors my-2 hover:text-black"
-              onClick={() => dispatch(resetFlow())}
+              onClick={() => {
+                if (onBack) {
+                  onBack();
+                } else {
+                  dispatch(resetFlow());
+                }
+              }}
               disabled={isSubmitting}
             >
               Back

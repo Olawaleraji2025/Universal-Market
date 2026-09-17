@@ -332,7 +332,7 @@ export const ProductDetails = () => {
               <div className="flex flex-col gap-2 sm:flex-row sm:justify-center">
                 <Button
                   asChild={false}
-                  className="w-full bg-[#064e3b] py-3 text-sm font-semibold text-white transition hover:bg-emerald-900 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 sm:max-w-55"
+                  className="w-full bg-[#064e3b] py-3 text-sm font-semibold text-white transition hover:bg-emerald-900 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 sm:max-w-42"
                   onClick={() => setRequestOpen(true)}
                 >
                   <Package size={16} className="mr-2" /> Request Item
@@ -341,7 +341,7 @@ export const ProductDetails = () => {
                 <Button
                   type="button"
                   variant="outline"
-                  className={`w-full border py-3 text-sm font-semibold transition focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 sm:max-w-55 ${
+                  className={`w-full border py-3 text-sm font-semibold transition focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 sm:max-w-42 ${
                     isWishlisted
                       ? 'border-red-200 bg-red-50 text-red-600 hover:bg-red-100'
                       : 'border-gray-200 bg-white text-[#01241a] hover:bg-gray-50'
