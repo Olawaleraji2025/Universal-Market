@@ -23,6 +23,14 @@ import { useAuthListener } from './Hooks/useAuthListener';
 import { selectAuthLoading, selectCurrentUser, selectIsAuthenticated } from './features/authSlice';
 import { canSyncWishlistToSupabase, selectWishlistIds, syncWishlistToSupabase } from './features/wishlistSlice';
 import { saveReturnTarget } from './lib/authRedirect';
+import AdminLayout from './admin/AdminLayout';
+import AdminRoute from './admin/AdminRoute';
+import Requests from './admin/pages/Requests';
+import RequestDetail from './admin/pages/RequestDetail';
+import Dashboard from './admin/pages/Dashboard';
+import Products from './admin/pages/Products';
+import AddProduct from './admin/pages/AddProduct';
+import EditProduct from './admin/pages/EditProduct';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -100,10 +108,15 @@ const App = () => {
 
   const { pathname } = useLocation();
 
-  const hideShell = pathname === '/login' || pathname === '/signup' || pathname === '/forgot-password' || pathname === '/update-password';
+  const hideShell =
+    pathname === '/login' ||
+    pathname === '/signup' ||
+    pathname === '/forgot-password' ||
+    pathname === '/update-password' ||
+    pathname.startsWith('/admin');
 
   return (
-    <div className="mx-auto max-w-[90rem]">
+    <div className={`mx-auto ${pathname.startsWith('/admin') ? 'w-full' : 'max-w-[90rem]'}`}>
       {!hideShell && <Navbar />}
       <div className="min-h-screen bg-[#f8fafc] font-sans text-gray-900 ">
         <ScrollToTop />
@@ -119,6 +132,24 @@ const App = () => {
           <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
           <Route path="/my-requests" element={<ProtectedRoute><MyRequestsPage /></ProtectedRoute>} />
           <Route path="/requests/:id" element={<ProtectedRoute><RequestDetailsPage /></ProtectedRoute>} />
+
+          {/* Admin Routes */}
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AdminLayout />
+              </AdminRoute>
+            }
+            >
+            <Route index element={<Dashboard />} />
+            <Route path="dashboard" element={<Navigate to="/admin" replace />} />
+            <Route path="requests" element={<Requests />} />
+            <Route path="requests/:id" element={<RequestDetail />} />
+            <Route path="products" element={<Products />} />
+            <Route path="products/new" element={<AddProduct />} />
+            <Route path="products/:id/edit" element={<EditProduct />} />
+          </Route>
         </Routes>
       </div>
       {!hideShell && <Footer />}

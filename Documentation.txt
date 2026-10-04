@@ -178,3 +178,7 @@ Password recovery is broken into two isolated phases:
         their Current / Old Password before calling updateUser.
 
 35. I Implement authentication redirect handling; add saveReturnTarget utility and update related components for improved user experience. I updated the product detailes page to include Location, Product Condition. I adjusted the Hero image responsiveness.
+
+36. i Enhanced the user flow by adding submission state management; integrate setSubmitting action in forms and modals for improved UX
+
+37. I worked on the Admin Dashboard, Requests and Product page. More info comming soon

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { ChevronRight, ShoppingBag } from 'lucide-react';
+import { REQUEST_STATUSES } from '../../admin/lib/requestStatus';
 
 const statusStyles = {
-  Pending: 'text-orange-600 bg-orange-50',
-  Confirmed: 'text-emerald-700 bg-emerald-50',
-  Completed: 'text-teal-700 bg-emerald-50',
-  Cancelled: 'text-red-600 bg-red-50',
+  [REQUEST_STATUSES.PENDING]: 'text-orange-600 bg-orange-50',
+  [REQUEST_STATUSES.CONFIRMED]: 'text-emerald-700 bg-emerald-50',
+  [REQUEST_STATUSES.COMPLETED]: 'text-teal-700 bg-emerald-50',
+  [REQUEST_STATUSES.CANCELLED]: 'text-red-600 bg-red-50',
 };
 
 export default function RequestCard({ item, onClick }) {

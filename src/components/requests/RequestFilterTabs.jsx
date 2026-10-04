@@ -1,12 +1,7 @@
 import React from 'react';
+import { STATUS_TABS } from '../../admin/lib/requestStatus';
 
-export const DEFAULT_REQUEST_STATUS_TABS = [
-  'All',
-  'Pending',
-  'Confirmed',
-  'Completed',
-  'Cancelled',
-];
+export const DEFAULT_REQUEST_STATUS_TABS = STATUS_TABS;
 
 export default function RequestFilterTabs({
   tabs = DEFAULT_REQUEST_STATUS_TABS,

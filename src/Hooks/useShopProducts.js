@@ -23,7 +23,10 @@ const fetchProducts = async () => {
   //
   //    NOTE: getPublicUrl is synchronous — do NOT await it.
 
-  const productsWithImages = (products ?? []).map((product) => {
+  // Filter out products marked as hidden by admin
+  const visibleProducts = (products ?? []).filter((product) => product.is_hidden !== true);
+
+  const productsWithImages = visibleProducts.map((product) => {
     // ── Parse the image filenames ─────────────────────────────────────────
     let fileNames = [];
 

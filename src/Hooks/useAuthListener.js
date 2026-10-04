@@ -4,6 +4,7 @@ import { supabase } from '../supabaseClient';
 import {
   setSession,
   setProfile,
+  setRoleStatus,
   clearAuth,
   setAuthLoading,
 } from '../features/authSlice';
@@ -23,8 +24,12 @@ export const useAuthListener = () => {
     dispatch(setAuthLoading(true));
 
     const fetchUserProfile = async (userId) => {
-      if (!userId) return;
+      if (!userId) {
+        dispatch(setRoleStatus('idle'));
+        return;
+      }
       try {
+        dispatch(setRoleStatus('loading'));
         const { data, error } = await supabase
           .from('profiles')
           .select('*')
@@ -33,9 +38,12 @@ export const useAuthListener = () => {
 
         if (data && !error) {
           dispatch(setProfile(data));
+        } else {
+          dispatch(setRoleStatus('error'));
         }
       } catch (err) {
         console.error('Error fetching user profile:', err);
+        dispatch(setRoleStatus('error'));
       }
     };
 

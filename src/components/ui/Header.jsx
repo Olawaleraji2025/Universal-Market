@@ -148,10 +148,16 @@ export const Navbar = () => {
                   onLogout={handleLogout}
                 />
                 {role === "admin" && (
-                  <span className="flex items-center gap-1 text-[11px] font-semibold bg-emerald-700 text-white px-2 py-0.5 rounded-full">
-                    <Shield className="w-3 h-3" />
-                    Admin
-                  </span>
+                  <button
+                    type="button"
+                    onClick={() => navigate('/admin')}
+                    className="flex items-center gap-1.5 text-xs font-semibold bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white px-2.5 py-1 rounded-full transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                    title="Open Admin Dashboard"
+                    aria-label="Open Admin Dashboard"
+                  >
+                    <Shield className="w-3.5 h-3.5" />
+                    <span>Admin</span>
+                  </button>
                 )}
               </div>
             ) : (

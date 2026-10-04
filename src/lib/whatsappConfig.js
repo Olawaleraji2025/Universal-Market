@@ -8,7 +8,7 @@ export const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || DEFAULT_W
 
 export const PRE_FILLED_MESSAGE = `Hello Universal Market, I’m interested in your products and would like to know more.`;
 
-function normalizeNumberForWa(number) {
+export function normalizeNumberForWa(number) {
   if (!number) return null;
   let s = String(number).trim();
   // remove any non-digit and non-plus characters
@@ -17,7 +17,7 @@ function normalizeNumberForWa(number) {
   if (s.startsWith("+")) s = s.slice(1);
   // convert local leading 0 to NG country code 234
   if (s.startsWith("0")) s = `234${s.slice(1)}`;
-  return s;
+  return s.length >= 7 ? s : null;
 }
 
 export function buildWhatsAppUrl(number, message) {

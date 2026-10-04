@@ -6,6 +6,7 @@ import {
   ChevronUp,
   ClipboardList,
   LogOut as LogOutIcon,
+  Shield,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -131,6 +132,21 @@ export default function UserMenu({ user, onLogout }) {
                 <ClipboardList className={`w-5 h-5 ${isActive('/my-requests') ? 'text-emerald-700' : 'text-gray-700'}`} />
                 <span className={`text-sm ${isActive('/my-requests') ? 'text-emerald-700' : 'text-slate-900'}`}>My Requests</span>
               </button>
+
+              {user?.role === 'admin' && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOpen(false);
+                    navigate('/admin');
+                  }}
+                  className={`flex items-center gap-3 w-full px-3 py-2 rounded-md mt-1 focus:outline-none focus:ring-2 focus:ring-emerald-200 ${location.pathname.startsWith('/admin') ? 'bg-emerald-50' : 'hover:bg-emerald-50'}`}
+                  role="menuitem"
+                >
+                  <Shield className="w-5 h-5 text-emerald-700" />
+                  <span className="text-sm font-semibold text-emerald-800">Admin Portal</span>
+                </button>
+              )}
             </div>
 
             <div className="border-t border-gray-100" />

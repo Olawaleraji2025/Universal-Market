@@ -17,9 +17,10 @@ export const menus = {
     // { label: 'Contact Us', icon: Phone, to: '/contact' },
   ],
   admin: [
-    { label: 'Dashboard', icon: PieChart, to: '/admin' },
-    { label: 'Products', icon: Package, to: '/admin/products' },
-    { label: 'Requests', icon: ClipboardList, to: '/admin/requests' },
-    { label: 'Users', icon: Users, to: '/admin/users' },
+    { label: 'Home', icon: House, to: '/' },
+    { label: 'Shop', icon: ShoppingBag, to: '/shop' },
+    { label: 'Wishlist', icon: Heart, to: '/wishlist' },
+    { label: 'My Requests', icon: ClipboardList, to: '/my-requests' },
+    { label: 'Admin Dashboard', icon: PieChart, to: '/admin', highlight: true },
   ],
 };
