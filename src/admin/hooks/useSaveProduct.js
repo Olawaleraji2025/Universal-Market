@@ -150,7 +150,9 @@ export function useSaveProduct() {
         if (!id && newlyUploadedFileNames.length > 0) {
           await deleteProductImages(newlyUploadedFileNames);
         }
-        throw new Error(err.message || 'Failed to save product');
+
+          throw err;
+        
       }
     },
     onSuccess: (_, variables) => {

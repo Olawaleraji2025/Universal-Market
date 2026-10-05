@@ -181,4 +181,15 @@ Password recovery is broken into two isolated phases:
 
 36. i Enhanced the user flow by adding submission state management; integrate setSubmitting action in forms and modals for improved UX
 
-37. I worked on the Admin Dashboard, Requests and Product page. More info comming soon
+37. I worked on the Admin Dashboard, Requests and Product page. More info comming soon.... I added RequestDetail and Requests pages for admin management
+
+- Implement RequestDetail component for viewing and managing individual requests.
+- Create Requests component for listing and filtering requests with pagination.
+- Enhance RequestCard to utilize dynamic status styles.
+- Update RequestFilterTabs to use centralized status constants.
+- Modify Header and UserMenu to include admin navigation options.
+- Refactor SidebarNav to streamline menu management for different user roles.
+- Introduce roleStatus in authSlice to manage user role loading states.
+- Export normalizeNumberForWa function for WhatsApp number formatting.
+
+38. I worked on the Supabase policy to allow admin upload product and its image into database table
