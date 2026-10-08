@@ -5,6 +5,34 @@ import { PRODUCT_STATUS } from '../lib/productConstants';
 
 export const ADMIN_PRODUCTS_QUERY_KEY = 'admin-products';
 
+export function getAvailabilityState(raw) {
+  if (!raw) return { isSold: false, availability: null };
+
+  const rawAvailability = raw.Availabilty ?? raw.availability ?? raw.Availability ?? null;
+  const normalized = String(rawAvailability ?? '').trim().toUpperCase();
+  const isSold = normalized === 'SOLD';
+
+  return {
+    isSold,
+    availability: isSold ? 'SOLD' : null,
+  };
+}
+
+export function getProductConditionLabel(raw) {
+  if (!raw) return 'USED';
+
+  const rawStatus = String(raw.ProductStatus ?? raw.ProductCondition ?? raw.condition ?? raw.Condition ?? '').trim();
+  if (!rawStatus) return 'USED';
+
+  const normalizedStatus = rawStatus.toUpperCase();
+  if (normalizedStatus === 'NEW' || normalizedStatus === 'BRAND NEW') return 'NEW';
+  if (normalizedStatus === 'USED' || normalizedStatus === 'SECOND HAND') return 'USED';
+  if (normalizedStatus === 'FAIRLY USED' || normalizedStatus === 'FAIRLY_USED' || normalizedStatus === 'FAIRLY-USED') return 'FAIRLY USED';
+  if (normalizedStatus === 'SOLD') return 'SOLD';
+
+  return rawStatus.toUpperCase();
+}
+
 /**
  * Normalizes DB product row into standard admin product object
  */
@@ -36,18 +64,7 @@ export function normalizeAdminProduct(raw) {
 
   const coverFileName = fileNames[0] || null;
   const coverImageUrl = coverFileName ? getProductImageUrl(coverFileName) : null;
-
-  // Normalize ProductStatus (e.g. legacy 'USED' or 'NEW' vs 'In Stock'/'Out of Stock')
-  let status = PRODUCT_STATUS.IN_STOCK;
-  const rawStatus = String(raw.ProductStatus || '').trim().toLowerCase();
-  if (rawStatus === 'out of stock' || rawStatus === 'sold' || rawStatus === 'unavailable') {
-    status = PRODUCT_STATUS.OUT_OF_STOCK;
-  } else if (rawStatus === 'in stock' || rawStatus === 'available') {
-    status = PRODUCT_STATUS.IN_STOCK;
-  } else {
-    // If legacy has 'USED' or 'NEW', treat as In Stock for catalog availability
-    status = PRODUCT_STATUS.IN_STOCK;
-  }
+  const { isSold, availability } = getAvailabilityState(raw);
 
   // Parse specifications
   let specifications = [];
@@ -62,14 +79,18 @@ export function normalizeAdminProduct(raw) {
     }
   }
 
+  const condition = getProductConditionLabel(raw);
+
   return {
     id: raw.id,
     created_at: raw.created_at,
     productName: raw.ProductName || 'Unnamed Product',
     category: raw.Category || 'Other',
     price: Number(raw.ProductPrice) || 0,
-    productStatus: status,
-    condition: raw.ProductCondition || (['NEW', 'USED'].includes(raw.ProductStatus) ? raw.ProductStatus : 'Used'),
+    productStatus: condition,
+    condition,
+    isSold,
+    availability,
     location: raw.Location || raw.ProductLocation || '',
     description: raw.ProductDescription || '',
     specifications,
@@ -141,14 +162,21 @@ export function useAdminProducts({
         throw new Error(error.message || 'Failed to load products');
       }
 
-      const products = (data || []).map(normalizeAdminProduct);
+      let products = (data || []).map(normalizeAdminProduct);
+      if (status === 'in_stock') {
+        products = products.filter((product) => !product?.isSold);
+      } else if (status === 'out_of_stock') {
+        products = products.filter((product) => product?.isSold);
+      }
+
+      const normalizedTotalCount = status === 'all' ? (count ?? products.length) : products.length;
 
       return {
         products,
-        totalCount: count ?? products.length,
+        totalCount: normalizedTotalCount,
         page,
         pageSize,
-        totalPages: Math.max(1, Math.ceil((count ?? products.length) / pageSize)),
+        totalPages: Math.max(1, Math.ceil(normalizedTotalCount / pageSize)),
       };
     },
     staleTime: 30 * 1000,

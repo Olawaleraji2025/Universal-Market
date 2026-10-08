@@ -51,7 +51,7 @@ const dispatch = useDispatch()
     }
 
     const product = clickedProduct?.ProductName || "the product";
-    const msg = `Hello Universal Market, I am intrested in ${product} - id ${selectedProduct?.id || "the product id"} listed for ${rawPrice || "a price"}.`;
+    const msg = `Hello Universal Market, I am intrested in ${product} listed for ${rawPrice || "a price"}.`;
 
     const url = buildWhatsAppUrl(WHATSAPP_NUMBER, msg || PRE_FILLED_MESSAGE);
     try {

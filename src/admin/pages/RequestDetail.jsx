@@ -279,7 +279,7 @@ export default function RequestDetail() {
                   </span>
                   <span className="text-base font-bold text-[#01241a]">
                     {formattedAmount ? (
-                      request.isProduct ? formattedAmount : `Budget ${formattedAmount}`
+                      request.isProduct ? formattedAmount : `${formattedAmount}`
                     ) : (
                       request.isProduct ? 'Price on request' : 'No budget specified'
                     )}
@@ -381,7 +381,7 @@ export default function RequestDetail() {
           </div>
 
           {/* ADMIN NOTES CARD (Private) */}
-          <div className="bg-white border border-[#e2e8f0] rounded-[14px] p-5 sm:p-6 shadow-xs">
+          {/* <div className="bg-white border border-[#e2e8f0] rounded-[14px] p-5 sm:p-6 shadow-xs">
             <div className="flex items-center justify-between gap-2 mb-3">
               <label
                 htmlFor="admin-private-notes"
@@ -415,7 +415,7 @@ export default function RequestDetail() {
                 <span>{updateMutation.isPending ? 'Saving...' : 'Save note'}</span>
               </button>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 

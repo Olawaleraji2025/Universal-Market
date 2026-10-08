@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../../supabaseClient';
+import { normalizeRequestStatus } from '../lib/requestStatus';
 
 export const ADMIN_SINGLE_REQUEST_KEY = 'admin-request';
 
@@ -33,7 +34,7 @@ export function normalizeSingleRequest(r) {
     ItemBudget: r.ItemBudget,
     ItemPrice: r.ItemPrice,
     ItemImage: r.ItemImage || r.ProductImage || null,
-    status: r.status || 'Pending',
+    status: normalizeRequestStatus(r.status),
     admin_notes: r.admin_notes || '',
   };
 }

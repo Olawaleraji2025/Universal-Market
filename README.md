@@ -14,4 +14,6 @@ Universal Market is a React + Vite web app for a simple retail workflow:
 - Redesign the product display to include wheather a product is available or sold.
 - 404 page
 - How to generate a product request ids for product and custom requests and Whatsapp messages content
-- 
+-
+
+

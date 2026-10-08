@@ -155,11 +155,18 @@ export const ProductDetails = () => {
   const rawPrice = selectedProduct.ProductPrice ?? selectedProduct.price ?? 0;
   const priceDisplay = `₦${Number(rawPrice).toLocaleString('en-NG')}`;
   const productStatus = getFirstMeaningfulValue(selectedProduct, ['ProductStatus', 'status']) || "";
-  const statusClass = String(productStatus).toLowerCase() === "in stock"
-    ? "bg-green-100 text-green-800"
-    : "bg-red-100 text-red-800";
+  const rawAvailability = getFirstMeaningfulValue(selectedProduct, ['Availabilty', 'availability', 'Availability']) || "";
+  const isSold = String(rawAvailability || '').trim().toUpperCase() === 'SOLD';
+  const statusClass = productStatus?.toUpperCase() === 'NEW'
+    ? 'bg-emerald-100 text-emerald-800'
+    : productStatus?.toUpperCase() === 'FAIRLY USED'
+      ? 'bg-amber-100 text-amber-800'
+      : productStatus?.toUpperCase() === 'SOLD'
+        ? 'bg-slate-200 text-slate-700'
+        : 'bg-violet-100 text-violet-800';
   const description = getFirstMeaningfulValue(selectedProduct, ['ProductDescription', 'description', 'ProductDetails']) || "";
   const productCondition = getFirstMeaningfulValue(selectedProduct, ['ProductCondition', 'condition', 'Condition']) || "";
+  const conditionBadge = productCondition || productStatus || 'USED';
   const locationValue = getFirstMeaningfulValue(selectedProduct, ['Location', 'location', 'ProductLocation', 'City', 'State', 'PickupLocation']) || "";
   const extraDetails = parseExtraDetails(
     getFirstMeaningfulValue(selectedProduct, ['ExtraDetails', 'extraDetails', 'Extra_Details', 'extra_details', 'ProductExtraDetails']) || ""
@@ -232,15 +239,15 @@ export const ProductDetails = () => {
               <h1 className="wrap-break-word text-3xl font-bold text-[#01241a] leading-tight">{productName}</h1>
               <p className="mt-2 text-xl font-bold text-[#01241a]">{priceDisplay}</p>
 
-              {productStatus && (
+              {conditionBadge && (
                 <span className={`mt-3 inline-flex items-center rounded-full px-3 py-1 text-[10px] font-bold uppercase ${statusClass}`}>
-                  {productStatus}
+                  {conditionBadge}
                 </span>
               )}
 
-              {productCondition && (
+              {(productCondition || conditionBadge) && (
                 <p className="mt-3 text-sm font-medium text-gray-700">
-                  Condition: <span className="text-[#01241a]">{productCondition}</span>
+                  Condition: <span className="text-[#01241a]">{productCondition || conditionBadge}</span>
                 </p>
               )}
             </div>
@@ -345,11 +352,13 @@ export const ProductDetails = () => {
                     isWishlisted
                       ? 'border-red-200 bg-red-50 text-red-600 hover:bg-red-100'
                       : 'border-gray-200 bg-white text-[#01241a] hover:bg-gray-50'
-                  }`}
-                  onClick={handleToggleWishlist}
+                  } ${isSold ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  onClick={() => { if (isSold) return; handleToggleWishlist(); }}
+                  disabled={isSold}
+                  aria-disabled={isSold}
                 >
                   <Heart className={`mr-2 h-4 w-4 ${isWishlisted ? 'fill-current' : ''}`} strokeWidth={2} />
-                  {isWishlisted ? 'Saved to Wishlist' : 'Add to Wishlist'}
+                  {isSold ? 'Sold' : (isWishlisted ? 'Saved to Wishlist' : 'Add to Wishlist')}
                 </Button>
               </div>
 

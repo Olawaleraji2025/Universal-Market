@@ -43,7 +43,7 @@ export default function RequestTable({
                 amountDisplay = formatNaira(r.ItemPrice) || 'Price on request';
               } else {
                 const budgetStr = formatNaira(r.ItemBudget);
-                amountDisplay = budgetStr ? `Budget ${budgetStr}` : 'No budget';
+                amountDisplay = budgetStr ? `${budgetStr}` : 'No budget';
               }
 
               return (

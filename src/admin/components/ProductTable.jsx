@@ -46,7 +46,7 @@ export default function ProductTable({
           </thead>
           <tbody className="divide-y divide-[#e2e8f0] text-sm">
             {products.map((product) => {
-              const isOutOfStock = product.productStatus === PRODUCT_STATUS.OUT_OF_STOCK;
+              const isSold = Boolean(product?.isSold);
               const formattedPrice = `₦${Number(product.price).toLocaleString('en-NG')}`;
               const isUpdatingThis = isTogglingId === product.id;
 
@@ -54,7 +54,7 @@ export default function ProductTable({
                 <tr
                   key={product.id}
                   className={`transition-colors duration-150 hover:bg-[#f8fafc]/80 ${
-                    isOutOfStock ? 'bg-[#f8fafc]/40 text-[#475569]' : 'text-[#01241a]'
+                    isSold ? 'bg-[#f8fafc]/40 text-[#475569] opacity-80' : 'text-[#01241a]'
                   }`}
                 >
                   {/* Thumbnail (48px rounded) */}
@@ -116,7 +116,7 @@ export default function ProductTable({
                   <td className="py-3.5 px-4 whitespace-nowrap">
                     <AvailabilityToggle
                       productName={product.productName}
-                      status={product.productStatus}
+                      status={product.availability || (isSold ? 'SOLD' : null)}
                       disabled={isUpdatingThis}
                       onChange={(newStatus) =>
                         onToggleStatus(product.id, newStatus, product.productName)

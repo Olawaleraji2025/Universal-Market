@@ -27,6 +27,7 @@ import Button from "./button";
 import { Input } from "./input";
 import { Textarea } from "./textarea";
 import { toast } from 'sonner';
+import { buildWhatsAppUrl, WHATSAPP_NUMBER } from '../../lib/whatsappConfig';
 
 // /**
 //  * RequestModal
@@ -611,6 +612,9 @@ export default function RequestModal({ open, onClose, initialItemName = "" }) {
 
 /* ---------- Success view ---------- */
 function SuccessView({ form, requestId, onStartOver, onClose }) {
+  const message = `Hello Universal Market, I’ve just submitted a request for ${form.ItemName || form.itemName || 'my item'} and would like to continue on WhatsApp.`;
+  const whatsappUrl = buildWhatsAppUrl(WHATSAPP_NUMBER, message);
+
   return (
     <motion.div
       className="flex flex-col items-center text-center"
@@ -679,11 +683,16 @@ function SuccessView({ form, requestId, onStartOver, onClose }) {
       <div className="mt-6 flex w-full flex-col gap-3">
         <Button
           type="button"
-          onClick={onStartOver}
+          onClick={() => {
+            if (whatsappUrl) {
+              window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+            }
+            onClose();
+          }}
           className="h-11 w-full bg-[#064e3b] text-white hover:bg-emerald-900"
         >
-          <RefreshCw className="size-4" />
-          Submit another request
+          <Phone className="size-4" />
+          Continue on WhatsApp
         </Button>
         <Button
           type="button"

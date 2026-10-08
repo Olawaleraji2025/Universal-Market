@@ -172,11 +172,20 @@ export default function ShopProductList() {
           >
             {filteredProducts.map((product) => {
               const hasFinishedLoading = loadedImages.has(product.id);
+              const isSold = Boolean(product?.isSold ?? false);
+              const badgeText = product?.condition || product?.ProductStatus || 'USED';
+              const badgeClass = badgeText === 'NEW'
+                ? 'bg-emerald-100 text-emerald-800'
+                : badgeText === 'FAIRLY USED'
+                  ? 'bg-amber-100 text-amber-800'
+                  : badgeText === 'SOLD'
+                    ? 'bg-slate-200 text-slate-700'
+                    : 'bg-violet-100 text-violet-800';
 
               return (
                 <div
                   key={product.id}
-                  className="shop-product-card w-40 min-w-40 flex-none bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition flex flex-col"
+                  className={`shop-product-card w-40 min-w-40 flex-none bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 transition flex flex-col ${isSold ? 'opacity-60 hover:shadow-none' : 'hover:shadow-lg'}`}
                 >
                   <div className="relative aspect-square bg-gray-50">
                     <img
@@ -223,20 +232,26 @@ export default function ShopProductList() {
                     </p>
 
                     <span
-                      className={`mt-2 inline-flex w-fit items-center rounded-full px-2.5 py-1 text-[10px] font-bold uppercase ${product.ProductStatus === 'In Stock' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}
+                      className={`mt-2 inline-flex w-fit items-center rounded-full px-2.5 py-1 text-[10px] font-bold uppercase ${badgeClass}`}
                     >
-                      {product.ProductStatus || ""}
+                      {badgeText}
                     </span>
 
                     <Button
                       type="button"
-                      className="mt-4 bg-[#064e3b] text-white w-full py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 hover:bg-emerald-900 transition cursor-pointer"
+                      disabled={isSold}
+                      className={`mt-4 w-full py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition ${
+                        isSold
+                          ? 'bg-slate-200 text-slate-500 cursor-not-allowed'
+                          : 'bg-[#064e3b] text-white hover:bg-emerald-900 cursor-pointer'
+                      }`}
                       onClick={() => {
+                        if (isSold) return;
                         dispatch(setClickedProduct(product));
                         navigate(`/product/${product.id}`);
                       }}
                     >
-                      <Package size={16} /> View details
+                      <Package size={16} /> {isSold ? 'Sold' : 'View details'}
                     </Button>
                   </div>
                 </div>

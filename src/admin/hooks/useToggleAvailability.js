@@ -2,7 +2,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../supabaseClient';
 import { ADMIN_PRODUCTS_QUERY_KEY } from './useAdminProducts';
 import { ADMIN_PRODUCT_QUERY_KEY } from './useAdminProduct';
-import { PRODUCT_STATUS } from '../lib/productConstants';
 import { toast } from 'sonner';
 
 export function useToggleAvailability() {
@@ -10,9 +9,12 @@ export function useToggleAvailability() {
 
   return useMutation({
     mutationFn: async ({ id, newStatus }) => {
-      const { data, error } = await supabase
+      const nextAvailability = newStatus === 'SOLD' ? 'SOLD' : null;
+      const payload = { Availability: nextAvailability };
+
+      let { data, error } = await supabase
         .from('EachProductInformation')
-        .update({ ProductStatus: newStatus })
+        .update(payload)
         .eq('id', id)
         .select()
         .single();
@@ -25,19 +27,22 @@ export function useToggleAvailability() {
     },
     // Optimistic update
     onMutate: async ({ id, newStatus, productName }) => {
-      // Cancel any outgoing refetches so they don't overwrite optimistic update
       await queryClient.cancelQueries({ queryKey: [ADMIN_PRODUCTS_QUERY_KEY] });
 
-      // Snapshot previous value
       const previousData = queryClient.getQueryData([ADMIN_PRODUCTS_QUERY_KEY]);
 
-      // Optimistically update list queries
       queryClient.setQueriesData({ queryKey: [ADMIN_PRODUCTS_QUERY_KEY] }, (old) => {
         if (!old || !old.products) return old;
         return {
           ...old,
           products: old.products.map((p) =>
-            p.id === id ? { ...p, productStatus: newStatus } : p
+            p.id === id
+              ? {
+                  ...p,
+                  isSold: newStatus === 'SOLD',
+                  availability: newStatus === 'SOLD' ? 'SOLD' : null,
+                }
+              : p
           ),
         };
       });
@@ -45,7 +50,6 @@ export function useToggleAvailability() {
       return { previousData, id, newStatus, productName };
     },
     onError: (err, variables, context) => {
-      // Rollback on error
       if (context?.previousData) {
         queryClient.setQueriesData(
           { queryKey: [ADMIN_PRODUCTS_QUERY_KEY] },
@@ -57,14 +61,12 @@ export function useToggleAvailability() {
       });
     },
     onSuccess: (data, variables) => {
-      const statusLabel =
-        variables.newStatus === PRODUCT_STATUS.IN_STOCK ? 'in stock' : 'out of stock';
+      const statusLabel = variables.newStatus === 'SOLD' ? 'sold' : 'available';
 
       toast.success(`${variables.productName || 'Product'} marked as ${statusLabel}`, {
         description: 'Changes are reflected across the catalogue.',
       });
 
-      // Invalidate queries to ensure fresh server state
       queryClient.invalidateQueries({ queryKey: [ADMIN_PRODUCTS_QUERY_KEY] });
       queryClient.invalidateQueries({ queryKey: [ADMIN_PRODUCT_QUERY_KEY, variables.id] });
       queryClient.invalidateQueries({ queryKey: ['products'] });

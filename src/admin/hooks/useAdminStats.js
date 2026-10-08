@@ -20,7 +20,7 @@ async function fetchAdminDashboardStats() {
         confirmed: Number(data.confirmed ?? data.Confirmed ?? 0),
         completed: Number(data.completed ?? data.Completed ?? 0),
         products: Number(data.products ?? data.Products ?? 0),
-        out_of_stock: Number(data.out_of_stock ?? data.outOfStock ?? data.OutOfStock ?? 0),
+        out_of_stock: Number(data.Availability ?? data.Availability ?? data.Availability ?? 0),
       };
     }
 
@@ -36,7 +36,7 @@ async function fetchAdminDashboardStats() {
   // Resilient fallback: Query All_Requests & EachProductInformation
   const [requestsRes, productsRes] = await Promise.all([
     supabase.from('All_Requests').select('status'),
-    supabase.from('EachProductInformation').select('id, ProductStatus'),
+    supabase.from('EachProductInformation').select('Availability'),
   ]);
 
   if (requestsRes.error?.code === '42501' || productsRes.error?.code === '42501') {
@@ -65,8 +65,8 @@ async function fetchAdminDashboardStats() {
   let outOfStock = 0;
 
   allProducts.forEach((p) => {
-    const status = (p?.ProductStatus || '').trim().toLowerCase();
-    if (status === 'out of stock') {
+    const status = (p?.Availability || p?.Availability || p?.Availability || p?.Availability || '').toString().trim().toUpperCase();
+    if (status === 'SOLD' || status === 'SOLD' || status === 'SOLD' || status === 'SOLD') {
       outOfStock += 1;
     }
   });

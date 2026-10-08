@@ -2,6 +2,25 @@ import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../supabaseClient';
 
+const normalizeProductCondition = (product) => {
+  const statusValue = String(product?.ProductStatus ?? product?.ProductCondition ?? product?.condition ?? product?.Condition ?? '').trim();
+  if (!statusValue) return 'USED';
+
+  const upper = statusValue.toUpperCase();
+  if (upper === 'NEW' || upper === 'BRAND NEW') return 'NEW';
+  if (upper === 'USED' || upper === 'SECOND HAND') return 'USED';
+  if (upper === 'FAIRLY USED' || upper === 'FAIRLY_USED' || upper === 'FAIRLY-USED') return 'FAIRLY USED';
+  if (upper === 'SOLD') return 'SOLD';
+
+  return statusValue.toUpperCase();
+};
+
+const getSoldState = (product) => {
+  const rawAvailability = product?.Availabilty ?? product?.availability ?? product?.Availability ?? null;
+  const value = String(rawAvailability ?? '').trim().toUpperCase();
+  return value === 'SOLD';
+};
+
 const fetchProducts = async () => {
   // 1) Fetch all products
   const { data: products, error } = await supabase
@@ -58,12 +77,19 @@ const fetchProducts = async () => {
       return data.publicUrl;
     }).filter(Boolean);
 
+    const isSold = getSoldState(product);
+    const displayCondition = normalizeProductCondition(product);
+
     return {
       ...product,
       // `imageUrl`  — first image URL kept for backward compatibility
       // `images`    — full array consumed by ProductImageGallery
       imageUrl: images[0] ?? null,
       images,
+      isSold,
+      condition: displayCondition,
+      availability: isSold ? 'SOLD' : null,
+      ProductStatus: product?.ProductStatus ?? displayCondition,
     };
   });
 

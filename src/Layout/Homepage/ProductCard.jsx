@@ -115,12 +115,22 @@ export const ProductCard = () => {
         ) : (
           products.map((product) => {
             const hasFinishedLoading = loadedImages.has(product.id);
+            const rawAvailability = (product?.availability || product?.Availabilty || product?.Availability || product?.isSold || product?.ProductStatus || '').toString();
+            const isSold = String(rawAvailability).trim().toLowerCase() === 'sold' || Boolean(product?.isSold === true);
+            const badgeText = product?.condition || product?.ProductStatus || 'USED';
+            const badgeClass = badgeText === 'NEW'
+              ? 'bg-emerald-100 text-emerald-800'
+              : badgeText === 'FAIRLY USED'
+                ? 'bg-amber-100 text-amber-800'
+                : badgeText === 'SOLD'
+                  ? 'bg-slate-200 text-slate-700'
+                  : 'bg-violet-100 text-violet-800';
 
             // ── ONE card shape, always. Only the photo square toggles. ──
             return (
               <div
                 key={product.id}
-                className=" w-40 min-w-40 flex-none bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition flex flex-col h-full"
+                className={`w-40 min-w-40 flex-none bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 transition flex flex-col h-full ${isSold ? 'opacity-60 hover:shadow-none' : 'hover:shadow-lg'}`}
               >
                 <div className="relative aspect-square bg-gray-50">
                   {/* Permanent image — always in the DOM, fenced by THIS div */}
@@ -147,14 +157,16 @@ export const ProductCard = () => {
 {hasFinishedLoading && (
                   <button
                     type="button"
-                    aria-label={wishlistIds.some((id) => String(id) === String(product.id)) ? `Remove ${product.ProductName} from wishlist` : `Add ${product.ProductName} to wishlist`}
+                    aria-label={isSold ? `Sold — wishlist disabled` : (wishlistIds.some((id) => String(id) === String(product.id)) ? `Remove ${product.ProductName} from wishlist` : `Add ${product.ProductName} to wishlist`)}
                     aria-pressed={wishlistIds.some((id) => String(id) === String(product.id))}
-                    onClick={() => toggleWishlist(product)}
+                    aria-disabled={isSold}
+                    disabled={isSold}
+                    onClick={() => { if (isSold) return; toggleWishlist(product); }}
                     className={`absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border shadow-sm backdrop-blur-sm transition hover:scale-105 ${
                       wishlistIds.some((id) => String(id) === String(product.id))
                         ? 'border-red-200 bg-red-50 text-red-500'
                         : 'border-white/80 bg-white/85 text-gray-700 hover:text-red-500'
-                    }`}
+                    } ${isSold ? 'opacity-50 pointer-events-none' : ''}`}
                   >
                     <Heart
                       className={`h-4 w-4 ${wishlistIds.some((id) => String(id) === String(product.id)) ? 'fill-current' : ''}`}
@@ -174,20 +186,23 @@ export const ProductCard = () => {
                     {product.ProductPrice.toLocaleString()}
                   </p>
                   <span
-                    className={`mt-2 inline-flex w-fit items-center rounded-full px-2.5 py-1 text-[10px] font-bold uppercase ${
-                      product.ProductStatus === 'In Stock'
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-red-100 text-red-800'
-                    }`}
+                    className={`mt-2 inline-flex w-fit items-center rounded-full px-2.5 py-1 text-[10px] font-bold uppercase ${badgeClass}`}
                   >
-                    {product.ProductStatus}
+                    {badgeText}
                   </span>
                   <Button
                     type="button"
-                    onClick={() => handleViewDetails(product)}
-                    className="mt-4 bg-[#064e3b] text-white w-full py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 hover:bg-emerald-900 transition cursor-pointer"
+                    disabled={isSold}
+                    onClick={() => {
+                      if (!isSold) handleViewDetails(product);
+                    }}
+                    className={`mt-4 w-full py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition ${
+                      isSold
+                        ? 'bg-slate-200 text-slate-500 cursor-not-allowed'
+                        : 'bg-[#064e3b] text-white hover:bg-emerald-900 cursor-pointer'
+                    }`}
                   >
-                    <Package size={16} /> View details
+                    <Package size={16} /> {isSold ? 'Sold' : 'View details'}
                   </Button>
                 </div>
               </div>

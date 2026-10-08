@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { ADMIN_SINGLE_REQUEST_KEY } from './useAdminRequest';
 import { ADMIN_REQUESTS_QUERY_KEY } from './useAdminRequests';
 import { ADMIN_COUNTS_QUERY_KEY } from './useRequestCounts';
+import { normalizeRequestStatus } from '../lib/requestStatus';
 
 /**
  * Hook to update a request's status and/or admin_notes.
@@ -16,8 +17,9 @@ export function useUpdateRequest() {
     mutationFn: async ({ id, status, admin_notes, isNoteSave = false }) => {
       if (!id) throw new Error('Request ID is required for update');
 
+      const normalizedStatus = status !== undefined ? normalizeRequestStatus(status) : undefined;
       const payload = {};
-      if (status !== undefined) payload.status = status;
+      if (normalizedStatus !== undefined) payload.status = normalizedStatus;
       if (admin_notes !== undefined) payload.admin_notes = admin_notes;
 
       const { data, error } = await supabase
@@ -31,10 +33,12 @@ export function useUpdateRequest() {
         throw error;
       }
 
-      return { data, isNoteSave, updatedStatus: status };
+      return { data, isNoteSave, updatedStatus: normalizedStatus };
     },
 
     onMutate: async ({ id, status, admin_notes }) => {
+      const normalizedStatus = status !== undefined ? normalizeRequestStatus(status) : undefined;
+
       // Cancel any outgoing refetches so they don't overwrite our optimistic update
       await queryClient.cancelQueries({ queryKey: [ADMIN_SINGLE_REQUEST_KEY, id] });
 
@@ -47,7 +51,7 @@ export function useUpdateRequest() {
           if (!old) return old;
           return {
             ...old,
-            ...(status !== undefined ? { status } : {}),
+            ...(normalizedStatus !== undefined ? { status: normalizedStatus } : {}),
             ...(admin_notes !== undefined ? { admin_notes } : {}),
           };
         });
@@ -68,10 +72,12 @@ export function useUpdateRequest() {
     },
 
     onSuccess: (result, variables) => {
+      const nextStatus = variables.status !== undefined ? normalizeRequestStatus(variables.status) : undefined;
+
       if (variables.isNoteSave) {
         toast.success('Note saved.');
-      } else if (variables.status) {
-        toast.success(`Marked as ${variables.status}.`);
+      } else if (nextStatus) {
+        toast.success(`Marked as ${nextStatus}.`);
       }
 
       // Invalidate relevant queries: single request, list, counts, dashboard stats

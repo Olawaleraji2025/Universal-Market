@@ -18,6 +18,17 @@ export const STATUS_LIST = [
 
 export const STATUS_TABS = ['All', ...STATUS_LIST];
 
+export function normalizeRequestStatus(status) {
+  if (status == null || status === '') return REQUEST_STATUSES.PENDING;
+
+  const value = String(status).trim();
+  const match = Object.values(REQUEST_STATUSES).find(
+    (item) => item.toLowerCase() === value.toLowerCase()
+  );
+
+  return match || value;
+}
+
 export const STATUS_COLORS = {
   Pending: {
     text: '#9a3412',
@@ -60,11 +71,14 @@ export const ALLOWED_STATUS_TRANSITIONS = {
 };
 
 export function getNextAllowedStatuses(currentStatus) {
-  return ALLOWED_STATUS_TRANSITIONS[currentStatus] || [];
+  const normalizedCurrent = normalizeRequestStatus(currentStatus);
+  return (ALLOWED_STATUS_TRANSITIONS[normalizedCurrent] || []).map((status) =>
+    normalizeRequestStatus(status)
+  );
 }
 
 export function isTerminalStatus(status) {
-  return status === REQUEST_STATUSES.COMPLETED;
+  return normalizeRequestStatus(status) === REQUEST_STATUSES.COMPLETED;
 }
 
 export function formatNaira(amount) {

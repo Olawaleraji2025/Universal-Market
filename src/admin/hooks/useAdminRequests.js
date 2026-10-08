@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../../supabaseClient';
+import { normalizeRequestStatus } from '../lib/requestStatus';
 
 export const ADMIN_REQUESTS_QUERY_KEY = 'admin-requests';
 
@@ -30,7 +31,7 @@ export function normalizeAdminRequestItem(r) {
     isProduct,
     ItemPrice: r?.ItemPrice,
     ItemBudget: r?.ItemBudget,
-    status: r?.status || 'Pending',
+    status: normalizeRequestStatus(r?.status),
   };
 }
 
@@ -45,9 +46,10 @@ async function fetchAdminRequests({ status = 'All', type = 'All', q = '', page =
     .select('id, created_at, user_id, userName, UserPhoneNumber, ItemName, ReqType, ItemPrice, ItemBudget, status', { count: 'exact' })
     .order('created_at', { ascending: false });
 
-  // Filter by status if not "All"
+  // Filter by status if not "All"; database values may arrive in different casing.
   if (status && status !== 'All') {
-    query = query.eq('status', status);
+    const normalizedStatus = normalizeRequestStatus(status);
+    query = query.ilike('status', normalizedStatus);
   }
 
   // Filter by type if not "All"

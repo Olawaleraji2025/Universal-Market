@@ -192,4 +192,14 @@ Password recovery is broken into two isolated phases:
 - Introduce roleStatus in authSlice to manage user role loading states.
 - Export normalizeNumberForWa function for WhatsApp number formatting.
 
-38. I worked on the Supabase policy to allow admin upload product and its image into database table
+38. I worked on the Supabase policy to allow admin upload product and its image into database table.
+
+39. feat: enhance product availability and condition handling
+
+- Added normalization functions for product condition and availability.
+- Updated product fetching logic to include new fields: `isSold`, `condition`, and `availability`.
+- Modified ProductCard and ProductDetails components to display product condition and sold status.
+- Enhanced AvailabilityToggle component to manage sold status.
+- Updated admin components to reflect changes in product status and availability.
+- Improved request handling to ensure accurate status representation.
+- Refactored product listing and detail views to accommodate new product state management.

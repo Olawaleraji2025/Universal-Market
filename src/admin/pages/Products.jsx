@@ -1,14 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import {
   Plus,
   Package,
   AlertCircle,
   RefreshCw,
-  Sparkles,
-  Inbox,
   FilterX,
-  Play,
 } from 'lucide-react';
 import { useAdminProducts } from '../hooks/useAdminProducts';
 import { useToggleAvailability } from '../hooks/useToggleAvailability';
@@ -17,7 +14,6 @@ import ProductFilters from '../components/ProductFilters';
 import ProductTable from '../components/ProductTable';
 import ProductCard from '../components/ProductCard';
 import ProductDeleteDialog from '../components/ProductDeleteDialog';
-import AdminProductDemo from '../components/AdminProductDemo';
 import { PRODUCT_STATUS } from '../lib/productConstants';
 
 export default function Products() {
@@ -32,9 +28,8 @@ export default function Products() {
   // Mobile load more pagination support
   const [mobileVisibleCount, setMobileVisibleCount] = useState(10);
 
-  // Dialog & demo states
+  // Dialog state
   const [productToDelete, setProductToDelete] = useState(null);
-  const [showDemoModal, setShowDemoModal] = useState(false);
 
   // Queries & Mutations
   const {
@@ -138,17 +133,6 @@ export default function Products() {
         </div>
 
         <div className="flex items-center gap-2.5 flex-wrap">
-          {/* Interactive Prototype Launcher */}
-          <button
-            type="button"
-            onClick={() => setShowDemoModal(true)}
-            className="min-h-[44px] px-3.5 py-2.5 rounded-[10px] border border-[#047857]/40 bg-[#ecfdf5] hover:bg-emerald-100 text-[#064e3b] text-xs font-semibold inline-flex items-center justify-center gap-2 transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#047857]"
-            title="Launch interactive Section 4 Prototype & Section 5 States simulator"
-          >
-            <Play className="w-3.5 h-3.5 text-[#047857] fill-current" />
-            <span>Interactive Prototype</span>
-          </button>
-
           {/* Add product button (Full-width on mobile, auto on desktop) */}
           <Link
             to="/admin/products/new"
@@ -313,11 +297,6 @@ export default function Products() {
         onCancel={() => setProductToDelete(null)}
       />
 
-      {/* Interactive Prototype & Screen 5 States Showcase Modal */}
-      <AdminProductDemo
-        isOpen={showDemoModal}
-        onClose={() => setShowDemoModal(false)}
-      />
     </div>
   );
 }

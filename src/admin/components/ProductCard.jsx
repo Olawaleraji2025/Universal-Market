@@ -13,7 +13,8 @@ export default function ProductCard({
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
-  const isOutOfStock = product.productStatus === PRODUCT_STATUS.OUT_OF_STOCK;
+  const isSold = Boolean(product?.isSold);
+  const displayCondition = product.condition || product.productStatus || 'USED';
   const formattedPrice = `₦${Number(product.price).toLocaleString('en-NG')}`;
 
   // Close overflow menu on outside click
@@ -31,7 +32,7 @@ export default function ProductCard({
   return (
     <div
       className={`relative bg-white rounded-[14px] border border-[#e2e8f0] p-4 shadow-xs transition-colors ${
-        isOutOfStock ? 'bg-[#f8fafc]/60' : 'bg-white'
+        isSold ? 'bg-[#f8fafc]/60 opacity-80' : 'bg-white'
       }`}
     >
       <div className="flex items-start gap-3">
@@ -133,12 +134,28 @@ export default function ProductCard({
         </div>
       </div>
 
-      {/* Availability toggle with label under info */}
-      <div className="mt-3 pt-3 border-t border-[#e2e8f0] flex items-center justify-between">
-        <span className="text-xs font-medium text-[#475569]">Stock status:</span>
+      <div className="mt-3 pt-3 border-t border-[#e2e8f0] flex items-center justify-between gap-2">
+        <span className="text-xs font-medium text-[#475569]">Condition:</span>
+        <span
+          className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${
+            displayCondition === 'NEW'
+              ? 'bg-emerald-100 text-emerald-800'
+              : displayCondition === 'FAIRLY USED'
+                ? 'bg-amber-100 text-amber-800'
+                : displayCondition === 'SOLD'
+                  ? 'bg-slate-200 text-slate-700'
+                  : 'bg-violet-100 text-violet-800'
+          }`}
+        >
+          {displayCondition}
+        </span>
+      </div>
+
+      <div className="mt-3 flex items-center justify-between">
+        <span className="text-xs font-medium text-[#475569]">Availability:</span>
         <AvailabilityToggle
           productName={product.productName}
-          status={product.productStatus}
+          status={product.availability || (isSold ? 'SOLD' : null)}
           disabled={isToggling}
           size="sm"
           onChange={(newStatus) =>
