@@ -139,7 +139,7 @@ export default function Products() {
             className="flex-1 sm:flex-initial min-h-[44px] px-5 py-2.5 rounded-[10px] bg-[#047857] hover:bg-[#064e3b] text-white text-sm font-semibold inline-flex items-center justify-center gap-2 transition shadow-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#047857] focus:ring-offset-2"
           >
             <Plus className="w-4 h-4" />
-            <span>+ Add product</span>
+            <span>Add product</span>
           </Link>
         </div>
       </div>

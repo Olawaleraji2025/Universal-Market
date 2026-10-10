@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CATEGORIES, CONDITIONS, PRODUCT_STATUS } from './productConstants';
+import { CATEGORIES, CONDITIONS } from './productConstants';
 
 export const productSchema = z.object({
   productName: z
@@ -26,9 +26,6 @@ export const productSchema = z.object({
     .max(100, { message: 'Location cannot exceed 100 characters' })
     .optional()
     .default(''),
-  productStatus: z
-    .enum([PRODUCT_STATUS.IN_STOCK, PRODUCT_STATUS.OUT_OF_STOCK])
-    .default(PRODUCT_STATUS.IN_STOCK),
   description: z
     .string()
     .max(2000, { message: 'Description cannot exceed 2000 characters' })

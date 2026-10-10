@@ -1,14 +1,22 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../../supabaseClient';
 import { getProductImageUrl } from '../lib/imageUtils';
-import { PRODUCT_STATUS } from '../lib/productConstants';
 
 export const ADMIN_PRODUCTS_QUERY_KEY = 'admin-products';
 
 export function getAvailabilityState(raw) {
   if (!raw) return { isSold: false, availability: null };
 
-  const rawAvailability = raw.Availabilty ?? raw.availability ?? raw.Availability ?? null;
+  const rawAvailability =
+    raw.Availabilty ??
+    raw.availability ??
+    raw.Availability ??
+    raw.ProductStatus ??
+    raw.ProductCondition ??
+    raw.condition ??
+    raw.Condition ??
+    null;
+
   const normalized = String(rawAvailability ?? '').trim().toUpperCase();
   const isSold = normalized === 'SOLD';
 
@@ -128,14 +136,9 @@ export function useAdminProducts({
         query = query.eq('Category', category);
       }
 
-      // Apply status filter
-      if (status === 'in_stock') {
-        query = query.neq('ProductStatus', 'Out of Stock');
-      } else if (status === 'out_of_stock') {
-        query = query.eq('ProductStatus', 'Out of Stock');
-      } else if (status === 'hidden') {
-        // If column exists
-        query = query.eq('is_hidden', true);
+      // Apply product status filter.
+      if (status === 'sold') {
+        query = query.or('Availability.eq.SOLD,ProductStatus.eq.SOLD');
       }
 
       // Order by created_at descending
@@ -163,9 +166,7 @@ export function useAdminProducts({
       }
 
       let products = (data || []).map(normalizeAdminProduct);
-      if (status === 'in_stock') {
-        products = products.filter((product) => !product?.isSold);
-      } else if (status === 'out_of_stock') {
+      if (status === 'sold') {
         products = products.filter((product) => product?.isSold);
       }
 

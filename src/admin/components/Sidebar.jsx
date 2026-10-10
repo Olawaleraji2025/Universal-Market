@@ -4,7 +4,6 @@ import {
   LayoutDashboard,
   Package,
   ClipboardList,
-  Users,
   ArrowLeft,
   LogOut,
 } from 'lucide-react';
@@ -26,7 +25,6 @@ export default function Sidebar({ pendingCount = 0, adminName = 'Admin', onLogou
       icon: ClipboardList,
       badge: badgeLabel,
     },
-    { label: 'Users', to: '/admin/users', icon: Users, disabled: true },
   ];
 
   return (
@@ -116,7 +114,7 @@ export default function Sidebar({ pendingCount = 0, adminName = 'Admin', onLogou
           className="min-h-[44px] flex items-center gap-2.5 px-3 py-2 rounded-[10px] text-xs font-medium text-emerald-200 hover:bg-emerald-900/50 hover:text-white transition focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300"
         >
           <ArrowLeft className="w-4 h-4 text-emerald-300" />
-          <span>← Back to site</span>
+          <span>Go Back Home</span>
         </NavLink>
 
         {/* Admin info & Logout */}

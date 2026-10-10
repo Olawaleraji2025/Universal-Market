@@ -71,8 +71,8 @@ export default function ProductCard({
             <span className="font-semibold text-[#047857] bg-[#ecfdf5] px-2 py-0.5 rounded-[6px]">
               {product.category}
             </span>
-            <span>•</span>
-            <span>{product.condition}</span>
+            {/* <span>•</span>
+            <span>{product.condition}</span> */}
           </div>
 
           <div className="mt-1.5 font-bold text-sm text-[#01241a]">

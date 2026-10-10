@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { ArrowLeft, Mail, Phone, UserRound } from 'lucide-react';
+import ProfilePageSkeleton from '../components/ui/skeletons/ProfilePageSkeleton';
 import { selectCurrentUser, selectUserProfile, setProfile } from '../features/authSlice';
 import { supabase } from '../supabaseClient';
 import Button from '../components/ui/button';
@@ -111,7 +112,7 @@ export default function ProfilePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] px-3 pb-10 pt-2 sm:px-4 md:px-6">
+    <div className="min-h-screen bg-[#f8fafc] px-3 pb-10 pt-2 sm:px-4 md:px-6" aria-busy={isLoading}>
       <div className="mx-auto max-w-2xl">
         <header className="mb-4 flex items-center gap-3 rounded-2xl border border-gray-200 bg-white px-3 py-3 shadow-sm sm:px-4">
           <button
@@ -126,24 +127,7 @@ export default function ProfilePage() {
         </header>
 
         {isLoading ? (
-          <div className="space-y-5">
-            <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-              <div className="mx-auto mb-4 h-20 w-20 animate-pulse rounded-full bg-slate-200" />
-              <div className="mx-auto mb-2 h-5 w-36 animate-pulse rounded-full bg-slate-200" />
-              <div className="mx-auto h-4 w-44 animate-pulse rounded-full bg-slate-200" />
-            </div>
-
-            <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
-              <div className="space-y-4 p-4">
-                {[...Array(3)].map((_, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="h-4 w-28 animate-pulse rounded-full bg-slate-200" />
-                    <div className="h-5 w-full animate-pulse rounded-full bg-slate-200" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          <ProfilePageSkeleton />
         ) : loadError ? (
           <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-center shadow-sm">
             <p className="text-lg font-semibold text-red-700">Unable to load your profile.</p>

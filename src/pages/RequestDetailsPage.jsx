@@ -67,7 +67,7 @@ export default function RequestDetailsPage() {
     return (
       <div className="min-h-screen max-w-[900px] mx-auto px-4 py-4 space-y-4">
         <PageHeader title="Request Details" onBack={() => navigate('/my-requests')} />
-        <SkeletonCard count={2} />
+        <SkeletonCard variant="request-detail" />
       </div>
     );
   }

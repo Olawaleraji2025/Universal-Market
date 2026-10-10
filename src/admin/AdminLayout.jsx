@@ -54,7 +54,6 @@ export default function AdminLayout() {
     if (path.startsWith('/admin/products')) return 'Products';
     if (path.match(/\/admin\/requests\/[^/]+/)) return 'Request Detail';
     if (path.startsWith('/admin/requests')) return 'Requests';
-    if (path.startsWith('/admin/users')) return 'Users';
     return 'Admin';
   }, [location.pathname]);
 

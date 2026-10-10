@@ -1,5 +1,5 @@
-import { useState, useCallback, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useCallback, useRef, useMemo } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setClickedProduct } from '../../features/productDetailsClicked';
 import {
@@ -10,9 +10,11 @@ import useShopProducts from '../../Hooks/useShopProducts';
 import { TbCurrencyNaira } from 'react-icons/tb';
 import { ChevronLeft, ChevronRight, Package, Heart } from 'lucide-react';
 import Button from '/src/components/ui/button.jsx';
-import SkeletonCard from '../../components/ui/SkeletonLoader';
+import HomepageProductCardSkeleton from '../../components/ui/skeletons/HomepageProductCardSkeleton';
 import ErrorModal from '../../components/ui/ErrorModal.jsx';
 import { toast } from 'sonner';
+
+const MAX_FRESH_ARRIVALS = 8;
 
 export const ProductCard = () => {
   const dispatch = useDispatch();
@@ -21,6 +23,24 @@ export const ProductCard = () => {
   const scrollRef = useRef(null);
 
   const { data: products, isLoading, isError, isFetching, error, refetch } = useShopProducts();
+  const totalProducts = products?.length ?? 0;
+
+  const freshArrivals = useMemo(() => {
+    const source = [...(products ?? [])];
+
+    return source
+      .sort((a, b) => {
+        const aTime = a?.created_at ? new Date(a.created_at).getTime() : Number(a?.id ?? 0);
+        const bTime = b?.created_at ? new Date(b.created_at).getTime() : Number(b?.id ?? 0);
+
+        if (a?.created_at && b?.created_at) {
+          return bTime - aTime;
+        }
+
+        return Number(b?.id ?? 0) - Number(a?.id ?? 0);
+      })
+      .slice(0, MAX_FRESH_ARRIVALS);
+  }, [products]);
 
   const [loadedImages, setLoadedImages] = useState(new Set());
 
@@ -67,7 +87,7 @@ export const ProductCard = () => {
   }, []);
 
   return (
-    <section className="px-6 py-16 mx-auto">
+    <section className="px-6 py-16 mx-auto" aria-busy={isLoading}>
       <div className="mb-10 flex items-end justify-between gap-4">
         <div>
           <h2 className="text-[20px] md:text-3xl font-bold text-[#01241a]">Fresh Arrivals</h2>
@@ -111,9 +131,9 @@ export const ProductCard = () => {
             message="We couldn't load the products. Please check your internet connection and try again."
           />
         ) : isLoading ? (
-          <SkeletonCard count={3} />
+          <HomepageProductCardSkeleton count={MAX_FRESH_ARRIVALS} />
         ) : (
-          products.map((product) => {
+          freshArrivals.map((product) => {
             const hasFinishedLoading = loadedImages.has(product.id);
             const rawAvailability = (product?.availability || product?.Availabilty || product?.Availability || product?.isSold || product?.ProductStatus || '').toString();
             const isSold = String(rawAvailability).trim().toLowerCase() === 'sold' || Boolean(product?.isSold === true);
@@ -145,36 +165,27 @@ export const ProductCard = () => {
                     loading="lazy"
                     onLoad={() => handleImageLoad(product.id)}
                   />
-                  
 
-                  {/* Skeleton overlay — exists ONLY until image loads, same fence */}
-                  {!hasFinishedLoading && (
-                    <div className="absolute inset-0">
-                      <SkeletonCard count={1} />
-                    </div>
+                  {hasFinishedLoading && (
+                    <button
+                      type="button"
+                      aria-label={isSold ? `Sold — wishlist disabled` : (wishlistIds.some((id) => String(id) === String(product.id)) ? `Remove ${product.ProductName} from wishlist` : `Add ${product.ProductName} to wishlist`)}
+                      aria-pressed={wishlistIds.some((id) => String(id) === String(product.id))}
+                      aria-disabled={isSold}
+                      disabled={isSold}
+                      onClick={() => { if (isSold) return; toggleWishlist(product); }}
+                      className={`absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border shadow-sm backdrop-blur-sm transition hover:scale-105 ${
+                        wishlistIds.some((id) => String(id) === String(product.id))
+                          ? 'border-red-200 bg-red-50 text-red-500'
+                          : 'border-white/80 bg-white/85 text-gray-700 hover:text-red-500'
+                      } ${isSold ? 'opacity-50 pointer-events-none' : ''}`}
+                    >
+                      <Heart
+                        className={`h-4 w-4 ${wishlistIds.some((id) => String(id) === String(product.id)) ? 'fill-current' : ''}`}
+                        strokeWidth={2}
+                      />
+                    </button>
                   )}
-
-{hasFinishedLoading && (
-                  <button
-                    type="button"
-                    aria-label={isSold ? `Sold — wishlist disabled` : (wishlistIds.some((id) => String(id) === String(product.id)) ? `Remove ${product.ProductName} from wishlist` : `Add ${product.ProductName} to wishlist`)}
-                    aria-pressed={wishlistIds.some((id) => String(id) === String(product.id))}
-                    aria-disabled={isSold}
-                    disabled={isSold}
-                    onClick={() => { if (isSold) return; toggleWishlist(product); }}
-                    className={`absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border shadow-sm backdrop-blur-sm transition hover:scale-105 ${
-                      wishlistIds.some((id) => String(id) === String(product.id))
-                        ? 'border-red-200 bg-red-50 text-red-500'
-                        : 'border-white/80 bg-white/85 text-gray-700 hover:text-red-500'
-                    } ${isSold ? 'opacity-50 pointer-events-none' : ''}`}
-                  >
-                    <Heart
-                      className={`h-4 w-4 ${wishlistIds.some((id) => String(id) === String(product.id)) ? 'fill-current' : ''}`}
-                      strokeWidth={2}
-                    />
-                  </button>)}
-
-                  
                 </div>
 
                 <div className="p-4 flex flex-col grow">
@@ -210,6 +221,18 @@ export const ProductCard = () => {
           })
         )}
       </div>
+
+      {!isLoading && !isError && totalProducts > MAX_FRESH_ARRIVALS && (
+        <div className="mt-5 flex justify-center">
+          <Link
+            to="/shop"
+            className="inline-flex items-center gap-2 rounded-full border border-[#064e3b] px-5 py-2.5 text-sm font-semibold text-[#064e3b] transition hover:bg-[#064e3b] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#064e3b]/30 focus-visible:ring-offset-2"
+          >
+            View more
+            <ChevronRight className="h-4 w-4" />
+          </Link>
+        </div>
+      )}
     </section>
   );
 };

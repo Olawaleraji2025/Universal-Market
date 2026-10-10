@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { useSearchParams } from 'react-router-dom';
 import { clearShopSearchQuery } from "../../features/shopSearchSlice";
 import RequestModal from "../../components/ui/CustomRequestModal";
-import SkeletonCard from "../../components/ui/SkeletonLoader";
+import ShopProductListSkeleton from "../../components/ui/skeletons/ShopProductListSkeleton";
 import { Heart, Package, ChevronLeft, ChevronRight } from "lucide-react";
 import { TbCurrencyNaira } from "react-icons/tb";
 import { toast } from "sonner";
@@ -25,6 +25,7 @@ const filters = [
   "Home Appliances",
   "Real Estate",
   "Cars & Motorcycles",
+  "Others"
 ];
 
 export default function ShopProductList() {
@@ -101,7 +102,7 @@ export default function ShopProductList() {
   // otherwise render products with per-image skeleton overlays.
 
   return (
-    <section className="px-6 py-10">
+    <section className="px-6 py-10" aria-busy={isLoading}>
       <div className="max-w-7xl mx-auto">
 
         {/* ── Header: filter pills ── */}
@@ -144,9 +145,7 @@ export default function ShopProductList() {
             message="We couldn't load the products. Please check your internet connection and try again."
           />
         ) : isLoading ? (
-          <div className="flex gap-4 overflow-x-auto pb-3" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-            <SkeletonCard count={3} />
-          </div>
+          <ShopProductListSkeleton count={5} />
         ) : filteredProducts.length === 0 ? (
           <>
             <NoProductFound
@@ -195,12 +194,6 @@ export default function ShopProductList() {
                       loading="lazy"
                       onLoad={() => handleImageLoad(product.id)}
                     />
-
-                    {!hasFinishedLoading && (
-                      <div className="absolute inset-0">
-                        <SkeletonCard count={1} />
-                      </div>
-                    )}
 
                     {hasFinishedLoading && (
                       <button

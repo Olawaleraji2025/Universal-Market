@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Loader2, Trash2 } from 'lucide-react';
-import { CATEGORIES, CONDITIONS, PRODUCT_STATUS } from '../lib/productConstants';
+import { CATEGORIES, CONDITIONS } from '../lib/productConstants';
 import { productSchema } from '../lib/productSchema';
 import ImageUploader from '../components/ImageUploader';
 import SpecsEditor from '../components/SpecsEditor';
@@ -26,9 +26,6 @@ export default function ProductForm({
   );
   const [condition, setCondition] = useState(initialData?.condition || CONDITIONS[0]);
   const [location, setLocation] = useState(initialData?.location || '');
-  const [productStatus, setProductStatus] = useState(
-    initialData?.productStatus || PRODUCT_STATUS.IN_STOCK
-  );
   const [isHidden, setIsHidden] = useState(Boolean(initialData?.is_hidden));
   const [description, setDescription] = useState(initialData?.description || '');
   const [specifications, setSpecifications] = useState(
@@ -65,7 +62,6 @@ export default function ProductForm({
       );
       setCondition(initialData.condition || CONDITIONS[0]);
       setLocation(initialData.location || '');
-      setProductStatus(initialData.productStatus || PRODUCT_STATUS.IN_STOCK);
       setIsHidden(Boolean(initialData.is_hidden));
       setDescription(initialData.description || '');
       setSpecifications(
@@ -102,7 +98,6 @@ export default function ProductForm({
       price: getNumericPrice(),
       condition,
       location,
-      productStatus,
       description,
       specifications,
       images,
@@ -139,7 +134,6 @@ export default function ProductForm({
       price: getNumericPrice(),
       condition,
       location,
-      productStatus,
       description,
       specifications,
       images,
@@ -383,90 +377,37 @@ export default function ProductForm({
           </div>
         </section>
 
-        {/* CARD 2: Availability */}
+        {/* Hide from shop toggle */}
         <section
-          aria-labelledby="card-availability-title"
+          aria-labelledby="card-visibility-title"
           className="bg-white rounded-[14px] border border-[#e2e8f0] p-5 sm:p-6 shadow-xs"
         >
           <h2
-            id="card-availability-title"
+            id="card-visibility-title"
             className="text-base font-bold text-[#01241a] pb-3 border-b border-[#e2e8f0] mb-4"
           >
-            Availability
+            Visibility
           </h2>
 
-          <div className="space-y-4">
-            {/* Radio choices */}
+          <label className="flex items-start gap-2.5 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={isHidden}
+              onChange={(e) => {
+                setIsDirty(true);
+                setIsHidden(e.target.checked);
+              }}
+              className="w-4 h-4 mt-0.5 rounded text-[#047857] focus:ring-[#047857]"
+            />
             <div>
-              <span className="block text-xs font-semibold text-[#01241a] mb-2">
-                Stock Status
+              <span className="text-sm font-semibold text-[#01241a] block">
+                Hide from shop
               </span>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <label className="flex items-center gap-2.5 p-3 rounded-[10px] border border-[#e2e8f0] cursor-pointer hover:bg-slate-50 transition flex-1">
-                  <input
-                    type="radio"
-                    name="productStatus"
-                    value={PRODUCT_STATUS.IN_STOCK}
-                    checked={productStatus === PRODUCT_STATUS.IN_STOCK}
-                    onChange={() => {
-                      setIsDirty(true);
-                      setProductStatus(PRODUCT_STATUS.IN_STOCK);
-                    }}
-                    className="w-4 h-4 text-[#047857] focus:ring-[#047857]"
-                  />
-                  <div>
-                    <span className="text-sm font-bold text-[#01241a] block">In stock</span>
-                    <span className="text-xs text-[#475569]">
-                      Available for customers to request
-                    </span>
-                  </div>
-                </label>
-
-                <label className="flex items-center gap-2.5 p-3 rounded-[10px] border border-[#e2e8f0] cursor-pointer hover:bg-slate-50 transition flex-1">
-                  <input
-                    type="radio"
-                    name="productStatus"
-                    value={PRODUCT_STATUS.OUT_OF_STOCK}
-                    checked={productStatus === PRODUCT_STATUS.OUT_OF_STOCK}
-                    onChange={() => {
-                      setIsDirty(true);
-                      setProductStatus(PRODUCT_STATUS.OUT_OF_STOCK);
-                    }}
-                    className="w-4 h-4 text-[#047857] focus:ring-[#047857]"
-                  />
-                  <div>
-                    <span className="text-sm font-bold text-[#01241a] block">Out of stock</span>
-                    <span className="text-xs text-[#475569]">
-                      Shown as unavailable in the shop
-                    </span>
-                  </div>
-                </label>
-              </div>
+              <span className="text-xs text-[#475569]">
+                Hidden products don't appear in the shop catalogue.
+              </span>
             </div>
-
-            {/* Optional Hide from shop */}
-            <div className="pt-2 border-t border-[#e2e8f0]">
-              <label className="flex items-start gap-2.5 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={isHidden}
-                  onChange={(e) => {
-                    setIsDirty(true);
-                    setIsHidden(e.target.checked);
-                  }}
-                  className="w-4 h-4 mt-0.5 rounded text-[#047857] focus:ring-[#047857]"
-                />
-                <div>
-                  <span className="text-sm font-semibold text-[#01241a] block">
-                    Hide from shop
-                  </span>
-                  <span className="text-xs text-[#475569]">
-                    Hidden products don't appear in the shop catalogue.
-                  </span>
-                </div>
-              </label>
-            </div>
-          </div>
+          </label>
         </section>
 
         {/* CARD 3: Images */}
@@ -647,8 +588,6 @@ export default function ProductForm({
         }}
         onMarkOutOfStock={() => {
           setShowDeleteDialog(false);
-          setProductStatus(PRODUCT_STATUS.OUT_OF_STOCK);
-          setIsDirty(true);
         }}
         onCancel={() => setShowDeleteDialog(false)}
       />

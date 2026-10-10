@@ -3,7 +3,7 @@
 // If not provided, a default number (supplied by the user) is used.
 // Example .env: VITE_WHATSAPP_NUMBER=2348012345678
 
-export const DEFAULT_WHATSAPP_NUMBER = "08109699494"; // user-supplied local number
+export const DEFAULT_WHATSAPP_NUMBER = "07033190225"; // user-supplied local number
 export const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || DEFAULT_WHATSAPP_NUMBER;
 
 export const PRE_FILLED_MESSAGE = `Hello Universal Market, I’m interested in your products and would like to know more.`;

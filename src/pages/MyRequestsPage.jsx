@@ -72,7 +72,7 @@ export default function MyRequestsPage() {
         <div className="space-y-3 pb-8">
           {isLoading ? (
             <div className="space-y-3">
-              <SkeletonCard count={3} />
+              <SkeletonCard count={3} variant="request-card" />
             </div>
           ) : isError ? (
             <div className="rounded-3xl border border-red-200 bg-red-50 p-8 text-center shadow-sm">

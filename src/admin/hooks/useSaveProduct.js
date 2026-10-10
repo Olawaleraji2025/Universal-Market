@@ -15,11 +15,9 @@ export function useSaveProduct() {
       price,
       condition,
       location,
-      productStatus,
       description,
       specifications,
       images,
-      // is_hidden,
       originalImageNames = [],
     }) => {
       // 1. Process specifications array into Key-Value object format
@@ -60,11 +58,10 @@ export function useSaveProduct() {
           ProductName: productName,
           Category: category,
           ProductPrice: Number(price),
-          ProductStatus: productStatus,
           ProductDescription: description || '',
           ProductSpecifications: specsObject,
-          ImageName: finalImageNames, // Saved as array of filenames
-          ImageItems: coverFileName || null,  // Legacy cover filename support
+          ImageName: finalImageNames,
+          ImageItems: coverFileName || null,
           Location: location || '',
         };
 
@@ -72,9 +69,6 @@ export function useSaveProduct() {
         if (condition) {
           payload.ProductCondition = condition;
         }
-
-        // Add is_hidden
-        // payload.is_hidden = Boolean(is_hidden);
 
         let savedData = null;
 
@@ -88,10 +82,9 @@ export function useSaveProduct() {
             .single();
 
           // Graceful fallback if is_hidden or ProductCondition columns do not exist in the database table
-          if (error && (error.message?.includes('is_hidden') || error.message?.includes('ProductCondition'))) {
+          if (error && error.message?.includes('ProductCondition')) {
             const fallbackPayload = { ...payload };
-            // if (error.message?.includes('is_hidden')) delete fallbackPayload.is_hidden;
-            if (error.message?.includes('ProductCondition')) delete fallbackPayload.ProductCondition;
+            delete fallbackPayload.ProductCondition;
 
             const retry = await supabase
               .from('EachProductInformation')
@@ -124,10 +117,9 @@ export function useSaveProduct() {
             .single();
 
           // Graceful fallback if is_hidden or ProductCondition columns do not exist in the database table
-          if (error && (error.message?.includes('is_hidden') || error.message?.includes('ProductCondition'))) {
+          if (error && error.message?.includes('ProductCondition')) {
             const fallbackPayload = { ...payload };
-            // if (error.message?.includes('is_hidden')) delete fallbackPayload.is_hidden;  
-            if (error.message?.includes('ProductCondition')) delete fallbackPayload.ProductCondition;
+            delete fallbackPayload.ProductCondition;
 
             const retry = await supabase
               .from('EachProductInformation')

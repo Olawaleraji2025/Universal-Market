@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 import Button from '../components/ui/button';
-import SkeletonCard from '../components/ui/SkeletonLoader';
+import WishlistPageSkeleton from '../components/ui/skeletons/WishlistPageSkeleton';
 import SelectedRequestModal from '../components/ui/SelectedRequestModal';
 import useShopProducts from '../Hooks/useShopProducts';
 import { useSelector, useDispatch } from 'react-redux';
@@ -95,14 +95,12 @@ export default function WishListPage() {
   const handleRemoveWishlistItem = (id) => dispatch(removeWishlistItemAction(id));
 
   return (
-    <main className="min-h-screen bg-[#f8fafc] px-4 py-10 md:px-6 lg:px-8">
+    <main className="min-h-screen bg-[#f8fafc] px-4 py-10 md:px-6 lg:px-8" aria-busy={isLoading}>
       <div className="mx-auto max-w-7xl">
         <WishlistHeader count={wishlistProducts.length} selectedCount={selectedCount} allSelected={allSelected} onToggleSelectAll={toggleSelectAll} />
 
         {isLoading ? (
-          <div className="space-y-4">
-            <SkeletonCard count={3} />
-          </div>
+          <WishlistPageSkeleton count={3} />
         ) : isError ? (
           <div className="rounded-3xl border border-red-200 bg-red-50 p-8 text-center shadow-sm">
             <p className="text-lg font-semibold text-red-700">Wishlist could not load</p>

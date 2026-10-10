@@ -22,10 +22,8 @@ export const PRODUCT_STATUS = {
 };
 
 export const STATUS_FILTER_OPTIONS = [
-  { label: 'All Statuses', value: 'all' },
-  { label: 'In Stock', value: 'in_stock' },
-  { label: 'Out of Stock', value: 'out_of_stock' },
-  { label: 'Hidden from Shop', value: 'hidden' },
+  { label: 'All', value: 'all' },
+  { label: 'SOLD', value: 'sold' },
 ];
 
 export const MAX_IMAGES = 6;

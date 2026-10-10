@@ -3,7 +3,7 @@ import { Package, Heart, MapPin, FileText, ChevronDown, ChevronUp } from "lucide
 import { useDispatch, useSelector } from "react-redux";
 import Button from "../../components/ui/button";
 import RequestModal from "./ProductRequestModal";
-import SkeletonCard from "../../components/ui/SkeletonLoader";
+import ProductDetailsSkeleton from "../../components/ui/skeletons/ProductDetailsSkeleton";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import useShopProducts from "../../Hooks/useShopProducts";
@@ -94,15 +94,7 @@ export const ProductDetails = () => {
   };
 
   if (isLoading && !selectedProduct ) {
-    return (
-      <section className="px-6 py-10">
-        <div className="max-w-6xl m-auto">
-          <div className="mb-6">
-            <SkeletonCard count={1} />
-          </div>
-        </div>
-      </section>
-    );
+    return <ProductDetailsSkeleton />;
   }
 
   if (!selectedProduct && isError) {
@@ -205,7 +197,7 @@ export const ProductDetails = () => {
   const visibleExtraDetails = showAllDetails ? extraDetails : extraDetails.slice(0, 3);
 
   return (
-    <section className="px-6 py-10">
+    <section className="px-6 py-10" aria-busy={isLoading}>
       <div className="max-w-6xl mx-auto">
         <nav className="text-sm text-gray-500 mb-4" aria-label="Breadcrumb">
           <ol className="flex items-center gap-2">
@@ -239,11 +231,11 @@ export const ProductDetails = () => {
               <h1 className="wrap-break-word text-3xl font-bold text-[#01241a] leading-tight">{productName}</h1>
               <p className="mt-2 text-xl font-bold text-[#01241a]">{priceDisplay}</p>
 
-              {conditionBadge && (
+              {/* {conditionBadge && (
                 <span className={`mt-3 inline-flex items-center rounded-full px-3 py-1 text-[10px] font-bold uppercase ${statusClass}`}>
                   {conditionBadge}
                 </span>
-              )}
+              )} */}
 
               {(productCondition || conditionBadge) && (
                 <p className="mt-3 text-sm font-medium text-gray-700">

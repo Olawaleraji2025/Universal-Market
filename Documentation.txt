@@ -203,3 +203,5 @@ Password recovery is broken into two isolated phases:
 - Updated admin components to reflect changes in product status and availability.
 - Improved request handling to ensure accurate status representation.
 - Refactored product listing and detail views to accommodate new product state management.
+
+40. Add skeleton components for various pages to enhance loading experience

@@ -144,7 +144,7 @@ export default function Requests() {
             </div>
             <h3 className="text-base font-bold text-[#01241a]">Failed to load requests</h3>
             <p className="mt-1 text-sm text-[#475569]">
-              {error?.message || 'Could not retrieve requests. Please check your network connection.'}
+              {'Could not retrieve requests. Please check your network connection.'}
             </p>
             <button
               type="button"

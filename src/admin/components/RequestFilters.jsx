@@ -8,35 +8,23 @@ export default function RequestFilters({
   typeFilter = 'All',
   onTypeChange,
 }) {
-  const [localSearch, setLocalSearch] = useState(searchQuery);
+  const [localSearch, setLocalSearch] = useState(searchQuery || '');
 
-  // Sync internal state when external prop changes (e.g. from URL or reset)
   useEffect(() => {
-    setLocalSearch(searchQuery);
+    setLocalSearch(searchQuery || '');
   }, [searchQuery]);
-
-  // Debounce search typing by 300ms
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      const sanitized = cleanSearchQuery(localSearch);
-      if (sanitized !== searchQuery) {
-        onSearchChange(sanitized);
-      }
-    }, 300);
-
-    return () => clearTimeout(handler);
-  }, [localSearch, searchQuery, onSearchChange]);
 
   const handleInputChange = (e) => {
     const rawValue = e.target.value;
-    // Strip commas and % while typing
     const stripped = rawValue.replace(/[,%]/g, '');
-    setLocalSearch(stripped);
+    const sanitized = cleanSearchQuery(stripped);
+    setLocalSearch(sanitized);
+    onSearchChange?.(sanitized);
   };
 
   const handleClearSearch = () => {
     setLocalSearch('');
-    onSearchChange('');
+    onSearchChange?.('');
   };
 
   return (
