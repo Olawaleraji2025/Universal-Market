@@ -12,6 +12,7 @@ import { ChevronLeft, ChevronRight, Package, Heart } from 'lucide-react';
 import Button from '/src/components/ui/button.jsx';
 import HomepageProductCardSkeleton from '../../components/ui/skeletons/HomepageProductCardSkeleton';
 import ErrorModal from '../../components/ui/ErrorModal.jsx';
+import EmptyStateModal from '../../components/ui/EmptyStateModal.jsx';
 import { toast } from 'sonner';
 
 const MAX_FRESH_ARRIVALS = 8;
@@ -132,6 +133,13 @@ export const ProductCard = () => {
           />
         ) : isLoading ? (
           <HomepageProductCardSkeleton count={MAX_FRESH_ARRIVALS} />
+        ) : !products || products.length === 0 ? (
+          <EmptyStateModal
+            onRetry={() => refetch()}
+            isRetrying={isFetching}
+            title="No products available"
+            message="There are no products in the shop right now. Please check back soon."
+          />
         ) : (
           freshArrivals.map((product) => {
             const hasFinishedLoading = loadedImages.has(product.id);

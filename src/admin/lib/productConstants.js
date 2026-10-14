@@ -1,13 +1,12 @@
 export const CATEGORIES = [
-  'Phones',
-  'Laptops',
-  'TVs',
-  'Refrigerators',
-  'Gaming Consoles',
-  'Home Appliances',
-  'Gadgets',
-  'Audio & Studio Equipment',
-  'Other',
+  "Phones",
+  "Laptops",
+  "Gadgets",
+  "Audio & Studio Equipment",
+  "Home Appliances",
+  "Real Estate",
+  "Cars & Motorcycles",
+  "Others"
 ];
 
 export const CONDITIONS = [

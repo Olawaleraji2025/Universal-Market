@@ -31,6 +31,7 @@ import Dashboard from './admin/pages/Dashboard';
 import Products from './admin/pages/Products';
 import AddProduct from './admin/pages/AddProduct';
 import EditProduct from './admin/pages/EditProduct';
+import InfoPage from './pages/InfoPage';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -127,6 +128,10 @@ const App = () => {
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/update-password" element={<UpdatePasswordPage />} />
           <Route path="/shop" element={<ShopPage />} />
+          <Route path="/about" element={<InfoPage title="About Us"><p>Draft: this page is still being reviewed by the team.</p><p>Universal Market helps people discover quality second-hand electronics and home essentials in Ibadan and beyond. We focus on simple browsing, clear pricing, and a trustworthy buying experience.</p><p>We are still refining the final story, products, and service details, so this content should be treated as a working draft.</p></InfoPage>} />
+          <Route path="/shipping-policy" element={<InfoPage title="Shipping Policy"><p>Draft: this shipping policy is still under review.</p><p>Delivery details, timing, and coverage areas will be shared here once the final shipping plan is confirmed.</p><p>At the moment, this page is informational only and is not a final legal or operational policy.</p></InfoPage>} />
+          <Route path="/terms" element={<InfoPage title="Terms"><p>Draft: this page is not final and needs review before publishing.</p><p>By using Universal Market, buyers and sellers agree to the platform rules and process that will be published here once the final terms are approved.</p><p>Nothing on this page should be treated as a final contractual agreement yet.</p></InfoPage>} />
+          <Route path="/privacy" element={<InfoPage title="Privacy"><p>Draft: this privacy notice is a placeholder and needs legal review.</p><p>We will explain what personal information we collect, how it is used, and how it is protected once the final privacy policy is approved.</p><p>This page is intentionally short and is not final policy text.</p></InfoPage>} />
           <Route path="/wishlist" element={<WishListPage />} />
           <Route path="/product/:id" element={<ProductPage />} />
           <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />

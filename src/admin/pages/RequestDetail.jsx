@@ -286,7 +286,7 @@ export default function RequestDetail() {
                   </span>
                 </div>
 
-                {request.isProduct && (
+                {/* {request.isProduct && (
                   <div className="pt-1">
                     <Link
                       to={`/product/${request.id}`}
@@ -298,7 +298,7 @@ export default function RequestDetail() {
                       <ExternalLink className="w-3.5 h-3.5" />
                     </Link>
                   </div>
-                )}
+                )} */}
               </div>
             </div>
           </div>

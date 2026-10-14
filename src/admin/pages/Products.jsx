@@ -116,7 +116,7 @@ export default function Products() {
     <div className="space-y-6">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
+        <div className="m-2.5">
           <div className="flex items-center gap-2">
             <h1 className="text-2xl sm:text-[28px] font-bold text-[#01241a] tracking-tight">
               Products
@@ -132,7 +132,7 @@ export default function Products() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5 flex-wrap">
+        <div className="flex items-center gap-2.5 flex-wrap mx-10">
           {/* Add product button (Full-width on mobile, auto on desktop) */}
           <Link
             to="/admin/products/new"

@@ -195,7 +195,7 @@ export default function ProductForm({
     <div className="max-w-4xl mx-auto space-y-6 pb-24 md:pb-12">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#e2e8f0] pb-4">
-        <div>
+        <div className="ml-3 mt-2">
           <button
             type="button"
             onClick={handleCancelClick}
@@ -204,7 +204,7 @@ export default function ProductForm({
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Back to products</span>
           </button>
-          <h1 className="text-2xl sm:text-[28px] font-bold text-[#01241a] tracking-tight">
+          <h1 className="text-2xl sm:text-[28px] font-bold text-[#01241a] tracking-tight text-center mt-4">
             {isEdit
               ? `Edit ${initialData?.productName || 'product'}`
               : 'Add product'}
