@@ -29,6 +29,13 @@ const filters = [
   "Others"
 ];
 
+const normalizeCategoryName = (value = '') =>
+  String(value)
+    .trim()
+    .replace(/\s*&\s*/g, ' and ')
+    .replace(/\s+/g, ' ')
+    .toLowerCase();
+
 const ROW_SIZE = 10;
 const ROWS_PER_PAGE = 2;
 const PAGE_SIZE = ROW_SIZE * ROWS_PER_PAGE;
@@ -224,7 +231,10 @@ export default function ShopProductList() {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const category = searchParams.get('category') || '';
-  const normalizedCategory = category && filters.includes(category) ? category : 'All';
+  const rawCategory = normalizeCategoryName(category);
+  const normalizedCategory = rawCategory
+    ? filters.find((filterName) => normalizeCategoryName(filterName) === rawCategory) ?? 'All'
+    : 'All';
   const query = useSelector((state) => state.shopSearch?.query ?? "");
 
   const { data: products = [], isLoading, isError, isFetching, error, refetch } = useShopProducts();
@@ -234,7 +244,7 @@ export default function ShopProductList() {
     let result = products;
 
     if (normalizedCategory !== 'All') {
-      result = result.filter((p) => p.Category === normalizedCategory);
+      result = result.filter((product) => normalizeCategoryName(product?.Category) === normalizeCategoryName(normalizedCategory));
     }
 
     if (!q) return result;

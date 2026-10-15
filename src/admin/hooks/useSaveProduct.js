@@ -60,6 +60,7 @@ export function useSaveProduct() {
           ProductPrice: Number(price),
           ProductDescription: description || '',
           ProductSpecifications: specsObject,
+          ProductStatus: condition.toUpperCase(),
           ImageName: finalImageNames,
           ImageItems: coverFileName || null,
           Location: location || '',

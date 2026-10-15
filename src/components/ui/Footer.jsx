@@ -1,19 +1,19 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowUpRight, ChevronRight, MessageCircle, Phone } from 'lucide-react';
+import { ChevronRight, MessageCircle, Phone } from 'lucide-react';
 
 import logo from '../../assets/logos/UM-logo2.png';
 import { WHATSAPP_NUMBER, PRE_FILLED_MESSAGE, buildWhatsAppUrl } from '../../lib/whatsappConfig';
 
 const shopCategories = [
   { label: 'All Products', href: '/shop' },
-  { label: 'Phones', href: '/shop?category=Phones' },
-  { label: 'Laptops', href: '/shop?category=Laptops' },
-  { label: 'Home Appliances', href: '/shop?category=Home Appliances' },
-  { label: 'Gadgets', href: '/shop?category=Gadgets' },
-  { label: 'Audio & Studio Equipment', href: '/shop?category=Audio & Studio Equipment' },
-  { label: 'Real Estate', href: '/shop?category=Real Estate' },
-  { label: 'Cars & Motorcycles', href: '/shop?category=Cars & Motorcycles' },
-  { label: 'Others', href: '/shop?category=Others' },
+  { label: 'Phones', href: `/shop?category=${encodeURIComponent('Phones')}` },
+  { label: 'Laptops', href: `/shop?category=${encodeURIComponent('Laptops')}` },
+  { label: 'Home Appliances', href: `/shop?category=${encodeURIComponent('Home Appliances')}` },
+  { label: 'Gadgets', href: `/shop?category=${encodeURIComponent('Gadgets')}` },
+  { label: 'Audio & Studio Equipment', href: `/shop?category=${encodeURIComponent('Audio & Studio Equipment')}` },
+  { label: 'Real Estate', href: `/shop?category=${encodeURIComponent('Real Estate')}` },
+  { label: 'Cars & Motorcycles', href: `/shop?category=${encodeURIComponent('Cars & Motorcycles')}` },
+  { label: 'Others', href: `/shop?category=${encodeURIComponent('Others')}`},
 ];
 
 const infoLinks = [
@@ -104,41 +104,6 @@ export const Footer = () => {
               ))}
             </ul>
           </div>
-
-          {/* <div>
-            <h4 className="mb-5 text-xs font-bold uppercase tracking-[0.2em] text-white">Support</h4>
-            <ul className="space-y-3 text-sm text-emerald-50/75">
-              <li>
-                <a
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#011c15] rounded"
-                >
-                  <MessageCircle className="h-4 w-4" />
-                  WhatsApp support
-                </a>
-              </li>
-              <li>
-                <a
-                  href={`tel:${WHATSAPP_NUMBER}`}
-                  className="inline-flex items-center gap-2 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#011c15] rounded"
-                >
-                  <Phone className="h-4 w-4" />
-                  {WHATSAPP_NUMBER}
-                </a>
-              </li>
-              <li>
-                <Link
-                  to="/shop"
-                  className="inline-flex items-center gap-2 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#011c15] rounded"
-                >
-                  <ArrowUpRight className="h-4 w-4" />
-                  Browse all products
-                </Link>
-              </li>
-            </ul>
-          </div> */}
         </div>
 
         <div className="mt-10 flex flex-col gap-4 border-t border-emerald-900/80 pt-6 text-xs text-emerald-50/60 sm:flex-row sm:items-center sm:justify-between">
