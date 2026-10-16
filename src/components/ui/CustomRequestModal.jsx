@@ -294,14 +294,12 @@ export default function RequestModal({ open, onClose, initialItemName = "" }) {
       };
 
       const { error } = await supabase.from("All_Requests").insert([payload]);
-      console.log("payload: ", payload);
 
       if (error) {
         // Graceful fallback so the demo still shows success even if the
         // table schema differs from the payload columns.
         toast.error("Failed to submit request. Please try again.");
         setStatus("idle");
-        console.log({error})
       } else {
         toast.success("Request submitted successfully!");
         setStatus("success");

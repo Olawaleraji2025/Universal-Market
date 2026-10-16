@@ -197,7 +197,7 @@ export const ProductCard = () => {
                 </div>
 
                 <div className="p-4 flex flex-col grow">
-                  <h3 className="font-semibold text-gray-800 mb-1">
+                  <h3 className="font-semibold text-gray-800 mb-1 truncate" title={product.ProductName}>
                     {product.ProductName}
                   </h3>
                   <p className="text-[15px] font-bold text-[#01241a] flex items-center">

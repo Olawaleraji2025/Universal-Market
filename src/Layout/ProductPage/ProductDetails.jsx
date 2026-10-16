@@ -212,12 +212,16 @@ export const ProductDetails = () => {
               <>
                 <li aria-hidden>›</li>
                 <li>
-                  <Link to={`/shop?category=${encodeURIComponent(categoryName)}`} className="hover:underline text-[13px]">{categoryName}</Link>
+                  <Link to={`/shop?category=${encodeURIComponent(categoryName)}`} className="hover:underline text-[13px] truncate" title={categoryName}>
+                    {categoryName}
+                  </Link>
                 </li>
               </>
             )}
             <li aria-hidden>›</li>
-            <li className="text-gray-700">{productName}</li>
+            <li className="text-gray-700 truncate" title={productName}>
+              {productName}
+            </li>
           </ol>
         </nav>
 

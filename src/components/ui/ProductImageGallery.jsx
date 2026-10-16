@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronRight, ImageOff } from 'lucide-react';
 const SWIPE_THRESHOLD = 40;
 
 // Maximum thumbnails shown before a "+N" overflow button appears
-const MAX_VISIBLE_THUMBS = 5;
+const MAX_VISIBLE_THUMBS = 3;
 
 /**
  * ProductImageGallery
