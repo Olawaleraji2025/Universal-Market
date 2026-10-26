@@ -2,25 +2,24 @@ import { House, ShoppingBag, Heart, ClipboardList, Info, Phone, PieChart, Packag
 
 export const menus = {
   guest: [
-    { label: 'Home', icon: House, to: '/', active: true },
+    { label: 'Home', icon: House, to: '/' },
     { label: 'Shop', icon: ShoppingBag, to: '/shop' },
     { label: 'Wishlist', icon: Heart, to: '/wishlist' },
-    // { label: 'About Us', icon: Info, to: '/about' },
-    // { label: 'Contact Us', icon: Phone, to: '/contact' },
+    { label: 'About Us', icon: Info, to: '/about' },
   ],
   user: [
-    { label: 'Home', icon: House, to: '/', active: true },
+    { label: 'Home', icon: House, to: '/' },
     { label: 'Shop', icon: ShoppingBag, to: '/shop' },
     { label: 'Wishlist', icon: Heart, to: '/wishlist' },
     { label: 'My Requests', icon: ClipboardList, to: '/my-requests' },
-    // { label: 'About Us', icon: Info, to: '/about' },
-    // { label: 'Contact Us', icon: Phone, to: '/contact' },
+    { label: 'About Us', icon: Info, to: '/about' },
   ],
   admin: [
     { label: 'Home', icon: House, to: '/' },
     { label: 'Shop', icon: ShoppingBag, to: '/shop' },
     { label: 'Wishlist', icon: Heart, to: '/wishlist' },
     { label: 'My Requests', icon: ClipboardList, to: '/my-requests' },
+    { label: 'About Us', icon: Info, to: '/about' },
     { label: 'Admin Dashboard', icon: PieChart, to: '/admin', highlight: true },
   ],
 };

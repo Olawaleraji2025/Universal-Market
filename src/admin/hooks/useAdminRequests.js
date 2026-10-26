@@ -31,6 +31,8 @@ export function normalizeAdminRequestItem(r) {
     isProduct,
     ItemPrice: r?.ItemPrice,
     ItemBudget: r?.ItemBudget,
+    ItemDetails: r?.ItemDetails,
+    specs: r?.ItemDetails,
     status: normalizeRequestStatus(r?.status),
   };
 }
@@ -43,7 +45,7 @@ async function fetchAdminRequests({ status = 'All', type = 'All', q = '', page =
 
   let query = supabase
     .from('All_Requests')
-    .select('id, created_at, user_id, userName, UserPhoneNumber, ItemName, ReqType, ItemPrice, ItemBudget, status', { count: 'exact' })
+    .select('id, created_at, user_id, userName, UserPhoneNumber, ItemName, ReqType, ItemPrice, ItemBudget, status, ItemDetails', { count: 'exact' })
     .order('created_at', { ascending: false });
 
   // Filter by status if not "All"; database values may arrive in different casing.

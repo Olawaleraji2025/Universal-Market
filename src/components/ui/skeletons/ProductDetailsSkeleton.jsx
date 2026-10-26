@@ -17,7 +17,7 @@ export default function ProductDetailsSkeleton() {
           <div className="mx-auto block w-full max-w-[420px] space-y-3 md:max-w-full">
             <Skeleton className="aspect-[4/3] w-full rounded-2xl bg-slate-200" />
             <div className="flex justify-center gap-2">
-              {Array.from({ length: 5 }).map((_, index) => (
+              {Array.from({ length: 3 }).map((_, index) => (
                 <Skeleton
                   key={`product-gallery-thumb-${index}`}
                   className="h-16 w-16 rounded-lg bg-slate-200"

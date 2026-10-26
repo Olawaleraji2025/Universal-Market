@@ -223,9 +223,9 @@ export default function RequestDetailsPage() {
                 )}
               </div>
             </div>
-            <div className="sm:col-span-2">
+            <div className="sm:col-span-2 min-w-0">
               <div className="text-xs text-gray-500">Item Specifications / Message</div>
-              <div className="font-medium mt-0.5 bg-gray-50 p-3 rounded-xl border border-gray-100 text-gray-800">
+              <div className="font-medium mt-0.5 bg-gray-50 p-3 rounded-xl border border-gray-100 text-gray-800 break-words [overflow-wrap:anywhere] whitespace-pre-line">
                 {item.specs || 'No extra specifications provided.'}
               </div>
             </div>

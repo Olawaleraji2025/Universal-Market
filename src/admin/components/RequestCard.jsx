@@ -27,6 +27,13 @@ export default function RequestCard({ request, onClick }) {
           {request.ItemName}
         </p>
 
+        {/* Optional Specs / Message (safe truncate) */}
+        {(request.ItemDetails || request.specs) && (
+          <p className="mt-0.5 text-xs text-gray-500 truncate">
+            {request.ItemDetails || request.specs}
+          </p>
+        )}
+
         {/* Second Line: Customer · Type · Date in small grey text */}
         <p className="mt-1 text-xs text-[#475569] truncate">
           <span>{request.userName}</span>

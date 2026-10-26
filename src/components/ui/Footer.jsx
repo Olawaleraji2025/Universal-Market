@@ -18,9 +18,6 @@ const shopCategories = [
 
 const infoLinks = [
   { label: 'About Us', href: '/about' },
-  { label: 'Shipping Policy', href: '/shipping-policy' },
-  { label: 'Terms', href: '/terms' },
-  { label: 'Privacy', href: '/privacy' },
 ];
 
 const whatsappUrl = buildWhatsAppUrl(WHATSAPP_NUMBER, PRE_FILLED_MESSAGE) ?? 'https://wa.me/2347033190225';

@@ -304,14 +304,14 @@ export default function RequestDetail() {
           </div>
 
           {/* CUSTOMER MESSAGE CARD */}
-          <div className="bg-white border border-[#e2e8f0] rounded-[14px] p-5 sm:p-6 shadow-xs">
+          <div className="bg-white border border-[#e2e8f0] rounded-[14px] p-5 sm:p-6 shadow-xs min-w-0">
             <h2 className="text-sm font-bold text-[#475569] uppercase tracking-wider mb-2 flex items-center gap-2">
               <MessageSquare className="w-4 h-4 text-emerald-800" />
               <span>Customer Message</span>
             </h2>
 
             {request.ItemDetails && request.ItemDetails.trim() ? (
-              <p className="text-sm text-[#01241a] leading-relaxed whitespace-pre-line bg-[#f8fafc] p-4 rounded-[10px] border border-[#e2e8f0]">
+              <p className="text-sm text-[#01241a] leading-relaxed whitespace-pre-line break-words [overflow-wrap:anywhere] bg-[#f8fafc] p-4 rounded-[10px] border border-[#e2e8f0]">
                 {request.ItemDetails.trim()}
               </p>
             ) : (

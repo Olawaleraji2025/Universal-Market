@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Button from "../ui/button";
 import MobileSidebar from "./MobileSidebar";
 import UserMenu from "./UserMenu";
-import { useLocation, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import logo from "../../assets/logos/UM-logo.png";
 import LoginForm from "../../Layout/ProductPage/LoginForm";
 import { SignupForm } from "../../Layout/ProductPage/signup-form";
@@ -99,44 +99,42 @@ export const Navbar = () => {
           </div>
 
           <div className="hidden md:flex items-center gap-8 font-medium text-gray-600">
-            <a
-              href="#"
-              className="hover:text-emerald-600 transition"
-              onClick={(e) => {
-                e.preventDefault();
-                navigate("/shop");
-              }}
+            <NavLink
+              to="/shop"
+              className={({ isActive }) =>
+                `transition ${
+                  isActive
+                    ? "text-emerald-700 font-semibold"
+                    : "hover:text-emerald-600"
+                }`
+              }
             >
               Shop
-            </a>
-            <a
-              href="#"
-              className="hover:text-emerald-600 transition"
-              onClick={(e) => {
-                e.preventDefault();
-                navigate("/wishlist");
-              }}
+            </NavLink>
+            <NavLink
+              to="/wishlist"
+              className={({ isActive }) =>
+                `transition ${
+                  isActive
+                    ? "text-emerald-700 font-semibold"
+                    : "hover:text-emerald-600"
+                }`
+              }
             >
               Wishlist
-            </a>
-            {/* <a
-              href="#"
-              className="hover:text-emerald-600 transition"
-              onClick={(e) => {
-                e.preventDefault();
-              }}
+            </NavLink>
+            <NavLink
+              to="/about"
+              className={({ isActive }) =>
+                `transition ${
+                  isActive || location.pathname === "/about-us"
+                    ? "text-emerald-700 font-semibold"
+                    : "hover:text-emerald-600"
+                }`
+              }
             >
-              Contact
-            </a>
-            <a
-              href="#"
-              className="hover:text-emerald-600 transition"
-              onClick={(e) => {
-                e.preventDefault();
-              }}
-            >
-              About
-            </a> */}
+              About Us
+            </NavLink>
           </div>
 
           {/* Desktop Auth State / User Controls */}
