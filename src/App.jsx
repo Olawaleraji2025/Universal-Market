@@ -1,6 +1,7 @@
 import './index.css'
 import './App.css'
 
+import { Analytics } from '@vercel/analytics/react';
 import { Navbar } from './components/ui/Header';
 import { Footer } from './components/ui/Footer';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
@@ -165,6 +166,7 @@ const App = () => {
       />
 
       <Toaster richColors />
+      <Analytics />
     </div>
   );
 };
