@@ -61,39 +61,15 @@ export const normalizeRequest = (r) => {
 
 
 const fetchUserRequests = async (userId) => {
-  let query = supabase
+  if (!userId) return [];
+
+  const { data: requests, error } = await supabase
     .from('All_Requests')
-    .select('*')
+    .select('id, created_at, ItemName, ItemDetails, status, ReqType, ItemCategory, ItemImage, ItemPrice, ItemBudget, UserPhoneNumber')
+    .eq('user_id', userId)
     .order('created_at', { ascending: false });
 
-  if (userId) {
-    query = query.eq('user_id', userId);
-  }
-
-  const { data: requests, error } = await query;
-
-  if (error) {
-    // If filtering by user_id fails or table doesn't have RLS / matches, fallback to general fetch
-    const fallback = await supabase
-      .from('All_Requests')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (fallback.error) throw fallback.error;
-    return (fallback.data ?? []).map(normalizeRequest);
-  }
-
-  // If user is logged in and has specific requests, return them; otherwise if empty fallback to general requests
-  if (userId && (!requests || requests.length === 0)) {
-    const fallback = await supabase
-      .from('All_Requests')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (!fallback.error && fallback.data && fallback.data.length > 0) {
-      return fallback.data.map(normalizeRequest);
-    }
-  }
+  if (error) throw error;
 
   return (requests ?? []).map(normalizeRequest);
 };
@@ -111,4 +87,3 @@ export default function useUserRequests(options = {}) {
 
   return useMemo(() => query, [query]);
 }
-

@@ -7,6 +7,7 @@ import { TbCurrencyNaira } from 'react-icons/tb';
 import { buildWhatsAppUrl, WHATSAPP_NUMBER } from '../lib/whatsappConfig';
 import SkeletonCard from '../components/ui/SkeletonLoader';
 import Button from '../components/ui/button';
+import { isTrustedImageUrl } from '../lib/utils';
 
 export default function RequestDetailsPage() {
   const { id } = useParams();
@@ -23,7 +24,8 @@ export default function RequestDetailsPage() {
     Boolean(item?.isProductRequest) ||
     (!item?.isCustom && Boolean(item?.ProductImage));
 
-  const showProductImage = isProductRequest && Boolean(item?.ProductImage) && !imageError;
+  const showProductImage =
+    isProductRequest && isTrustedImageUrl(item?.ProductImage) && !imageError;
 
   const rawPrice = isProductRequest
     ? (item?.ItemPrice ?? item?.price ?? item?.ProductPrice ?? null)
@@ -263,4 +265,3 @@ export default function RequestDetailsPage() {
     </div>
   );
 }
-

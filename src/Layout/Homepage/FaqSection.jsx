@@ -36,11 +36,11 @@ export const FaqSection = () => (
       answer="We specialize in high-quality pre-owned (secondhand) electronics. Each item is thoroughly tested and graded (e.g., Like New, Very Good) so you know exactly what you're buying."
     />
 
-    <FAQItem
+    {/* <FAQItem
       isOpen={false}
       question="Is there a warranty?"
       answer="Yes, we provide a limited warranty on all verified items."
-    />
+    /> */}
 
     <FAQItem
       isOpen={false}

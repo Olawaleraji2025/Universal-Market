@@ -60,7 +60,6 @@ export const selectAuthLoading = (state) => state.auth.loading;
 export const selectRoleStatus = (state) => state.auth.roleStatus;
 export const selectUserRole = (state) =>
   state.auth.profile?.role ||
-  state.auth.user?.user_metadata?.role ||
   (state.auth.user ? 'user' : 'guest');
 export const selectIsAuthenticated = (state) => !!state.auth.user;
 

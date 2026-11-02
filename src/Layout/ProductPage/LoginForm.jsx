@@ -131,7 +131,7 @@ export default function LoginForm({
             <Input
               id="email"
               type="email"
-              placeholder="e.g. olawale@gmail.com"
+              placeholder="you@example.com"
               autoComplete="email"
               className="bg-white"
               value={formData.email}

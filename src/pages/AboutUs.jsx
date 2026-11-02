@@ -6,7 +6,12 @@ import TrustBanner from '../components/about/TrustBanner';
 
 export const AboutUs = () => {
   useEffect(() => {
+    const previousTitle = document.title;
     document.title = 'About Us | Universal Market';
+
+    return () => {
+      document.title = previousTitle;
+    };
   }, []);
 
   return (

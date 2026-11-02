@@ -5,7 +5,7 @@ import { resolveAuthRedirect, saveReturnTarget } from '../lib/authRedirect';
 export default function SignupPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const returnTo = resolveAuthRedirect(location, '/profile');
+  const returnTo = resolveAuthRedirect(location);
 
   return (
     <div className="min-h-screen bg-[#f8fafc] px-4 py-8">

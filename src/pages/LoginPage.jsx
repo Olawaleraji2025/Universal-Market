@@ -8,7 +8,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const isAuthenticated = useSelector(selectIsAuthenticated);
-  const from = resolveAuthRedirect(location, '/profile');
+  const from = resolveAuthRedirect(location);
 
   if (isAuthenticated) {
     return <Navigate to={from} replace />;

@@ -188,7 +188,7 @@ export function SignupForm({
             <Input
               id="email"
               type="email"
-              placeholder="olawale@example.com"
+              placeholder="you@example.com"
               autoComplete="email"
               required
               className="bg-white"

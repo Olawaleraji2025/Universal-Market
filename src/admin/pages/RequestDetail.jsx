@@ -20,6 +20,7 @@ import RequestStatusSelect from '../components/RequestStatusSelect';
 import WhatsAppButton from '../components/WhatsAppButton';
 import ConfirmDialog from '../components/ConfirmDialog';
 import { formatNaira, formatDisplayDateTime } from '../lib/requestStatus';
+import { isTrustedImageUrl } from '../../lib/utils';
 
 export default function RequestDetail() {
   const { id } = useParams();
@@ -231,7 +232,7 @@ export default function RequestDetail() {
             <div className="flex flex-col sm:flex-row gap-5">
               {/* Product Photo / Neutral Category Tile */}
               <div className="w-full sm:w-[160px] h-[160px] shrink-0 rounded-[10px] border border-[#e2e8f0] bg-slate-50 overflow-hidden flex items-center justify-center text-center p-3">
-                {request.isProduct && request.ItemImage && !imageError ? (
+                {request.isProduct && isTrustedImageUrl(request.ItemImage) && !imageError ? (
                   <img
                     src={request.ItemImage}
                     alt={request.ItemName}

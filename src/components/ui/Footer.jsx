@@ -20,7 +20,7 @@ const infoLinks = [
   { label: 'About Us', href: '/about' },
 ];
 
-const whatsappUrl = buildWhatsAppUrl(WHATSAPP_NUMBER, PRE_FILLED_MESSAGE) ?? 'https://wa.me/2347033190225';
+const whatsappUrl = buildWhatsAppUrl(WHATSAPP_NUMBER, PRE_FILLED_MESSAGE);
 
 export const Footer = () => {
   const navigate = useNavigate();
@@ -117,4 +117,3 @@ export const Footer = () => {
     </footer>
   );
 };
-

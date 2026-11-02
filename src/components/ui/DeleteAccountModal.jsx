@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useQueryClient } from '@tanstack/react-query';
 import { AlertCircle, Loader2, X } from 'lucide-react';
 import { supabase } from '../../supabaseClient';
-import { clearAuth } from '../../features/authSlice';
+import { clearAuth, selectCurrentUser } from '../../features/authSlice';
 import Button from './button';
+import { Input } from './input';
 
 /**
  * DeleteAccountModal Component
@@ -20,11 +22,14 @@ import Button from './button';
 export default function DeleteAccountModal() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const queryClient = useQueryClient();
+  const currentUser = useSelector(selectCurrentUser);
 
   // Modal state management
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState('');
+  const [password, setPassword] = useState('');
 
   /**
    * Open the confirmation modal
@@ -32,6 +37,7 @@ export default function DeleteAccountModal() {
   const openModal = () => {
     setIsModalOpen(true);
     setError('');
+    setPassword('');
   };
 
   /**
@@ -40,6 +46,7 @@ export default function DeleteAccountModal() {
   const closeModal = () => {
     setIsModalOpen(false);
     setError('');
+    setPassword('');
     setIsDeleting(false);
   };
 
@@ -55,6 +62,23 @@ export default function DeleteAccountModal() {
       setIsDeleting(true);
       setError('');
 
+      if (!currentUser?.email) {
+        setError('Unable to verify your account. Please sign in again.');
+        setIsDeleting(false);
+        return;
+      }
+
+      const { error: passwordError } = await supabase.auth.signInWithPassword({
+        email: currentUser.email,
+        password,
+      });
+
+      if (passwordError) {
+        setError('Password could not be verified. Check it and try again.');
+        setIsDeleting(false);
+        return;
+      }
+
       // Call Supabase RPC function to delete user account and related data
       const { error: rpcError } = await supabase.rpc('delete_user');
 
@@ -62,15 +86,18 @@ export default function DeleteAccountModal() {
         throw new Error(rpcError.message || 'Failed to delete account');
       }
 
-      // Sign out the user
-      const { error: signOutError } = await supabase.auth.signOut();
-
-      if (signOutError) {
-        throw new Error(signOutError.message || 'Failed to sign out');
+      try {
+        const { error: signOutError } = await supabase.auth.signOut();
+        if (signOutError) {
+          console.error('Sign out after account deletion failed:', signOutError);
+        }
+      } catch (signOutError) {
+        console.error('Sign out after account deletion failed:', signOutError);
       }
 
       // Clear Redux auth state
       dispatch(clearAuth());
+      queryClient.clear();
 
       // Close modal and redirect to signup
       closeModal();
@@ -174,6 +201,26 @@ export default function DeleteAccountModal() {
                   and wishlist items will be permanently deleted.
                 </p>
 
+                <label
+                  htmlFor="delete-account-password"
+                  className="mt-4 block text-sm font-medium text-slate-700"
+                >
+                  Confirm your password
+                </label>
+                <Input
+                  id="delete-account-password"
+                  type="password"
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(event) => {
+                    setPassword(event.target.value);
+                    setError('');
+                  }}
+                  disabled={isDeleting}
+                  required
+                  className="mt-2 h-10"
+                />
+
                 {/* Error Message */}
                 {error && (
                   <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3">
@@ -196,7 +243,7 @@ export default function DeleteAccountModal() {
                 <Button
                   type="button"
                   onClick={handleDeleteAccount}
-                  disabled={isDeleting}
+                  disabled={isDeleting || !password}
                   className="flex-1 bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
                 >
                   {isDeleting ? (

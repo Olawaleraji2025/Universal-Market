@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDispatch, useSelector } from 'react-redux';
+import { useQueryClient } from '@tanstack/react-query';
 import SidebarHeader from './mobile-sidebar/SidebarHeader';
 import SidebarNav from './mobile-sidebar/SidebarNav';
 import SidebarAuthActions from './mobile-sidebar/SidebarAuthActions';
@@ -16,6 +17,7 @@ export default function MobileSidebar({ user: userProp = null, onOpenAuth }) {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
+  const queryClient = useQueryClient();
 
   const { user: authUser, profile } = useSelector((state) => state.auth);
 
@@ -23,7 +25,6 @@ export default function MobileSidebar({ user: userProp = null, onOpenAuth }) {
     name: profile?.full_name || authUser?.user_metadata?.full_name || authUser?.email?.split('@')[0],
     email: authUser?.email,
     avatar: profile?.avatar_url || authUser?.user_metadata?.avatar_url,
-    role: profile?.role || authUser?.user_metadata?.role || 'user',
   } : null);
 
   const [open, setOpen] = useState(false);
@@ -100,6 +101,7 @@ export default function MobileSidebar({ user: userProp = null, onOpenAuth }) {
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut();
+      queryClient.clear();
       dispatch(clearAuth());
       setOpen(false);
 
@@ -121,7 +123,7 @@ export default function MobileSidebar({ user: userProp = null, onOpenAuth }) {
     }
   };
 
-  const role = activeUser?.role || 'guest';
+  const role = profile?.role || (authUser ? 'user' : 'guest');
 
   return (
     <div className="md:hidden">

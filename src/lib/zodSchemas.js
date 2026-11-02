@@ -146,8 +146,7 @@ export const loginSchema = z.object({
     .email({ message: "Please enter a valid email address." }),
   password: z
     .string()
-    .min(1, { message: "Password is required." })
-    .min(6, { message: "Password must be at least 6 characters." }),
+    .min(1, { message: "Password is required." }),
 });
 
 // Schema for Signup Form
@@ -174,7 +173,13 @@ export const signupSchema = z
     password: z
       .string()
       .min(1, { message: "Password is required." })
-      .min(6, { message: "Password must be at least 6 characters." }),
+      .min(8, { message: "Password must be at least 8 characters." })
+      .regex(/[A-Za-z]/, {
+        message: "Password must contain at least one letter.",
+      })
+      .regex(/[0-9]/, {
+        message: "Password must contain at least one number.",
+      }),
     confirmPassword: z
       .string()
       .min(1, { message: "Please confirm your password." }),
@@ -183,6 +188,5 @@ export const signupSchema = z
     message: "Passwords do not match.",
     path: ["confirmPassword"],
   });
-
 
 

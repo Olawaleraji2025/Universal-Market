@@ -6,6 +6,15 @@ const AUTH_PATHS = new Set([
   '/update-password',
 ]);
 
+export const isSafeInternalPath = (value) => {
+  if (typeof value !== 'string' || !value.startsWith('/') || value.startsWith('//')) {
+    return false;
+  }
+
+  const firstSlash = value.indexOf('/');
+  return !value.includes('\\') && !value.slice(0, firstSlash).includes(':');
+};
+
 const normalizeLocation = (value) => {
   if (!value) return null;
 
@@ -24,7 +33,7 @@ export const saveReturnTarget = (location) => {
   if (!location) return;
 
   const target = normalizeLocation(location.state?.from || location);
-  if (!target || AUTH_PATHS.has(target.split('?')[0].split('#')[0])) {
+  if (!isSafeInternalPath(target) || AUTH_PATHS.has(target.split('?')[0].split('#')[0])) {
     return;
   }
 
@@ -37,7 +46,7 @@ export const getStoredReturnTarget = () => {
     if (!raw) return null;
 
     const parsed = JSON.parse(raw);
-    if (typeof parsed !== 'string' || !parsed) return null;
+    if (!isSafeInternalPath(parsed)) return null;
 
     return parsed;
   } catch {
@@ -49,10 +58,14 @@ export const clearReturnTarget = () => {
   sessionStorage.removeItem(AUTH_RETURN_KEY);
 };
 
-export const resolveAuthRedirect = (location, fallback = '/profile') => {
+export const resolveAuthRedirect = (location, fallback = '/') => {
   const fromState = normalizeLocation(location?.state?.from);
   const storedTarget = getStoredReturnTarget();
-  const resolvedTarget = fromState || storedTarget || fallback;
+  const resolvedTarget =
+    (isSafeInternalPath(fromState) && fromState) ||
+    storedTarget ||
+    fallback ||
+    '/';
 
   if (!resolvedTarget) {
     return fallback;

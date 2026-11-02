@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { LogIn, UserPlus, X, Shield } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
+import { useQueryClient } from "@tanstack/react-query";
 import Button from "../ui/button";
 import MobileSidebar from "./MobileSidebar";
 import UserMenu from "./UserMenu";
@@ -17,12 +18,10 @@ export const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
+  const queryClient = useQueryClient();
 
   const { user, profile } = useSelector((state) => state.auth);
-  const role =
-    profile?.role ||
-    user?.user_metadata?.role ||
-    (user ? "user" : "guest");
+  const role = profile?.role || (user ? "user" : "guest");
   const displayName =
     profile?.full_name ||
     user?.user_metadata?.full_name ||
@@ -57,6 +56,7 @@ export const Navbar = () => {
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut();
+      queryClient.clear();
       dispatch(clearAuth());
 
       const isAuthRequiredRoute =

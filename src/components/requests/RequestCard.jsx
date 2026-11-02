@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronRight, ShoppingBag } from 'lucide-react';
 import { REQUEST_STATUSES } from '../../admin/lib/requestStatus';
+import { isTrustedImageUrl } from '../../lib/utils';
 
 const statusStyles = {
   [REQUEST_STATUSES.PENDING]: 'text-orange-600 bg-orange-50',
@@ -17,7 +18,8 @@ export default function RequestCard({ item, onClick }) {
     Boolean(item?.isProductRequest) ||
     (!item?.isCustom && Boolean(item?.ProductImage));
 
-  const showProductImage = isProductRequest && Boolean(item?.ProductImage) && !imageError;
+  const showProductImage =
+    isProductRequest && isTrustedImageUrl(item?.ProductImage) && !imageError;
 
   return (
     <button

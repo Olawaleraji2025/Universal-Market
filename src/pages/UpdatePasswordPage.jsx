@@ -6,7 +6,7 @@ import Button from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { resolveAuthRedirect } from '../lib/authRedirect';
 
-const MIN_PASSWORD_LENGTH = 6;
+const MIN_PASSWORD_LENGTH = 8;
 
 /**
  * UpdatePasswordPage Component
@@ -17,7 +17,7 @@ const MIN_PASSWORD_LENGTH = 6;
  * Features:
  * - Listens for PASSWORD_RECOVERY auth event from Supabase
  * - Blocks direct visits and unauthorized access
- * - Password strength validation (min 6 characters)
+ * - Password strength validation (min 8 characters, one letter, one number)
  * - Password confirmation matching
  * - Show/hide password toggle with accessibility support
  * - Real-time validation feedback
@@ -29,7 +29,7 @@ const MIN_PASSWORD_LENGTH = 6;
 export default function UpdatePasswordPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const returnTo = resolveAuthRedirect(location, '/profile');
+  const returnTo = resolveAuthRedirect(location);
 
   // Auth verification state
   const [isVerifying, setIsVerifying] = useState(true);
@@ -128,7 +128,12 @@ export default function UpdatePasswordPage() {
    * Validate if new password meets requirements
    */
   const isPasswordValid = (password) => {
-    return password.length >= MIN_PASSWORD_LENGTH;
+    const trimmedPassword = password.trim();
+    return (
+      trimmedPassword.length >= MIN_PASSWORD_LENGTH &&
+      /[A-Za-z]/.test(trimmedPassword) &&
+      /[0-9]/.test(trimmedPassword)
+    );
   };
 
   /**
@@ -160,7 +165,7 @@ export default function UpdatePasswordPage() {
       // Final validation before submission
       if (!isPasswordValid(newPassword)) {
         setFormError(
-          `Password must be at least ${MIN_PASSWORD_LENGTH} characters long.`
+          `Password must be at least ${MIN_PASSWORD_LENGTH} characters long and contain at least one letter and one number.`
         );
         setIsLoading(false);
         return;
@@ -365,10 +370,10 @@ export default function UpdatePasswordPage() {
                       }`}
                     >
                       {newPassword.length === 0
-                        ? `• At least ${MIN_PASSWORD_LENGTH} characters`
+                        ? `• At least ${MIN_PASSWORD_LENGTH} characters, one letter, and one number`
                         : isPasswordValid(newPassword)
                           ? `✓ Strong password (${newPassword.length} characters)`
-                          : `• At least ${MIN_PASSWORD_LENGTH} characters (${newPassword.length}/${MIN_PASSWORD_LENGTH})`}
+                          : `• At least ${MIN_PASSWORD_LENGTH} characters, one letter, and one number`}
                     </p>
                   </div>
                 </div>
@@ -446,8 +451,8 @@ export default function UpdatePasswordPage() {
                 </p>
                 <ul className="space-y-1 text-xs text-blue-700">
                   <li>• At least {MIN_PASSWORD_LENGTH} characters</li>
-                  <li>• Mix of uppercase and lowercase letters (recommended)</li>
-                  <li>• Include numbers or special characters (recommended)</li>
+                  <li>• At least one letter</li>
+                  <li>• At least one number</li>
                 </ul>
               </div>
             </div>
