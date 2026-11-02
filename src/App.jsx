@@ -33,6 +33,7 @@ import AddProduct from './admin/pages/AddProduct';
 import EditProduct from './admin/pages/EditProduct';
 import InfoPage from './pages/InfoPage';
 import AboutUs from './pages/AboutUs';
+import { Analytics } from '@vercel/analytics/react';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -165,6 +166,7 @@ const App = () => {
       />
 
       <Toaster richColors />
+      <Analytics />
     </div>
   );
 };
