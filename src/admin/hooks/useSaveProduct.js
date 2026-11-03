@@ -68,7 +68,7 @@ export function useSaveProduct() {
 
         // If condition column exists or can be stored
         if (condition) {
-          payload.ProductStatus = condition;
+          payload.ProductCondition = condition;
         }
 
         let savedData = null;
@@ -82,10 +82,10 @@ export function useSaveProduct() {
             .select()
             .single();
 
-          // Graceful fallback if is_hidden or ProductStatus columns do not exist in the database table
-          if (error && error.message?.includes('ProductStatus')) {
+          // Graceful fallback if is_hidden or ProductCondition columns do not exist in the database table
+          if (error && error.message?.includes('ProductCondition')) {
             const fallbackPayload = { ...payload };
-            delete fallbackPayload.ProductStatus;
+            delete fallbackPayload.ProductCondition;
 
             const retry = await supabase
               .from('EachProductInformation')
@@ -117,10 +117,10 @@ export function useSaveProduct() {
             .select()
             .single();
 
-          // Graceful fallback if is_hidden or ProductStatus columns do not exist in the database table
-          if (error && error.message?.includes('ProductStatus')) {
+          // Graceful fallback if is_hidden or ProductCondition columns do not exist in the database table
+          if (error && error.message?.includes('ProductCondition')) {
             const fallbackPayload = { ...payload };
-            delete fallbackPayload.ProductStatus;
+            delete fallbackPayload.ProductCondition;
 
             const retry = await supabase
               .from('EachProductInformation')

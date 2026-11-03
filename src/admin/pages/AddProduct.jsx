@@ -16,8 +16,11 @@ export default function AddProduct() {
       });
       navigate('/admin/products');
     } catch (err) {
+      console.error('Save product failed:', err);
       toast.error('Failed to add product', {
-        description: err.message || 'Please check your inputs and try again.',
+        description:
+          [err.message, err.details, err.hint].filter(Boolean).join(' — ') ||
+          'Please check your inputs and try again.',
       });
     }
   };
