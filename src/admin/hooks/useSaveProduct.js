@@ -66,10 +66,7 @@ export function useSaveProduct() {
           Location: location || '',
         };
 
-        // If condition column exists or can be stored
-        if (condition) {
-          payload.ProductCondition = condition;
-        }
+     
 
         let savedData = null;
 
@@ -83,22 +80,22 @@ export function useSaveProduct() {
             .single();
 
           // Graceful fallback if is_hidden or ProductCondition columns do not exist in the database table
-          if (error && error.message?.includes('ProductCondition')) {
-            const fallbackPayload = { ...payload };
-            delete fallbackPayload.ProductCondition;
+          // if (error && error.message?.includes('ProductCondition')) {
+          //   const fallbackPayload = { ...payload };
+          //   delete fallbackPayload.ProductCondition;
 
-            const retry = await supabase
-              .from('EachProductInformation')
-              .update(fallbackPayload)
-              .eq('id', id)
-              .select()
-              .single();
+          //   const retry = await supabase
+          //     .from('EachProductInformation')
+          //     .update(fallbackPayload)
+          //     .eq('id', id)
+          //     .select()
+          //     .single();
 
-            if (retry.error) throw retry.error;
-            data = retry.data;
-          } else if (error) {
-            throw error;
-          }
+          //   if (retry.error) throw retry.error;
+          //   data = retry.data;
+          // } else if (error) {
+          //   throw error;
+          // }
 
           savedData = data;
 
@@ -118,21 +115,21 @@ export function useSaveProduct() {
             .single();
 
           // Graceful fallback if is_hidden or ProductCondition columns do not exist in the database table
-          if (error && error.message?.includes('ProductCondition')) {
-            const fallbackPayload = { ...payload };
-            delete fallbackPayload.ProductCondition;
+          // if (error && error.message?.includes('ProductCondition')) {
+          //   const fallbackPayload = { ...payload };
+          //   delete fallbackPayload.ProductCondition;
 
-            const retry = await supabase
-              .from('EachProductInformation')
-              .insert([fallbackPayload])
-              .select()
-              .single();
+          //   const retry = await supabase
+          //     .from('EachProductInformation')
+          //     .insert([fallbackPayload])
+          //     .select()
+          //     .single();
 
-            if (retry.error) throw retry.error;
-            data = retry.data;
-          } else if (error) {
-            throw error;
-          }
+          //   if (retry.error) throw retry.error;
+          //   data = retry.data;
+          // } else if (error) {
+          //   throw error;
+          // }
 
           savedData = data;
         }
@@ -156,7 +153,7 @@ export function useSaveProduct() {
       }
       queryClient.invalidateQueries({ queryKey: ['products'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-dashboard-stats'] });
+      // queryClient.invalidateQueries({ queryKey: ['admin-dashboard-stats'] });
     },
   });
 }
