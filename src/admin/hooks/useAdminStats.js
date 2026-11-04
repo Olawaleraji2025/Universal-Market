@@ -85,6 +85,6 @@ export function useAdminStats() {
     queryKey: ADMIN_STATS_QUERY_KEY,
     queryFn: fetchAdminDashboardStats,
     staleTime: 1000 * 30, // 30 seconds
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
   });
 }

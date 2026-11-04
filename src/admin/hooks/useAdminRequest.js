@@ -62,5 +62,6 @@ export function useAdminRequest(id) {
     queryFn: () => fetchAdminRequestById(id),
     enabled: Boolean(id),
     staleTime: 1000 * 20,
+    refetchOnWindowFocus: false,
   });
 }

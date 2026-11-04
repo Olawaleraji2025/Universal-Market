@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   selectAuthLoading,
   selectIsAuthenticated,
+  selectUserProfile,
   selectUserRole,
   selectRoleStatus,
   clearAuth,
@@ -29,6 +30,7 @@ export default function AdminRoute({ children }) {
 
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const isAuthLoading = useSelector(selectAuthLoading);
+  const profile = useSelector(selectUserProfile);
   const role = useSelector(selectUserRole);
   const roleStatus = useSelector(selectRoleStatus);
 
@@ -53,8 +55,10 @@ export default function AdminRoute({ children }) {
   }, [dispatch, navigate, location, queryClient]);
 
   // Step 1: Session loading, or logged in but role not yet 'ready' or 'error'
-  const isRolePending = isAuthenticated && roleStatus !== 'ready' && roleStatus !== 'error';
-  if (isAuthLoading || isRolePending) {
+  const isRolePending =
+    isAuthenticated && !profile && roleStatus !== 'ready' && roleStatus !== 'error';
+  const showSpinner = (isAuthLoading && !profile) || isRolePending;
+  if (showSpinner) {
     return (
       <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center p-6">
         <div className="flex flex-col items-center gap-3">

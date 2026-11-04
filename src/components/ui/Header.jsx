@@ -140,7 +140,7 @@ export const Navbar = () => {
           {/* Desktop Auth State / User Controls */}
           <div className="hidden md:flex items-center gap-4">
             {user ? (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 truncate">
                 <UserMenu
                   user={{ name: displayName, email: user.email, avatar: avatarUrl, role }}
                   onLogout={handleLogout}

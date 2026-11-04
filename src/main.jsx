@@ -12,7 +12,15 @@ import { ThemeProvider } from 'next-themes'
 import ErrorBoundary from './components/ui/ErrorBoundary.jsx'
 
 // 2. We create the "Brain" of the assistant
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      staleTime: 60_000,
+    },
+  },
+})
 
 
 

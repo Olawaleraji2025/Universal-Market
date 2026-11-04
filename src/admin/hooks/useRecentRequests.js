@@ -28,6 +28,6 @@ export function useRecentRequests() {
     queryKey: RECENT_REQUESTS_QUERY_KEY,
     queryFn: fetchRecentRequests,
     staleTime: 1000 * 30, // 30 seconds
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
   });
 }

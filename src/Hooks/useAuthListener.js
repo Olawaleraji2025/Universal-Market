@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { supabase } from '../supabaseClient';
 import {
@@ -19,17 +19,18 @@ import {
 
 export const useAuthListener = () => {
   const dispatch = useDispatch();
+  const currentUserId = useRef(null);
 
   useEffect(() => {
     dispatch(setAuthLoading(true));
 
-    const fetchUserProfile = async (userId) => {
+    const fetchUserProfile = async (userId, { silent = false } = {}) => {
       if (!userId) {
-        dispatch(setRoleStatus('idle'));
+        if (!silent) dispatch(setRoleStatus('idle'));
         return;
       }
       try {
-        dispatch(setRoleStatus('loading'));
+        if (!silent) dispatch(setRoleStatus('loading'));
         const { data, error } = await supabase
           .from('profiles')
           .select('*')
@@ -38,12 +39,12 @@ export const useAuthListener = () => {
 
         if (data && !error) {
           dispatch(setProfile(data));
-        } else {
+        } else if (!silent) {
           dispatch(setRoleStatus('error'));
         }
       } catch (err) {
         console.error('Error fetching user profile:', err);
-        dispatch(setRoleStatus('error'));
+        if (!silent) dispatch(setRoleStatus('error'));
       }
     };
 
@@ -62,6 +63,7 @@ export const useAuthListener = () => {
     // 1. Initial Session Check on app mount
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session) {
+        currentUserId.current = session.user?.id ?? null;
         dispatch(setSession(session));
         if (session.user?.id) {
           await fetchUserProfile(session.user.id);
@@ -77,16 +79,30 @@ export const useAuthListener = () => {
     // 2. Real-time subscription to auth state changes (login, logout, token refresh)
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session?.user) {
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setTimeout(async () => {
+        if (!session?.user) {
+          currentUserId.current = null;
+          setActiveWishlistUser(null);
+          dispatch(clearAuth());
+          dispatch(setAuthLoading(false));
+          return;
+        }
+
+        const newId = session.user.id;
+        if (newId === currentUserId.current) {
+          if (event === 'TOKEN_REFRESHED') {
+            dispatch(setSession(session));
+          }
+          return;
+        }
+
+        currentUserId.current = newId;
         dispatch(setSession(session));
-        await fetchUserProfile(session.user.id);
+        await fetchUserProfile(newId);
         await hydrateWishlistAfterLogin(session.user);
-      } else {
-        setActiveWishlistUser(null);
-        dispatch(clearAuth());
-      }
-      dispatch(setAuthLoading(false));
+        dispatch(setAuthLoading(false));
+      }, 0);
     });
 
     return () => {

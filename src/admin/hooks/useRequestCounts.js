@@ -64,6 +64,6 @@ export function useRequestCounts() {
     queryKey: ADMIN_COUNTS_QUERY_KEY,
     queryFn: fetchAdminRequestCounts,
     staleTime: 1000 * 30, // 30 seconds
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
   });
 }

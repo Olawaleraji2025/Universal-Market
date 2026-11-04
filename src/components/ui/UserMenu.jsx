@@ -97,7 +97,7 @@ export default function UserMenu({ user, onLogout }) {
                   )}
                 </div>
                 <div className="min-w-0">
-                  <div className="text-sm font-semibold text-slate-900">{user?.name || 'User'}</div>
+                  <div className="text-sm font-semibold text-slate-900 truncate">{user?.name || 'User'}</div>
                   <div className="text-xs text-gray-500 truncate">{user?.email || ''}</div>
                 </div>
               </div>

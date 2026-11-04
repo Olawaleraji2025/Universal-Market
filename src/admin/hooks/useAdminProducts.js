@@ -181,5 +181,6 @@ export function useAdminProducts({
       };
     },
     staleTime: 30 * 1000,
+    refetchOnWindowFocus: false,
   });
 }

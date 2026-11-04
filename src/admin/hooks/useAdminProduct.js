@@ -39,5 +39,6 @@ export function useAdminProduct(id) {
     },
     enabled: Boolean(id),
     staleTime: 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 }

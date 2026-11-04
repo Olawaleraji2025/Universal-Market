@@ -103,6 +103,7 @@ export function useAdminRequests({ status = 'All', type = 'All', q = '', page = 
     queryKey: [ADMIN_REQUESTS_QUERY_KEY, { status, type, q: cleanQ, page, limit }],
     queryFn: () => fetchAdminRequests({ status, type, q: cleanQ, page, limit }),
     staleTime: 1000 * 15, // 15 seconds
+    refetchOnWindowFocus: false,
     placeholderData: (prev) => prev,
   });
 }
