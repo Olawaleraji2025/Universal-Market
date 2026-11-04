@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   User as UserIcon,
@@ -15,7 +15,6 @@ export default function UserMenu({ user, onLogout }) {
   const navigate = useNavigate();
   const location = useLocation();
   const rootRef = useRef(null);
-  const btnRef = useRef(null);
   const [open, setOpen] = useState(false);
 
   const isActive = (path) => location.pathname === path;
@@ -30,12 +29,12 @@ export default function UserMenu({ user, onLogout }) {
   }, [open]);
 
   useEffect(() => {
-    const onDoc = (e) => {
+    const onPointerDown = (e) => {
       if (!rootRef.current) return;
       if (!rootRef.current.contains(e.target)) setOpen(false);
     };
-    document.addEventListener('click', onDoc);
-    return () => document.removeEventListener('click', onDoc);
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => document.removeEventListener('pointerdown', onPointerDown);
   }, []);
 
   const handleToggle = (e) => {
@@ -46,16 +45,10 @@ export default function UserMenu({ user, onLogout }) {
   return (
     <div className="relative user-menu-root" ref={rootRef}>
       <button
-        ref={btnRef}
+        type="button"
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={handleToggle}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            setOpen((s) => !s);
-          }
-        }}
         className="inline-flex items-center gap-2 p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-300"
       >
         <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center overflow-hidden">
